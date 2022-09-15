@@ -3,6 +3,14 @@
 
 #pragma once
 
-#include <iostream>
+//OpenGL imports
+#include "glad/glad.h"
+#include "GLFW/glfw3.h"
+//ImGui imports
+#include <imgui.h>
+#include <imgui_impl_glfw.h>
+#include <imgui_impl_opengl3.h>
 
-// TODO: Reference additional headers your program requires here.
+//Other imports
+#include <stdio.h>
+#include <iostream>
