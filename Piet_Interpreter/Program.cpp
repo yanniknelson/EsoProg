@@ -63,11 +63,16 @@ void Program::Check_ShortCuts() {
             last_shortcut_used = ImGuiKey_O;
             handle_Open();
         }
+        else if (io.KeyShift && io.KeysDown[ImGuiKey_S]) {
+            shortcut_used = true;
+            last_shortcut_used = ImGuiKey_S;
+            handle_Save_As();
+        } 
         else if (io.KeysDown[ImGuiKey_S]) {
             shortcut_used = true;
             last_shortcut_used = ImGuiKey_S;
             handle_Save();
-        }
+        } 
     }
 
 }
@@ -84,6 +89,9 @@ void Program::CreateMenuBar() {
             }
             if (ImGui::MenuItem(ICON_FA_FLOPPY_DISK " Save", "Ctrl+S")) {
                 handle_Save();
+            }
+            if (ImGui::MenuItem(ICON_FA_FLOPPY_DISK " Save As", "Ctrl+Shift+S")) {
+                handle_Save_As();
             }
             ImGui::EndMenu();
         }
