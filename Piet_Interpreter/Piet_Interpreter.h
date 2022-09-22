@@ -3,6 +3,8 @@
 
 #pragma once
 
+#include "Program.h"
+
 //OpenGL imports
 #include "glad/glad.h"
 #include "GLFW/glfw3.h"
