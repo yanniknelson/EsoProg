@@ -145,8 +145,18 @@ void Program::Render() {
         std::cout << code << std::endl;
     }
     if (enterPressed) {
-        std::cout << "bool changed" << std::endl;
+        
     }
-    ImGui::Button("Run");
+    if (ImGui::Button("Run")) {
+        std::istrstream input(code.c_str());
+        tk.set_Stream(input);
+        int count = 0;
+        Tokeniser::Token& token = tk.pop();
+        while (token.kind != Tokeniser::Kind::End) {
+            std::cout << count << " " << token << std::endl;
+            token = tk.pop();
+            count++;
+        }
+    }
     ImGui::End();
 }

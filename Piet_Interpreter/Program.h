@@ -13,6 +13,7 @@
 //Custom classes
 #include "File_Dialog_Box/FileDialogBox.h"
 #include "Resources/IconsFontAwesome6.h"
+#include "Interpreter/Tokeniser.h"
 
 class Program {
 
@@ -38,6 +39,9 @@ class Program {
 	//file management
 	bool file_is_new = true;
 	fs::path currentFilePath = "";
+
+	//Interpreting
+	Tokeniser tk;
 	
 
 	ImGuiInputTextFlags code_editor_flags = ImGuiInputTextFlags_CallbackCharFilter | ImGuiInputTextFlags_EnterReturnsTrue;

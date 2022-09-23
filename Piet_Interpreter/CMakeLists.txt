@@ -11,11 +11,10 @@ add_executable (Piet_Interpreter
 	"File_Dialog_Box/FileDialogBox.h" 
 	"File_Dialog_Box/FileDialogBox.cpp" 
 	"Program.cpp"
+	"Program.h"
 	"Resources/IconsFontAwesome6.h"
-	 )
-
-#file(COPY "${PROJECT_SOURCE_DIR}/Piet_Interpreter/Resources/fa-solid-900.ttf"
-#    DESTINATION $<TARGET_FILE_DIR:Piet_Interpreter>)
+	"Interpreter/Tokeniser.h"
+	"Interpreter/Tokeniser.cpp")
 
 add_custom_command(TARGET Piet_Interpreter POST_BUILD        # Adds a post-build event to MyTest
     COMMAND ${CMAKE_COMMAND} -E copy_if_different  # which executes "cmake - E copy_if_different..."
