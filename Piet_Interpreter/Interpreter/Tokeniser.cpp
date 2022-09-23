@@ -5,6 +5,7 @@ Tokeniser::Token& Tokeniser::pop() {
 	std::string word;
 	while (isspace(ch)) {
 		stream->get(ch);
+		if (ch == '\n') { line_number++; }
 	}
 	switch (ch)
 	{
@@ -65,6 +66,9 @@ Tokeniser::Token& Tokeniser::pop() {
 			} else if (word == "ROLL") {
 				lp.kind = Kind::Roll;
 				lp.value = NAN;
+			} else if (word == "END") {
+				lp.kind = Kind::End;
+				lp.value = NAN;
 			} else if (word == "OUT") {
 				word = "";
 				*stream >> word;
@@ -73,6 +77,9 @@ Tokeniser::Token& Tokeniser::pop() {
 					lp.value = NAN;
 				} else if (word == "INT") {
 					lp.kind = Kind::Output_Val;
+					lp.value = NAN;
+				} else {
+					lp.kind = Kind::Unrecognised_Token;
 					lp.value = NAN;
 				}
 			} else if (word == "IN") {
@@ -84,10 +91,12 @@ Tokeniser::Token& Tokeniser::pop() {
 				} else if (word == "INT") {
 					lp.kind = Kind::Input_Val;
 					lp.value = NAN;
+				} else {
+					lp.kind = Kind::Unrecognised_Token;
+					lp.value = NAN;
 				}
-			}
-			else {
-				lp.kind = Kind::End;
+			} else {
+				lp.kind = Kind::Unrecognised_Token;
 				lp.value = NAN;
 			}
 		}

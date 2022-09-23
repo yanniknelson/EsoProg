@@ -148,15 +148,23 @@ void Program::Render() {
         
     }
     if (ImGui::Button("Run")) {
+        is_token_error = false;
         std::istrstream input(code.c_str());
         tk.set_Stream(input);
-        int count = 0;
         Tokeniser::Token& token = tk.pop();
         while (token.kind != Tokeniser::Kind::End) {
-            std::cout << count << " " << token << std::endl;
+            std::cout << tk.get_line_number() << " " << token << std::endl;
             token = tk.pop();
-            count++;
+            if (token.kind == Tokeniser::Kind::Unrecognised_Token) {
+                is_token_error = true;
+                token_error_line = tk.get_line_number();
+                break;
+            }
         }
+    }
+    if (is_token_error) {
+        ImGui::SameLine();
+        ImGui::Text("There's an error on line %d, lower lines have not been checked", token_error_line);
     }
     ImGui::End();
 }

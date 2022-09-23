@@ -42,7 +42,8 @@ class Program {
 
 	//Interpreting
 	Tokeniser tk;
-	
+	bool is_token_error = false;
+	int token_error_line = 0;
 
 	ImGuiInputTextFlags code_editor_flags = ImGuiInputTextFlags_CallbackCharFilter | ImGuiInputTextFlags_EnterReturnsTrue;
 	std::string code{ "" };

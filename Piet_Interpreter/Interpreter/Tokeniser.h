@@ -5,7 +5,7 @@ class Tokeniser {
 public:
 	enum class Kind {
 		Value, Push, Pop, Add, Subtract, Multiply, Divide, Modulo, Not, Greater,
-		Pointer, Switch, Duplicate, Roll, Input_Char, Input_Val, Output_Char, Output_Val, End
+		Pointer, Switch, Duplicate, Roll, Input_Char, Input_Val, Output_Char, Output_Val, End, Unrecognised_Token
 	};
 
 	struct Token {
@@ -71,6 +71,9 @@ public:
 			case(Kind::End):
 				os << "End";
 				break;
+			case(Kind::Unrecognised_Token):
+				os << "Unrecognised_Token";
+				break;
 			default:
 				break;
 			}
@@ -85,11 +88,17 @@ public:
 
 	void set_Stream(std::istrstream& code) {
 		stream = &code;
+		line_number = 1;
+	}
+
+	int get_line_number() {
+		return line_number;
 	}
 
 private:
 
 	std::istrstream* stream;
 	Token lp{ Kind::End };
+	int line_number = 1;
 
 };
