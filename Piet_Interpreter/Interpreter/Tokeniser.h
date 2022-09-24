@@ -4,7 +4,7 @@
 class Tokeniser {
 public:
 	enum class Kind {
-		Value, Push, Pop, Add, Subtract, Multiply, Divide, Modulo, Not, Greater,
+		Start, Value, Push, Pop, Add, Subtract, Multiply, Divide, Modulo, Not, Greater,
 		Pointer, Switch, Duplicate, Roll, Input_Char, Input_Val, Output_Char, Output_Val, End, Unrecognised_Token
 	};
 
@@ -86,7 +86,7 @@ public:
 
 	Tokeniser() {}
 
-	void set_Stream(std::istrstream& code) {
+	void set_stream(std::istrstream& code) {
 		stream = &code;
 		line_number = 1;
 	}

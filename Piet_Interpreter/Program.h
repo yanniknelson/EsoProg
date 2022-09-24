@@ -13,7 +13,7 @@
 //Custom classes
 #include "File_Dialog_Box/FileDialogBox.h"
 #include "Resources/IconsFontAwesome6.h"
-#include "Interpreter/Tokeniser.h"
+#include "Interpreter/Runtime.h"
 
 class Program {
 
@@ -44,6 +44,7 @@ class Program {
 	Tokeniser tk;
 	bool is_token_error = false;
 	int token_error_line = 0;
+	Runtime runtime;
 
 	ImGuiInputTextFlags code_editor_flags = ImGuiInputTextFlags_CallbackCharFilter | ImGuiInputTextFlags_EnterReturnsTrue;
 	std::string code{ "" };

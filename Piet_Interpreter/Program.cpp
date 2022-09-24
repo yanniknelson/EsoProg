@@ -150,7 +150,7 @@ void Program::Render() {
     if (ImGui::Button("Run")) {
         is_token_error = false;
         std::istrstream input(code.c_str());
-        tk.set_Stream(input);
+        tk.set_stream(input);
         Tokeniser::Token& token = tk.pop();
         while (token.kind != Tokeniser::Kind::End) {
             std::cout << tk.get_line_number() << " " << token << std::endl;
@@ -160,6 +160,11 @@ void Program::Render() {
                 token_error_line = tk.get_line_number();
                 break;
             }
+        }
+        if (!is_token_error) {
+            std::istrstream runtime_input(code.c_str());
+            runtime.set_stream(runtime_input);
+            runtime.run();
         }
     }
     if (is_token_error) {
