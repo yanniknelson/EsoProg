@@ -4,6 +4,10 @@
 #include <imgui.h>
 #include <imgui_stdlib.h>
 
+//OpenGL imports
+#include "glad/glad.h"
+#include "GLFW/glfw3.h"
+
 //Other imports
 #include <stdio.h>
 #include <iostream>
@@ -15,7 +19,13 @@
 #include "Resources/IconsFontAwesome6.h"
 #include "Interpreter/Runtime.h"
 
+
 class Program {
+
+	enum FileType {
+		Text,
+		Image
+	};
 
 	static int Check_For_Enter(ImGuiInputTextCallbackData* data);
 	void Check_ShortCuts();
@@ -35,10 +45,23 @@ class Program {
 	bool enable_file_dialog = false;
 	FileDialogBox::FileDialogType dialogType = FileDialogBox::FileDialogType::Open;
 	ImGuiWindowFlags_ file_dialog_on_top = ImGuiWindowFlags_None;
+	std::fstream fs;
+
+	FileType OpenFile(std::filesystem::path path);
 	
 	//file management
 	bool file_is_new = true;
 	fs::path currentFilePath = "";
+
+	//Image
+	unsigned char* image_data;
+	int image_width = 0;
+	int image_height = 0;
+	int num_components = 0;
+	bool image_loaded = false;
+	float aspect_ratio = 1.f;
+
+	GLuint texture;
 
 	//Interpreting
 	Tokeniser tk;
@@ -57,6 +80,8 @@ public:
 		//setup the current directory as the initial path in the file dialog box
 		FileDialogBox::Init_Path(fs::current_path());
 		FileDialogBox::Set_Allowed_Type({".txt", ".jpg", ".png", ".gif", ".ppm"});
+
+		glGenTextures(1, &texture);
 
 		//Merge font awesome into the default font
 		ImGuiIO io = ImGui::GetIO();

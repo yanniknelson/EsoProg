@@ -13,6 +13,8 @@ add_executable (Piet_Interpreter
 	"Program.cpp"
 	"Program.h"
 	"Resources/IconsFontAwesome6.h"
+	"Resources/stb_image.h"
+	"Resources/stb_image_write.h"
 	"Interpreter/Tokeniser.h"
 	"Interpreter/Tokeniser.cpp"
 	"Interpreter/PietStack.h" 

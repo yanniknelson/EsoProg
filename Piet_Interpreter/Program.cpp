@@ -1,4 +1,6 @@
 #include "Program.h"
+#define STB_IMAGE_IMPLEMENTATION
+#include "Resources/stb_image.h"
 
 int Program::Check_For_Enter(ImGuiInputTextCallbackData* data)
 {
@@ -99,6 +101,39 @@ void Program::CreateMenuBar() {
     }
 }
 
+Program::FileType Program::OpenFile(std::filesystem::path path) {
+    if (path.extension() == ".txt") {
+        fs.open(path.string(), fs.in);
+        code = "";
+        std::getline(fs, code, char(0));
+        file_is_new = false;
+        currentFilePath = path;
+        fs.close();
+        return FileType::Text;
+    } else {
+        if (image_loaded) {
+            stbi_image_free(image_data);
+        }
+        image_data = stbi_load(path.string().c_str(), &image_width, &image_height, &num_components, 4);
+        if (image_data) {
+            aspect_ratio = (float)image_height / (float)image_width;
+            glBindTexture(GL_TEXTURE_2D, texture);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE); // This is required on WebGL for non power-of-two textures
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE); // Same
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+#if defined(GL_UNPACK_ROW_LENGTH) && !defined(__EMSCRIPTEN__)
+            glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);
+#endif
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, image_width, image_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, image_data);
+            glGenerateMipmap(GL_TEXTURE_2D);
+            image_loaded = true;
+        }
+        return FileType::Image;
+    }
+}
+
 void Program::Render() {
     file_dialog_on_top = ImGuiWindowFlags_None;
     //check if any shortcut is active and handle it
@@ -113,16 +148,10 @@ void Program::Render() {
         file_dialog_on_top = ImGuiWindowFlags_NoBringToFrontOnFocus;
         FileDialogBox::FileDialogReturn ret = FileDialogBox::Create_File_Dialog(enable_file_dialog, dialogType);
         if (ret.selected) {
-            std::fstream fs;
             switch (dialogType)
             {
             case FileDialogBox::Open:
-                fs.open(ret.path.string(), fs.in);
-                code = "";
-                std::getline(fs, code, char(0));
-                file_is_new = false;
-                currentFilePath = ret.path;
-                fs.close();
+                OpenFile(ret.path);
                 break;
             case FileDialogBox::Save_As:
                 fs.open(ret.path.string(), fs.out);
@@ -189,6 +218,19 @@ void Program::Render() {
                     runtime.step_execution();
                 }
             }
+        }
+        ImGui::End();
+    }
+
+    // IMAGE PROGRAM DISPLAY --------------------------------------------------------------------------------------------
+    if (ImGui::Begin("OpenGL Texture Text")) {
+        if (image_loaded) {
+            ImVec2 area = ImGui::GetContentRegionAvail();
+            ImVec2 desired = ImVec2(area.x, (int)area.x * aspect_ratio);
+            if (desired.y > area.y) {
+                desired = ImVec2((int)area.y * (1/aspect_ratio), area.y);
+            }
+            ImGui::Image((void*)(intptr_t)texture, desired);
         }
         ImGui::End();
     }

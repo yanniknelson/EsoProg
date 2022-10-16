@@ -5,9 +5,6 @@
 
 #include "Program.h"
 
-//OpenGL imports
-#include "glad/glad.h"
-#include "GLFW/glfw3.h"
 //ImGui imports
 #include <imgui.h>
 #include <imgui_impl_glfw.h>
