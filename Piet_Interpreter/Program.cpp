@@ -209,5 +209,6 @@ void Program::Render() {
     if (ImGui::Begin("Program Output", &output_display_open, file_dialog_on_top)) {
         ImGui::Text("The stack is displayed with the deepest value at the top");
         //ImGui::TextWrapped();
+        ImGui::End();
     }
 }
