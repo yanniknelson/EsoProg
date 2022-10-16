@@ -43,8 +43,10 @@ class Program {
 	//Interpreting
 	Tokeniser tk;
 	bool is_token_error = false;
+	bool is_compiled = false;
 	int token_error_line = 0;
-	Runtime runtime;
+	std::string output = "";
+	Runtime runtime{ output };
 
 	ImGuiInputTextFlags code_editor_flags = ImGuiInputTextFlags_CallbackCharFilter | ImGuiInputTextFlags_EnterReturnsTrue;
 	std::string code{ "" };
@@ -54,6 +56,7 @@ public:
 	Program() {
 		//setup the current directory as the initial path in the file dialog box
 		FileDialogBox::Init_Path(fs::current_path());
+		FileDialogBox::Set_Allowed_Type({".txt", ".jpg", ".png", ".gif", ".ppm"});
 
 		//Merge font awesome into the default font
 		ImGuiIO io = ImGui::GetIO();

@@ -8,9 +8,10 @@ const char* FileDialogBox::DialogBoxTypes[] = { "Open", "Save As" };
 fs::path FileDialogBox::currentPath = fs::path();
 fs::path FileDialogBox::selectedFilePath = fs::path();
 std::string FileDialogBox::currentFileName = "";
+std::vector<std::string> FileDialogBox::allowed_types = {};
 
 FileDialogBox::FileDialogReturn FileDialogBox::Create_File_Dialog(bool& open, FileDialogBox::FileDialogType type) {
-    if (ImGui::Begin("File Explorer", &open, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoDocking)) {
+    if (ImGui::Begin("File Explorer", &open, ImGuiWindowFlags_NoCollapse)) { //| ImGuiWindowFlags_NoDocking)) {
         //decompose the current Path
         fs::path p = currentPath;
         std::vector<fs::path> breakdown = {};
@@ -35,7 +36,7 @@ FileDialogBox::FileDialogReturn FileDialogBox::Create_File_Dialog(bool& open, Fi
             }
             for (const fs::directory_entry& entry : fs::directory_iterator(currentPath)) {
                 //filter files for text files only
-                if (!entry.is_directory() && entry.path().extension() != ".txt") {
+                if (!entry.is_directory() && std::find(allowed_types.begin(), allowed_types.end(), entry.path().extension()) == allowed_types.end()) {
                     continue;
                 }
 
