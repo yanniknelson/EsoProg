@@ -106,6 +106,7 @@ void Program::Render() {
 
     CreateMenuBar();
 
+    // FILE DIALOG BOX ------------------------------------------------------------------------------------------------------
     if (enable_file_dialog) {
         //set the nobring to front on focus flag for all other elements to ensure
         //the file dialog is always on top
@@ -137,39 +138,76 @@ void Program::Render() {
         }
     }
 
+    // CODE EDITOR --------------------------------------------------------------------------------------------------
     bool code_editor_open = true;
-    ImGui::Begin("Code Editor", &code_editor_open, file_dialog_on_top);
-    ImGui::Text("Warning: Pressing ESC will delete all non submitted changes");
-    bool enterPressed = false;
-    if (ImGui::InputTextMultiline("##code", &code, ImVec2(-FLT_MIN, ImGui::GetContentRegionAvail().y - (ImGui::GetTextLineHeight() * 1.5)), ImGuiInputTextFlags_CallbackCharFilter | ImGuiInputTextFlags_EnterReturnsTrue, Check_For_Enter, &enterPressed)) {
-        std::cout << code << std::endl;
-    }
-    if (enterPressed) {
-        
-    }
-    if (ImGui::Button("Run")) {
-        is_token_error = false;
-        std::istrstream input(code.c_str());
-        tk.set_stream(input);
-        Tokeniser::Token& token = tk.pop();
-        while (token.kind != Tokeniser::Kind::End) {
-            std::cout << tk.get_line_number() << " " << token << std::endl;
-            token = tk.pop();
-            if (token.kind == Tokeniser::Kind::Unrecognised_Token) {
-                is_token_error = true;
-                token_error_line = tk.get_line_number();
-                break;
+    if (ImGui::Begin("Code Editor", &code_editor_open, file_dialog_on_top)) {
+        ImGui::Text("Warning: Pressing ESC will delete all non submitted changes");
+        bool enterPressed = false;
+        if (ImGui::InputTextMultiline("##code", &code, ImVec2(-FLT_MIN, ImGui::GetContentRegionAvail().y - (ImGui::GetTextLineHeight() * 1.5)), ImGuiInputTextFlags_CallbackCharFilter | ImGuiInputTextFlags_EnterReturnsTrue, Check_For_Enter, &enterPressed)) {
+            std::cout << code << std::endl;
+        }
+        if (enterPressed) {
+
+        }
+        if (ImGui::Button("Compile")) {
+            is_token_error = false;
+            std::istrstream input(code.c_str());
+            tk.set_stream(input);
+            Tokeniser::Token& token = tk.pop();
+            while (token.kind != Tokeniser::Kind::End) {
+                std::cout << tk.get_line_number() << " " << token << std::endl;
+                token = tk.pop();
+                if (token.kind == Tokeniser::Kind::Unrecognised_Token) {
+                    is_token_error = true;
+                    token_error_line = tk.get_line_number();
+                    break;
+                }
+            }
+            if (!is_token_error) {
+                runtime.set_stream(code);
             }
         }
-        if (!is_token_error) {
-            std::istrstream runtime_input(code.c_str());
-            runtime.set_stream(runtime_input);
-            runtime.run();
+
+        if (is_token_error) {
+            ImGui::SameLine();
+            ImGui::Text("There's an error on line %d, lower lines have not been checked", token_error_line);
         }
+        else {
+            ImGui::SameLine();
+            if (ImGui::Button("Run")) {
+                runtime.run(); // add a run speed
+            }
+            ImGui::SameLine();
+            if (ImGui::Button("Pause")) {
+
+            }
+            ImGui::SameLine();
+            if (ImGui::Button("Step")) {
+                runtime.step_execution();
+            }
+        }
+        ImGui::End();
     }
-    if (is_token_error) {
-        ImGui::SameLine();
-        ImGui::Text("There's an error on line %d, lower lines have not been checked", token_error_line);
+
+    // STACK DISPLAY ----------------------------------------------------------------------------------------------------
+    bool stack_display_open = true;
+    if (ImGui::Begin("Stack", &stack_display_open, file_dialog_on_top)) {
+        ImGui::Text("The stack is displayed with the deepest value at the top");
+        if (ImGui::BeginListBox("##Stack", ImGui::GetContentRegionAvail())) {
+           const std::deque<int> stack = runtime.getStack();
+           for (int i = stack.size()-1; i >= 0 ; i--) {
+               std::string lbl = std::to_string(stack[i]) + "##" + std::to_string(i);
+               ImGui::Selectable(lbl.c_str(), false, ImGuiSelectableFlags_Disabled);
+           }
+           ImGui::EndListBox();
+        }
+        ImGui::End();
     }
-    ImGui::End();
+
+    // PROGRAM OUTPUT ----------------------------------------------------------------------------------------------------
+    bool output_display_open = true;
+    if (ImGui::Begin("Program Output", &output_display_open, file_dialog_on_top)) {
+        ImGui::Text("The stack is displayed with the deepest value at the top");
+        //ImGui::TextWrapped();
+    }
 }

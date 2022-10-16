@@ -21,4 +21,6 @@ public:
 		return os;
 	}
 
+	const std::deque<int>& getStack() { return stack; }
+
 };

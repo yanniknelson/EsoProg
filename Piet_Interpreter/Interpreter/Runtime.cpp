@@ -96,6 +96,22 @@ void Runtime::step_execution(Tokeniser::Token& token, Tokeniser::Token& value) {
 	}
 }
 
+void Runtime::step_execution() {
+	Tokeniser::Token token = startToken;
+	Tokeniser::Token value = startToken;
+	if (token.kind != Tokeniser::Kind::End) {
+		token = tk.pop();
+		if (token.kind == Tokeniser::Kind::Push) {
+			value = tk.pop();
+			if (value.kind != Tokeniser::Kind::Value) {
+				return;
+			}
+		}
+		step_execution(token, value);
+	}
+	return;
+}
+
 int Runtime::run() {
 	Tokeniser::Token token = startToken;
 	Tokeniser::Token value = startToken;
