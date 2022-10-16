@@ -83,12 +83,12 @@ void Runtime::step_execution(Tokeniser::Token& token, Tokeniser::Token& value) {
 		break;
 	case(Tokeniser::Kind::Output_Char):
 		if (stack.get_size() > 0) {
-			std::cout << (char)stack.pop();
+			output += (char)stack.pop();
 		}
 		break;
 	case(Tokeniser::Kind::Output_Val):
 		if (stack.get_size() > 0) {
-			std::cout << stack.pop();
+			output += std::to_string(stack.pop());
 		}
 		break;
 	default:
@@ -113,6 +113,7 @@ void Runtime::step_execution() {
 }
 
 int Runtime::run() {
+	reset_stream();
 	Tokeniser::Token token = startToken;
 	Tokeniser::Token value = startToken;
 	while (token.kind != Tokeniser::Kind::End) {

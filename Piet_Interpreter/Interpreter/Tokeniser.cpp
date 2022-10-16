@@ -1,6 +1,11 @@
 #include "Tokeniser.h"
 
 Tokeniser::Token& Tokeniser::pop() {
+	if (!stream->rdbuf()->in_avail()) {
+		lp.kind = Kind::End;
+		lp.value = NAN;
+		return lp;
+	}
 	char ch = ' ';
 	std::string word;
 	while (isspace(ch)) {

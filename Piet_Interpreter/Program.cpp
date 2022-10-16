@@ -165,25 +165,29 @@ void Program::Render() {
             }
             if (!is_token_error) {
                 runtime.set_stream(code);
+                is_compiled = true;
             }
         }
 
-        if (is_token_error) {
-            ImGui::SameLine();
-            ImGui::Text("There's an error on line %d, lower lines have not been checked", token_error_line);
-        }
-        else {
-            ImGui::SameLine();
-            if (ImGui::Button("Run")) {
-                runtime.run(); // add a run speed
+        if (is_compiled) {
+            if (is_token_error) {
+                ImGui::SameLine();
+                ImGui::Text("There's an error on line %d, lower lines have not been checked", token_error_line);
             }
-            ImGui::SameLine();
-            if (ImGui::Button("Pause")) {
+            else {
+                ImGui::SameLine();
+                if (ImGui::Button("Run")) {
+                    output = "";
+                    runtime.run(); // add a run speed
+                }
+                ImGui::SameLine();
+                if (ImGui::Button("Pause")) {
 
-            }
-            ImGui::SameLine();
-            if (ImGui::Button("Step")) {
-                runtime.step_execution();
+                }
+                ImGui::SameLine();
+                if (ImGui::Button("Step")) {
+                    runtime.step_execution();
+                }
             }
         }
         ImGui::End();
@@ -208,7 +212,7 @@ void Program::Render() {
     bool output_display_open = true;
     if (ImGui::Begin("Program Output", &output_display_open, file_dialog_on_top)) {
         ImGui::Text("The stack is displayed with the deepest value at the top");
-        //ImGui::TextWrapped();
+        ImGui::TextWrapped(output.c_str());
         ImGui::End();
     }
 }

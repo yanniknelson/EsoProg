@@ -1,5 +1,6 @@
 #include "Tokeniser.h"
 #include "PietStack.h"
+#include <string>
 
 class Runtime {
 
@@ -21,11 +22,15 @@ class Runtime {
 
 	PietStack stack;
 	std::string code_str = "";
-	std::istrstream code = std::istrstream("");;
+	std::istrstream code = std::istrstream("");
+
+	std::string& output;
 
 	void step_execution(Tokeniser::Token& token, Tokeniser::Token& value);
 
 public:
+
+	Runtime(std::string& outputString) : output(outputString) {}
 
 	void step_execution();
 
@@ -33,6 +38,13 @@ public:
 		code_str = str;
 		code = std::istrstream(code_str.c_str());
 		tk.set_stream(code);
+		output = "";
+	}
+
+	void reset_stream() {
+		code = std::istrstream(code_str.c_str());
+		tk.set_stream(code);
+		output = "";
 	}
 
 	int run();
