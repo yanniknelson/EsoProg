@@ -1,8 +1,8 @@
-#include "Tokeniser.h"
+#include "PietTextTokeniser.h"
 
-Token& Tokeniser::pop() {
+PietToken& PietTextTokeniser::pop() {
 	if (!stream->rdbuf()->in_avail()) {
-		lp.kind = Token::Kind::End;
+		lp.kind = PietToken::Kind::End;
 		lp.value = NAN;
 		return lp;
 	}
@@ -25,7 +25,7 @@ Token& Tokeniser::pop() {
 	case('8'):
 	case('9'):
 		stream->putback(ch);
-		lp.kind = Token::Kind::Value;
+		lp.kind = PietToken::Kind::Value;
 		*stream>>lp.value;
 		break;
 	default:
@@ -33,75 +33,75 @@ Token& Tokeniser::pop() {
 			stream->putback(ch);
 			*stream >> word;
 			if (word == "PUSH") {
-				lp.kind = Token::Kind::Push;
+				lp.kind = PietToken::Kind::Push;
 				lp.value = NAN;
 			} else if (word == "POP") {
-				lp.kind = Token::Kind::Pop;
+				lp.kind = PietToken::Kind::Pop;
 				lp.value = NAN;
 			} else if (word == "Add") {
-				lp.kind = Token::Kind::Add;
+				lp.kind = PietToken::Kind::Add;
 				lp.value = NAN;
 			} else if (word == "SUB") {
-				lp.kind = Token::Kind::Subtract;
+				lp.kind = PietToken::Kind::Subtract;
 				lp.value = NAN;
 			} else if (word == "MUL") {
-				lp.kind = Token::Kind::Multiply;
+				lp.kind = PietToken::Kind::Multiply;
 				lp.value = NAN;
 			} else if (word == "DIV") {
-				lp.kind = Token::Kind::Divide;
+				lp.kind = PietToken::Kind::Divide;
 				lp.value = NAN;
 			} else if (word == "MOD") {
-				lp.kind = Token::Kind::Modulo;
+				lp.kind = PietToken::Kind::Modulo;
 				lp.value = NAN;
 			} else if (word == "NOT") {
-				lp.kind = Token::Kind::Not;
+				lp.kind = PietToken::Kind::Not;
 				lp.value = NAN;
 			} else if (word == "GR") {
-				lp.kind = Token::Kind::Greater;
+				lp.kind = PietToken::Kind::Greater;
 				lp.value = NAN;
 			} else if (word == "PNTR") {
-				lp.kind = Token::Kind::Pointer;
+				lp.kind = PietToken::Kind::Pointer;
 				lp.value = NAN;
 			} else if (word == "SWTCH") {
-				lp.kind = Token::Kind::Switch;
+				lp.kind = PietToken::Kind::Switch;
 				lp.value = NAN;
 			} else if (word == "DUP") {
-				lp.kind = Token::Kind::Duplicate;
+				lp.kind = PietToken::Kind::Duplicate;
 				lp.value = NAN;
 			} else if (word == "ROLL") {
-				lp.kind = Token::Kind::Roll;
+				lp.kind = PietToken::Kind::Roll;
 				lp.value = NAN;
 			} else if (word == "END") {
-				lp.kind = Token::Kind::End;
+				lp.kind = PietToken::Kind::End;
 				lp.value = NAN;
 			} else if (word == "OUT") {
 				word = "";
 				*stream >> word;
 				if (word == "CHAR") {
-					lp.kind = Token::Kind::Output_Char;
+					lp.kind = PietToken::Kind::Output_Char;
 					lp.value = NAN;
 				} else if (word == "INT") {
-					lp.kind = Token::Kind::Output_Val;
+					lp.kind = PietToken::Kind::Output_Val;
 					lp.value = NAN;
 				} else {
-					lp.kind = Token::Kind::Unrecognised_Token;
+					lp.kind = PietToken::Kind::Unrecognised_Token;
 					lp.value = NAN;
 				}
 			} else if (word == "IN") {
 				word = "";
 				*stream >> word;
 				if (word == "CHAR") {
-					lp.kind = Token::Kind::Input_Char;
+					lp.kind = PietToken::Kind::Input_Char;
 					lp.value = NAN;
 				} else if (word == "INT") {
-					lp.kind = Token::Kind::Input_Val;
+					lp.kind = PietToken::Kind::Input_Val;
 					lp.value = NAN;
 				} else {
-					lp.kind = Token::Kind::Unrecognised_Token;
+					lp.kind = PietToken::Kind::Unrecognised_Token;
 					lp.value = NAN;
 				}
 			} else {
-				lp.kind = Token::Kind::Unrecognised_Token;
+				lp.kind = PietToken::Kind::Unrecognised_Token;
 				lp.value = NAN;
 			}
 		}
@@ -109,6 +109,6 @@ Token& Tokeniser::pop() {
 	return lp;
 }
 
-Token& Tokeniser::last_popped() {
+PietToken& PietTextTokeniser::last_popped() {
 	return lp;
 }

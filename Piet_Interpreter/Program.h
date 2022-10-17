@@ -64,7 +64,7 @@ class Program {
 	GLuint texture;
 
 	//Interpreting
-	Tokeniser tk;
+	PietTextTokeniser tk;
 	bool is_token_error = false;
 	bool is_compiled = false;
 	int token_error_line = 0;

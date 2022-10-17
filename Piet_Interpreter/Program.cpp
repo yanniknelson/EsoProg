@@ -182,11 +182,11 @@ void Program::Render() {
             is_token_error = false;
             std::istrstream input(code.c_str());
             tk.set_stream(input);
-            Token& token = tk.pop();
-            while (token.kind != Token::Kind::End) {
+            PietToken& token = tk.pop();
+            while (token.kind != PietToken::Kind::End) {
                 //std::cout << tk.get_line_number() << " " << token << std::endl;
                 token = tk.pop();
-                if (token.kind == Token::Kind::Unrecognised_Token) {
+                if (token.kind == PietToken::Kind::Unrecognised_Token) {
                     is_token_error = true;
                     token_error_line = tk.get_line_number();
                     break;

@@ -1,4 +1,4 @@
-#include "Tokeniser.h"
+#include "PietTextTokeniser.h"
 #include "PietStack.h"
 #include <string>
 
@@ -13,14 +13,14 @@ class Runtime {
 		int y;
 	};
 
-	Tokeniser tk;
+	PietTextTokeniser tk;
 	Direction dp;
 	Direction cc;
 	Location current_pixel { 0, 0 };
 
 	bool finished = false;
 
-	Token startToken{ Token::Kind::Start };
+	PietToken startToken{ PietToken::Kind::Start };
 
 	PietStack stack;
 	std::string code_str = "";
@@ -28,7 +28,7 @@ class Runtime {
 
 	std::string& output;
 
-	void step_execution(Token& token, Token& value);
+	void step_execution(PietToken& token, PietToken& value);
 
 public:
 

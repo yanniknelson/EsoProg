@@ -1,15 +1,15 @@
 #include <strstream>
 #include <iostream>
 
-#include "Token.h"
+#include "PietToken.h"
 
-class Tokeniser {
+class PietTextTokeniser {
 public:
 
-	Token& pop();
-	Token& last_popped();
+	PietToken& pop();
+	PietToken& last_popped();
 
-	Tokeniser() {}
+	PietTextTokeniser() {}
 
 	void set_stream(std::istrstream& code) {
 		stream = &code;
@@ -23,7 +23,7 @@ public:
 private:
 
 	std::istrstream* stream;
-	Token lp{ Token::Kind::End };
+	PietToken lp{ PietToken::Kind::End };
 	int line_number = 1;
 
 };

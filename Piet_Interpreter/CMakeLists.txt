@@ -15,14 +15,15 @@ add_executable (Piet_Interpreter
 	"Resources/IconsFontAwesome6.h"
 	"Resources/stb_image.h"
 	"Resources/stb_image_write.h"
-	"PietInterpreter/Token.h"
-	"PietInterpreter/Tokeniser.h"
-	"PietInterpreter/Tokeniser.cpp"
+	"PietInterpreter/PietToken.h"
+	"PietInterpreter/PietTextTokeniser.h"
+	"PietInterpreter/PietTextTokeniser.cpp"
 	"PietInterpreter/PietStack.h" 
 	"PietInterpreter/PietStack.cpp"
 	"PietInterpreter/Runtime.h" 
 	"PietInterpreter/Runtime.cpp"
-	"PietInterpreter/ImageTokeniser.cpp" )
+	"PietInterpreter/PietImageTokeniser.cpp"
+	"PietInterpreter/PietImageTokeniser.h" )
 
 add_custom_command(TARGET Piet_Interpreter POST_BUILD        # Adds a post-build event to MyTest
     COMMAND ${CMAKE_COMMAND} -E copy_if_different  # which executes "cmake - E copy_if_different..."

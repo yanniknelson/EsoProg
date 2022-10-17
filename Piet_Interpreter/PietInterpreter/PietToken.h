@@ -1,4 +1,4 @@
-class Token {
+class PietToken {
 
 public:
 	enum class Kind {
@@ -9,7 +9,7 @@ public:
 	Kind kind = Kind::Start;
 	int value;
 
-	friend std::ostream& operator<<(std::ostream& os, const Token& tk) {
+	friend std::ostream& operator<<(std::ostream& os, const PietToken& tk) {
 		switch (tk.kind)
 		{
 			case(Kind::Value):

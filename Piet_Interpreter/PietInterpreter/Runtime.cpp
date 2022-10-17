@@ -1,57 +1,57 @@
 #include "Runtime.h"
 
-void Runtime::step_execution(Token& token, Token& value) {
+void Runtime::step_execution(PietToken& token, PietToken& value) {
 	int top = 0;
 	int second = 0;
 	int val = 0;
 	switch (token.kind)
 	{
-	case(Token::Kind::Push):
+	case(PietToken::Kind::Push):
 		stack.push(value.value);
 		break;
-	case(Token::Kind::Pop):
+	case(PietToken::Kind::Pop):
 		if (stack.get_size() > 0) {
 			stack.pop();
 		}
 		break;
-	case(Token::Kind::Add):
+	case(PietToken::Kind::Add):
 		if (stack.get_size() >= 2) {
 			stack.push(stack.pop() + stack.pop());
 		}
 		break;
-	case(Token::Kind::Subtract):
+	case(PietToken::Kind::Subtract):
 		if (stack.get_size() >= 2) {
 			top = stack.pop();
 			second = stack.pop();
 			stack.push(second - top);
 		}
 		break;
-	case(Token::Kind::Multiply):
+	case(PietToken::Kind::Multiply):
 		if (stack.get_size() >= 2) {
 			stack.push(stack.pop() * stack.pop());
 		}
 		break;
-	case(Token::Kind::Divide):
+	case(PietToken::Kind::Divide):
 		if (stack.get_size() >= 2) {
 			top = stack.pop();
 			second = stack.pop();
 			stack.push(second / top);
 		}
 		break;
-	case(Token::Kind::Modulo):
+	case(PietToken::Kind::Modulo):
 		if (stack.get_size() >= 2) {
 			top = stack.pop();
 			second = stack.pop();
 			stack.push((top + (second % top)) % top);
 		}
 		break;
-	case(Token::Kind::Not):
+	case(PietToken::Kind::Not):
 		if (stack.get_size() > 0) {
 			val = stack.pop() == 0 ? 1 : 0;
 			stack.push(val);
 		}
 		break;
-	case(Token::Kind::Greater):
+	case(PietToken::Kind::Greater):
 		if (stack.get_size() >= 2) {
 			top = stack.pop();
 			second = stack.pop();
@@ -59,39 +59,39 @@ void Runtime::step_execution(Token& token, Token& value) {
 			stack.push(val);
 		}
 		break;
-	case(Token::Kind::Pointer):
+	case(PietToken::Kind::Pointer):
 		break;
-	case(Token::Kind::Switch):
+	case(PietToken::Kind::Switch):
 		break;
-	case(Token::Kind::Duplicate):
+	case(PietToken::Kind::Duplicate):
 		if (stack.get_size() > 0) {
 			val = stack.pop();
 			stack.push(val);
 			stack.push(val);
 		}
 		break;
-	case(Token::Kind::Roll):
+	case(PietToken::Kind::Roll):
 		if (stack.get_size() >= 2) {
 			top = stack.pop();
 			second = stack.pop();
 			stack.roll(second, top);
 		}
 		break;
-	case(Token::Kind::Input_Char):
+	case(PietToken::Kind::Input_Char):
 		break;
-	case(Token::Kind::Input_Val):
+	case(PietToken::Kind::Input_Val):
 		break;
-	case(Token::Kind::Output_Char):
+	case(PietToken::Kind::Output_Char):
 		if (stack.get_size() > 0) {
 			output += (char)stack.pop();
 		}
 		break;
-	case(Token::Kind::Output_Val):
+	case(PietToken::Kind::Output_Val):
 		if (stack.get_size() > 0) {
 			output += std::to_string(stack.pop());
 		}
 		break;
-	case (Token::Kind::End):
+	case (PietToken::Kind::End):
 		finished = true;
 	default:
 		break;
@@ -99,13 +99,13 @@ void Runtime::step_execution(Token& token, Token& value) {
 }
 
 void Runtime::step_execution() {
-	Token token = startToken;
-	Token value = startToken;
-	if (token.kind != Token::Kind::End) {
+	PietToken token = startToken;
+	PietToken value = startToken;
+	if (token.kind != PietToken::Kind::End) {
 		token = tk.pop();
-		if (token.kind == Token::Kind::Push) {
+		if (token.kind == PietToken::Kind::Push) {
 			value = tk.pop();
-			if (value.kind != Token::Kind::Value) {
+			if (value.kind != PietToken::Kind::Value) {
 				return;
 			}
 		}
@@ -116,13 +116,13 @@ void Runtime::step_execution() {
 
 int Runtime::run() {
 	reset_stream();
-	Token token = startToken;
-	Token value = startToken;
-	while (token.kind != Token::Kind::End) {
+	PietToken token = startToken;
+	PietToken value = startToken;
+	while (token.kind != PietToken::Kind::End) {
 		token = tk.pop();
-		if (token.kind == Token::Kind::Push) {
+		if (token.kind == PietToken::Kind::Push) {
 			value = tk.pop();
-			if (value.kind != Token::Kind::Value) {
+			if (value.kind != PietToken::Kind::Value) {
 				return -1;
 			}
 		}
