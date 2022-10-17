@@ -18,7 +18,9 @@ class Runtime {
 	Direction cc;
 	Location current_pixel { 0, 0 };
 
-	Tokeniser::Token startToken{ Tokeniser::Kind::Start };
+	bool finished = false;
+
+	Token startToken{ Token::Kind::Start };
 
 	PietStack stack;
 	std::string code_str = "";
@@ -26,9 +28,11 @@ class Runtime {
 
 	std::string& output;
 
-	void step_execution(Tokeniser::Token& token, Tokeniser::Token& value);
+	void step_execution(Token& token, Token& value);
 
 public:
+
+	bool Is_Finished() { return finished; }
 
 	Runtime(std::string& outputString) : output(outputString) {}
 
@@ -39,12 +43,14 @@ public:
 		code = std::istrstream(code_str.c_str());
 		tk.set_stream(code);
 		output = "";
+		finished = false;
 	}
 
 	void reset_stream() {
 		code = std::istrstream(code_str.c_str());
 		tk.set_stream(code);
 		output = "";
+		finished = false;
 	}
 
 	int run();

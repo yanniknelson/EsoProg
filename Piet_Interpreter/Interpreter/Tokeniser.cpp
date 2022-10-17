@@ -1,8 +1,8 @@
 #include "Tokeniser.h"
 
-Tokeniser::Token& Tokeniser::pop() {
+Token& Tokeniser::pop() {
 	if (!stream->rdbuf()->in_avail()) {
-		lp.kind = Kind::End;
+		lp.kind = Token::Kind::End;
 		lp.value = NAN;
 		return lp;
 	}
@@ -25,7 +25,7 @@ Tokeniser::Token& Tokeniser::pop() {
 	case('8'):
 	case('9'):
 		stream->putback(ch);
-		lp.kind = Kind::Value;
+		lp.kind = Token::Kind::Value;
 		*stream>>lp.value;
 		break;
 	default:
@@ -33,75 +33,75 @@ Tokeniser::Token& Tokeniser::pop() {
 			stream->putback(ch);
 			*stream >> word;
 			if (word == "PUSH") {
-				lp.kind = Kind::Push;
+				lp.kind = Token::Kind::Push;
 				lp.value = NAN;
 			} else if (word == "POP") {
-				lp.kind = Kind::Pop;
+				lp.kind = Token::Kind::Pop;
 				lp.value = NAN;
 			} else if (word == "Add") {
-				lp.kind = Kind::Add;
+				lp.kind = Token::Kind::Add;
 				lp.value = NAN;
 			} else if (word == "SUB") {
-				lp.kind = Kind::Subtract;
+				lp.kind = Token::Kind::Subtract;
 				lp.value = NAN;
 			} else if (word == "MUL") {
-				lp.kind = Kind::Multiply;
+				lp.kind = Token::Kind::Multiply;
 				lp.value = NAN;
 			} else if (word == "DIV") {
-				lp.kind = Kind::Divide;
+				lp.kind = Token::Kind::Divide;
 				lp.value = NAN;
 			} else if (word == "MOD") {
-				lp.kind = Kind::Modulo;
+				lp.kind = Token::Kind::Modulo;
 				lp.value = NAN;
 			} else if (word == "NOT") {
-				lp.kind = Kind::Not;
+				lp.kind = Token::Kind::Not;
 				lp.value = NAN;
 			} else if (word == "GR") {
-				lp.kind = Kind::Greater;
+				lp.kind = Token::Kind::Greater;
 				lp.value = NAN;
 			} else if (word == "PNTR") {
-				lp.kind = Kind::Pointer;
+				lp.kind = Token::Kind::Pointer;
 				lp.value = NAN;
 			} else if (word == "SWTCH") {
-				lp.kind = Kind::Switch;
+				lp.kind = Token::Kind::Switch;
 				lp.value = NAN;
 			} else if (word == "DUP") {
-				lp.kind = Kind::Duplicate;
+				lp.kind = Token::Kind::Duplicate;
 				lp.value = NAN;
 			} else if (word == "ROLL") {
-				lp.kind = Kind::Roll;
+				lp.kind = Token::Kind::Roll;
 				lp.value = NAN;
 			} else if (word == "END") {
-				lp.kind = Kind::End;
+				lp.kind = Token::Kind::End;
 				lp.value = NAN;
 			} else if (word == "OUT") {
 				word = "";
 				*stream >> word;
 				if (word == "CHAR") {
-					lp.kind = Kind::Output_Char;
+					lp.kind = Token::Kind::Output_Char;
 					lp.value = NAN;
 				} else if (word == "INT") {
-					lp.kind = Kind::Output_Val;
+					lp.kind = Token::Kind::Output_Val;
 					lp.value = NAN;
 				} else {
-					lp.kind = Kind::Unrecognised_Token;
+					lp.kind = Token::Kind::Unrecognised_Token;
 					lp.value = NAN;
 				}
 			} else if (word == "IN") {
 				word = "";
 				*stream >> word;
 				if (word == "CHAR") {
-					lp.kind = Kind::Input_Char;
+					lp.kind = Token::Kind::Input_Char;
 					lp.value = NAN;
 				} else if (word == "INT") {
-					lp.kind = Kind::Input_Val;
+					lp.kind = Token::Kind::Input_Val;
 					lp.value = NAN;
 				} else {
-					lp.kind = Kind::Unrecognised_Token;
+					lp.kind = Token::Kind::Unrecognised_Token;
 					lp.value = NAN;
 				}
 			} else {
-				lp.kind = Kind::Unrecognised_Token;
+				lp.kind = Token::Kind::Unrecognised_Token;
 				lp.value = NAN;
 			}
 		}
@@ -109,6 +109,6 @@ Tokeniser::Token& Tokeniser::pop() {
 	return lp;
 }
 
-Tokeniser::Token& Tokeniser::last_popped() {
+Token& Tokeniser::last_popped() {
 	return lp;
 }

@@ -13,13 +13,13 @@ int Program::Check_For_Enter(ImGuiInputTextCallbackData* data)
 }
 
 void Program::handle_New() {
-    std::cout << "New\n";
+    //std::cout << "New\n";
     file_is_new = true;
     code = "";
 }
 
 void Program::handle_Open() {
-    std::cout << "Open\n";
+    //std::cout << "Open\n";
     enable_file_dialog = true;
     dialogType = FileDialogBox::FileDialogType::Open;
 }
@@ -29,7 +29,7 @@ void Program::handle_Save() {
         handle_Save_As();
     }
     else {
-        std::cout << "Save\n";
+        //std::cout << "Save\n";
         std::ofstream fs;
         fs.open(currentFilePath.string());
         fs << code;
@@ -38,7 +38,7 @@ void Program::handle_Save() {
 }
 
 void Program::handle_Save_As() {
-    std::cout << "Save As\n";
+    //std::cout << "Save As\n";
     enable_file_dialog = true;
     dialogType = FileDialogBox::FileDialogType::Save_As;
 }
@@ -161,7 +161,7 @@ void Program::Render() {
                 currentFilePath = ret.path;
                 break;
             default:
-                std::cout << "default" << std::endl;
+                //std::cout << "default" << std::endl;
                 break;
             }
         }
@@ -173,7 +173,7 @@ void Program::Render() {
         ImGui::Text("Warning: Pressing ESC will delete all non submitted changes");
         bool enterPressed = false;
         if (ImGui::InputTextMultiline("##code", &code, ImVec2(-FLT_MIN, ImGui::GetContentRegionAvail().y - (ImGui::GetTextLineHeight() * 1.5)), ImGuiInputTextFlags_CallbackCharFilter | ImGuiInputTextFlags_EnterReturnsTrue, Check_For_Enter, &enterPressed)) {
-            std::cout << code << std::endl;
+            //std::cout << code << std::endl;
         }
         if (enterPressed) {
 
@@ -182,11 +182,11 @@ void Program::Render() {
             is_token_error = false;
             std::istrstream input(code.c_str());
             tk.set_stream(input);
-            Tokeniser::Token& token = tk.pop();
-            while (token.kind != Tokeniser::Kind::End) {
-                std::cout << tk.get_line_number() << " " << token << std::endl;
+            Token& token = tk.pop();
+            while (token.kind != Token::Kind::End) {
+                //std::cout << tk.get_line_number() << " " << token << std::endl;
                 token = tk.pop();
-                if (token.kind == Tokeniser::Kind::Unrecognised_Token) {
+                if (token.kind == Token::Kind::Unrecognised_Token) {
                     is_token_error = true;
                     token_error_line = tk.get_line_number();
                     break;
@@ -216,6 +216,12 @@ void Program::Render() {
                 ImGui::SameLine();
                 if (ImGui::Button("Step")) {
                     runtime.step_execution();
+                }
+                if (runtime.Is_Finished()) {
+                    ImGui::SameLine();
+                    if (ImGui::Button("Reset")) {
+                        runtime.reset_stream();
+                    }
                 }
             }
         }
