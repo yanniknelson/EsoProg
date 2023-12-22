@@ -14,7 +14,7 @@ ABOUT:
 
    This header file is a library for writing images to C stdio or a callback.
 
-   The PNG output is not optimal; it is 20-50% larger than the file
+   The PNG m_rOutputStr is not optimal; it is 20-50% larger than the file
    written by a decent optimizing implementation; though providing a custom
    zlib compress function (see STBIW_ZLIB_COMPRESS) can mitigate that.
    This library is designed for source code compactness and simplicity,
@@ -72,7 +72,7 @@ USAGE:
 
    You can define STBI_WRITE_NO_STDIO to disable the file variant of these
    functions, so the library will not use stdio.h at all. However, this will
-   also disable HDR writing, because it requires stdio for formatted output.
+   also disable HDR writing, because it requires stdio for formatted m_rOutputStr.
 
    Each function returns 0 on failure and non-0 on success.
 
@@ -85,9 +85,9 @@ USAGE:
    For PNG, "stride_in_bytes" is the distance in bytes from the first byte of
    a row of pixels to the first byte of the next row of pixels.
 
-   PNG creates output files with the same number of components as the input.
+   PNG creates m_rOutputStr files with the same number of components as the input.
    The BMP format expands Y to RGB in the file format and does not
-   output alpha.
+   m_rOutputStr alpha.
 
    PNG supports writing rectangles of data even when the bytes storing rows of
    data are not consecutive in memory (e.g. sub-rectangles of a larger image),
@@ -740,12 +740,12 @@ static void stbiw__write_hdr_scanline(stbi__write_context *s, int width, int nco
                stbiw__write_dump_data(s, len, &comp[x]);
                x += len;
             }
-            // if there's a run, output it
+            // if there's a run, m_rOutputStr it
             if (r+2 < width) { // same test as what we break out of in search loop, so only true if we break'd
                // find next byte after run
                while (r < width && comp[r] == comp[x])
                   ++r;
-               // output run up to r
+               // m_rOutputStr run up to r
                while (x < r) {
                   int len = r-x;
                   if (len > 127) len = 127;
@@ -763,7 +763,7 @@ static int stbi_write_hdr_core(stbi__write_context *s, int x, int y, int comp, f
    if (y <= 0 || x <= 0 || data == NULL)
       return 0;
    else {
-      // Each component is stored separately. Allocate scratch space for full output scanline.
+      // Each component is stored separately. Allocate scratch space for full m_rOutputStr scanline.
       unsigned char *scratch = (unsigned char *) STBIW_MALLOC(x*4);
       int i, len;
       char buffer[128];
@@ -1652,7 +1652,7 @@ STBIWDEF int stbi_write_jpg(char const *filename, int x, int y, int comp, const 
              monochrome BMP expansion
       1.03   ???
       1.02 (2016-04-02)
-             avoid allocating large structures on the stack
+             avoid allocating large structures on the m_stack
       1.01 (2016-01-16)
              STBIW_REALLOC_SIZED: support allocators with no realloc support
              avoid race-condition in crc initialization
@@ -1666,10 +1666,10 @@ STBIWDEF int stbi_write_jpg(char const *filename, int x, int y, int comp, const 
       0.97 (2015-01-18)
              fixed HDR asserts, rewrote HDR rle logic
       0.96 (2015-01-17)
-             add HDR output
+             add HDR m_rOutputStr
              fix monochrome BMP
       0.95 (2014-08-17)
-             add monochrome TGA output
+             add monochrome TGA m_rOutputStr
       0.94 (2014-05-31)
              rename private functions to avoid conflicts with stb_image.h
       0.93 (2014-05-27)

@@ -66,7 +66,7 @@ RECENT REVISION HISTORY:
       2.12  (2016-04-02) fix typo in 2.11 PSD fix that caused crashes
       2.11  (2016-04-02) 16-bit PNGS; enable SSE2 in non-gcc x64
                          RGB-format JPEG; remove white matting in PSD;
-                         allocate large structures on the stack;
+                         allocate large structures on the m_stack;
                          correct channel count for PNG & BMP
       2.10  (2016-01-22) avoid warning introduced in 2.09
       2.09  (2016-01-16) 16-bit TGA; comments in PNM files; STBI_REALLOC_SIZED
@@ -148,7 +148,7 @@ RECENT REVISION HISTORY:
 //    int *channels_in_file  -- outputs # of image components in image file
 //    int desired_channels   -- if non-zero, # of image components requested in result
 //
-// The return value from an image loader is an 'unsigned char *' which points
+// The return m_value from an image loader is an 'unsigned char *' which points
 // to the pixel data, or NULL on an allocation failure or if the image is
 // corrupt or invalid. The pixel data consists of *y scanlines of *x pixels,
 // with each pixel consisting of N interleaved 8-bit components; the first
@@ -157,11 +157,11 @@ RECENT REVISION HISTORY:
 // components N is 'desired_channels' if desired_channels is non-zero, or
 // *channels_in_file otherwise. If desired_channels is non-zero,
 // *channels_in_file has the number of components that _would_ have been
-// output otherwise. E.g. if you set desired_channels to 4, you will always
-// get RGBA output, but you can check *channels_in_file to see if it's trivially
+// m_rOutputStr otherwise. E.g. if you set desired_channels to 4, you will always
+// get RGBA m_rOutputStr, but you can check *channels_in_file to see if it's trivially
 // opaque because e.g. there were only 3 channels in the source image.
 //
-// An output image with N components has the following components interleaved
+// An m_rOutputStr image with N components has the following components interleaved
 // in this order in each pixel:
 //
 //     N=#comp     components
@@ -170,7 +170,7 @@ RECENT REVISION HISTORY:
 //       3           red, green, blue
 //       4           red, green, blue, alpha
 //
-// If image loading fails for any reason, the return value will be NULL,
+// If image loading fails for any reason, the return m_value will be NULL,
 // and *x, *y, *channels_in_file will be unchanged. The function
 // stbi_failure_reason() can be queried for an extremely brief, end-user
 // unfriendly explanation of why the load failed. Define STBI_NO_FAILURE_STRINGS
@@ -196,7 +196,7 @@ RECENT REVISION HISTORY:
 // will fail.
 //
 // Additionally, stb_image will reject image files that have any of their
-// dimensions set to a larger value than the configurable STBI_MAX_DIMENSIONS,
+// dimensions set to a larger m_value than the configurable STBI_MAX_DIMENSIONS,
 // which defaults to 2**24 = 16777216 pixels. Due to the above memory limit,
 // the only way to have an image with such dimensions load correctly
 // is for it to have a rather extreme aspect ratio. Either way, the
@@ -511,7 +511,7 @@ STBIDEF void stbi_set_unpremultiply_on_load(int flag_true_if_should_unpremultipl
 // or just pass them through "as-is"
 STBIDEF void stbi_convert_iphone_png_to_rgb(int flag_true_if_should_convert);
 
-// flip the image vertically, so the first pixel in the output array is the bottom left
+// flip the image vertically, so the first pixel in the m_rOutputStr array is the bottom left
 STBIDEF void stbi_set_flip_vertically_on_load(int flag_true_if_should_flip);
 
 // as above, but only applies to images loaded on the thread that calls the function
@@ -1118,7 +1118,7 @@ static void *stbi__load_main(stbi__context *s, int *x, int *y, int *comp, int re
 {
    memset(ri, 0, sizeof(*ri)); // make sure it's initialized if we add new fields
    ri->bits_per_channel = 8; // default is 8 so most paths don't have to be changed
-   ri->channel_order = STBI_ORDER_RGB; // all current input & output are this, but this is here so we can add BGR order
+   ri->channel_order = STBI_ORDER_RGB; // all current input & m_rOutputStr are this, but this is here so we can add BGR order
    ri->num_channels = 0;
 
    // test the formats with a very explicit header first (at least a FOURCC
@@ -1894,8 +1894,8 @@ static stbi_uc *stbi__hdr_to_ldr(float   *data, int x, int y, int comp)
 //  "baseline" JPEG/JFIF decoder
 //
 //    simple implementation
-//      - doesn't support delayed output of y-dimension
-//      - simple interface (only one output format: 8-bit interleaved RGB)
+//      - doesn't support delayed m_rOutputStr of y-dimension
+//      - simple interface (only one m_rOutputStr format: 8-bit interleaved RGB)
 //      - doesn't try to recover corrupt jpegs
 //      - doesn't allow partial loading, loading multiple at once
 //      - still fast on x86 (copying globals into locals doesn't help x86)
@@ -2022,7 +2022,7 @@ static int stbi__build_huffman(stbi__huffman *h, int *count)
    return 1;
 }
 
-// build a table that decodes both magnitude and value of small ACs in
+// build a table that decodes both magnitude and m_value of small ACs in
 // one go.
 static void stbi__build_fast_ac(stbi__int16 *fast_ac, stbi__huffman *h)
 {
@@ -2070,7 +2070,7 @@ static void stbi__grow_buffer_unsafe(stbi__jpeg *j)
 // (1 << n) - 1
 static const stbi__uint32 stbi__bmask[17]={0,1,3,7,15,31,63,127,255,511,1023,2047,4095,8191,16383,32767,65535};
 
-// decode a jpeg huffman value from the bitstream
+// decode a jpeg huffman m_value from the bitstream
 stbi_inline static int stbi__jpeg_huff_decode(stbi__jpeg *j, stbi__huffman *h)
 {
    unsigned int temp;
@@ -2161,7 +2161,7 @@ stbi_inline static int stbi__jpeg_get_bit(stbi__jpeg *j)
    return k & 0x80000000;
 }
 
-// given a value that's at position X in the zigzag stream,
+// given a m_value that's at position X in the zigzag stream,
 // where does it appear in the 8x8 matrix coded as row-major?
 static const stbi_uc stbi__jpeg_dezigzag[64+15] =
 {
@@ -2378,7 +2378,7 @@ static int stbi__jpeg_decode_block_prog_ac(stbi__jpeg *j, short data[64], stbi__
    return 1;
 }
 
-// take a -128..127 value and stbi__clamp it and convert to 0..255
+// take a -128..127 m_value and stbi__clamp it and convert to 0..255
 stbi_inline static stbi_uc stbi__clamp(int x)
 {
    // trick to use a single test to catch both cases
@@ -2881,7 +2881,7 @@ static void stbi__idct_simd(stbi_uc *out, int out_stride, short data[64])
 #define STBI__MARKER_none  0xff
 // if there's a pending marker from the entropy stream, return that
 // otherwise, fetch from the stream and get a marker. if there's no
-// marker, return 0xff, which is never a valid marker value
+// marker, return 0xff, which is never a valid marker m_value
 static stbi_uc stbi__get_marker(stbi__jpeg *j)
 {
    stbi_uc x;
@@ -3502,7 +3502,7 @@ static stbi_uc *stbi__resample_row_hv_2_simd(stbi_uc *out, stbi_uc *in_near, stb
 
       // horizontal filter works the same based on shifted vers of current
       // row. "prev" is current row shifted right by 1 pixel; we need to
-      // insert the previous pixel value (from t1).
+      // insert the previous pixel m_value (from t1).
       // "next" is current row shifted left by 1 pixel, with first pixel
       // of next block of 8 pixels added in.
       __m128i prv0 = _mm_slli_si128(curr, 2);
@@ -3528,7 +3528,7 @@ static stbi_uc *stbi__resample_row_hv_2_simd(stbi_uc *out, stbi_uc *in_near, stb
       __m128i de0  = _mm_srli_epi16(int0, 4);
       __m128i de1  = _mm_srli_epi16(int1, 4);
 
-      // pack and write output
+      // pack and write m_rOutputStr
       __m128i outv = _mm_packus_epi16(de0, de1);
       _mm_storeu_si128((__m128i *) (out + i*2), outv);
 #elif defined(STBI_NEON)
@@ -3542,7 +3542,7 @@ static stbi_uc *stbi__resample_row_hv_2_simd(stbi_uc *out, stbi_uc *in_near, stb
 
       // horizontal filter works the same based on shifted vers of current
       // row. "prev" is current row shifted right by 1 pixel; we need to
-      // insert the previous pixel value (from t1).
+      // insert the previous pixel m_value (from t1).
       // "next" is current row shifted left by 1 pixel, with first pixel
       // of next block of 8 pixels added in.
       int16x8_t prv0 = vextq_s16(curr, curr, 7);
@@ -3567,7 +3567,7 @@ static stbi_uc *stbi__resample_row_hv_2_simd(stbi_uc *out, stbi_uc *in_near, stb
       vst2_u8(out + i*2, o);
 #endif
 
-      // "previous" value for next iter
+      // "previous" m_value for next iter
       t1 = 3*in_near[i+7] + in_far[i+7];
    }
 
@@ -3966,7 +3966,7 @@ static stbi_uc *load_jpeg_image(stbi__jpeg *z, int *out_x, int *out_y, int *comp
       stbi__cleanup_jpeg(z);
       *out_x = z->s->img_x;
       *out_y = z->s->img_y;
-      if (comp) *comp = z->s->img_n >= 3 ? 3 : 1; // report original components, not output
+      if (comp) *comp = z->s->img_n >= 3 ? 3 : 1; // report original components, not m_rOutputStr
       return output;
    }
 }
@@ -4024,7 +4024,7 @@ static int stbi__jpeg_info(stbi__context *s, int *x, int *y, int *comp)
 // public domain zlib decode    v0.2  Sean Barrett 2006-11-18
 //    simple implementation
 //      - all input must be provided in an upfront buffer
-//      - all output is written to a single output buffer (can malloc/realloc)
+//      - all m_rOutputStr is written to a single m_rOutputStr buffer (can malloc/realloc)
 //    performance
 //      - fast huffman
 
@@ -4368,7 +4368,7 @@ static int stbi__parse_zlib_header(stbi__zbuf *a)
    if ((cmf*256+flg) % 31 != 0) return stbi__err("bad zlib header","Corrupt PNG"); // zlib spec
    if (flg & 32) return stbi__err("no preset dict","Corrupt PNG"); // preset dictionary not allowed in png
    if (cm != 8) return stbi__err("bad compression","Corrupt PNG"); // DEFLATE required for png
-   // window = 1 << (8 + cinfo)... but who cares, we fully buffer output
+   // window = 1 << (8 + cinfo)... but who cares, we fully buffer m_rOutputStr
    return 1;
 }
 
@@ -4627,7 +4627,7 @@ static int stbi__create_png_image_raw(stbi__png *a, stbi_uc *raw, stbi__uint32 r
 
       if (depth < 8) {
          if (img_width_bytes > x) return stbi__err("invalid width","Corrupt PNG");
-         cur += x*out_n - img_width_bytes; // store output to the rightmost img_len bytes, so we can decode in place
+         cur += x*out_n - img_width_bytes; // store m_rOutputStr to the rightmost img_len bytes, so we can decode in place
          filter_bytes = 1;
          width = img_width_bytes;
       }
@@ -4855,7 +4855,7 @@ static int stbi__compute_transparency(stbi__png *z, stbi_uc tc[3], int out_n)
    stbi_uc *p = z->out;
 
    // compute color-based transparency, assuming we've
-   // already got 255 as the alpha value in the output
+   // already got 255 as the alpha m_value in the m_rOutputStr
    STBI_ASSERT(out_n == 2 || out_n == 4);
 
    if (out_n == 2) {
@@ -4880,7 +4880,7 @@ static int stbi__compute_transparency16(stbi__png *z, stbi__uint16 tc[3], int ou
    stbi__uint16 *p = (stbi__uint16*) z->out;
 
    // compute color-based transparency, assuming we've
-   // already got 65535 as the alpha value in the output
+   // already got 65535 as the alpha m_value in the m_rOutputStr
    STBI_ASSERT(out_n == 2 || out_n == 4);
 
    if (out_n == 2) {
@@ -5325,7 +5325,7 @@ static int stbi__bitcount(unsigned int a)
    return a & 0xff;
 }
 
-// extract an arbitrarily-aligned N-bit value (N=bits)
+// extract an arbitrarily-aligned N-bit m_value (N=bits)
 // from v, and then make it 8-bits long and fractionally
 // extend it to full full range.
 static int stbi__shiftsigned(unsigned int v, int shift, int bits)
@@ -5770,7 +5770,7 @@ errorEnd:
    return res;
 }
 
-// read 16bit value and convert to 24bit RGB
+// read 16bit m_value and convert to 24bit RGB
 static void stbi__tga_read_rgb16(stbi__context *s, stbi_uc* out)
 {
    stbi__uint16 px = (stbi__uint16)stbi__get16le(s);
@@ -6165,7 +6165,7 @@ static void *stbi__psd_load(stbi__context *s, int *x, int *y, int *comp, int req
 
    } else {
       // We're at the raw image data.  It's each channel in order (Red, Green, Blue, Alpha, ...)
-      // where each channel consists of an 8-bit (or 16-bit) value for each pixel in the image.
+      // where each channel consists of an 8-bit (or 16-bit) m_value for each pixel in the image.
 
       // Read the data by channel.
       for (channel = 0; channel < 4; channel++) {
@@ -6183,7 +6183,7 @@ static void *stbi__psd_load(stbi__context *s, int *x, int *y, int *comp, int req
                   *p = val;
             }
          } else {
-            if (ri->bits_per_channel == 16) {    // output bpc
+            if (ri->bits_per_channel == 16) {    // m_rOutputStr bpc
                stbi__uint16 *q = ((stbi__uint16 *) out) + channel;
                for (i = 0; i < pixelCount; i++, q += 4)
                   *q = (stbi__uint16) stbi__get16be(s);
@@ -6230,7 +6230,7 @@ static void *stbi__psd_load(stbi__context *s, int *x, int *y, int *comp, int req
       }
    }
 
-   // convert to desired output format
+   // convert to desired m_rOutputStr format
    if (req_comp && req_comp != 4) {
       if (ri->bits_per_channel == 16)
          out = (stbi_uc *) stbi__convert_format16((stbi__uint16 *) out, 4, req_comp, w, h);
@@ -6482,7 +6482,7 @@ typedef struct
 typedef struct
 {
    int w,h;
-   stbi_uc *out;                 // output buffer (always 4 components)
+   stbi_uc *out;                 // m_rOutputStr buffer (always 4 components)
    stbi_uc *background;          // The current "background" as far as a gif is concerned
    stbi_uc *history;
    int flags, bgindex, ratio, transparent, eflags;
@@ -7521,9 +7521,9 @@ static int      stbi__pnm_info(stbi__context *s, int *x, int *y, int *comp)
    *y = stbi__pnm_getinteger(s, &c); // read height
    stbi__pnm_skip_whitespace(s, &c);
 
-   maxv = stbi__pnm_getinteger(s, &c);  // read max value
+   maxv = stbi__pnm_getinteger(s, &c);  // read max m_value
    if (maxv > 65535)
-      return stbi__err("max value > 65535", "PPM image supports only 8-bit and 16-bit images");
+      return stbi__err("max m_value > 65535", "PPM image supports only 8-bit and 16-bit images");
    else if (maxv > 255)
       return 16;
    else
@@ -7693,7 +7693,7 @@ STBIDEF int stbi_is_16_bit_from_callbacks(stbi_io_callbacks const *c, void *user
       2.14  (2017-03-03) remove deprecated STBI_JPEG_OLD; fixes for Imagenet JPGs
       2.13  (2016-11-29) add 16-bit API, only supported for PNG right now
       2.12  (2016-04-02) fix typo in 2.11 PSD fix that caused crashes
-      2.11  (2016-04-02) allocate large structures on the stack
+      2.11  (2016-04-02) allocate large structures on the m_stack
                          remove white matting for transparent PSD
                          fix reported channel count for PNG & BMP
                          re-enable SSE2 in non-gcc 64-bit
@@ -7712,7 +7712,7 @@ STBIDEF int stbi_is_16_bit_from_callbacks(stbi_io_callbacks const *c, void *user
                          limited 16-bpc PSD support
                          #ifdef unused functions
                          bug with < 92 byte PIC,PNM,HDR,TGA
-      2.06  (2015-04-19) fix bug where PSD returns wrong '*comp' value
+      2.06  (2015-04-19) fix bug where PSD returns wrong '*comp' m_value
       2.05  (2015-04-19) fix bug in progressive JPEG handling, fix warning
       2.04  (2015-04-15) try to re-enable SIMD on MinGW 64-bit
       2.03  (2015-04-12) extra corruption checking (mmozeiko)
@@ -7830,12 +7830,12 @@ STBIDEF int stbi_is_16_bit_from_callbacks(stbi_io_callbacks const *c, void *user
       0.99    correct handling of alpha in palette
       0.98    TGA loader by lonesock; dynamically add loaders (untested)
       0.97    jpeg errors on too large a file; also catch another malloc failure
-      0.96    fix detection of invalid v value - particleman@mollyrocket forum
+      0.96    fix detection of invalid v m_value - particleman@mollyrocket forum
       0.95    during header scan, seek to markers in case of padding
       0.94    STBI_NO_STDIO to disable stdio usage; rename all #defines the same
-      0.93    handle jpegtran output; verbose errors
+      0.93    handle jpegtran m_rOutputStr; verbose errors
       0.92    read 4,8,16,24,32-bit BMP files of several formats
-      0.91    output 24-bit Windows 3.0 BMP files
+      0.91    m_rOutputStr 24-bit Windows 3.0 BMP files
       0.90    fix a few more warnings; bump version number to approach 1.0
       0.61    bugfixes due to Marc LeBlanc, Christopher Lloyd
       0.60    fix compiling as c++

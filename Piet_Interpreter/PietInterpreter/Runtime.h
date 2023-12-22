@@ -2,58 +2,69 @@
 #include "PietStack.h"
 #include <string>
 
-class Runtime {
+class Runtime
+{
 
-	enum class Direction {
+	enum class Direction
+	{
 		Up, Right, Down, Left
 	};
 
-	struct Location {
+	struct Location
+	{
 		int x;
 		int y;
 	};
 
-	PietTextTokeniser tk;
+	PietTextTokeniser m_textTokeniser;
 	Direction dp;
 	Direction cc;
-	Location current_pixel { 0, 0 };
+	Location m_currentPixel{ 0, 0 };
 
-	bool finished = false;
+	bool m_bFinished = false;
 
-	PietToken startToken{ PietToken::Kind::Start };
+	PietToken m_tStartToken{ PietToken::TokenType::Start };
 
-	PietStack stack;
-	std::string code_str = "";
-	std::istrstream code = std::istrstream("");
+	PietStack m_stack;
+	std::string m_codeStr = "";
+	std::istrstream m_code = std::istrstream("");
 
-	std::string& output;
+	std::string& m_rOutputStr;
 
-	void step_execution(PietToken& token, PietToken& value);
+	void StepExecution(PietToken& token, PietToken& value);
+
+	void ResetStream()
+	{
+		m_code = std::istrstream(m_codeStr.c_str());
+		m_textTokeniser.SetStream(m_code);
+		m_rOutputStr = "";
+		m_bFinished = false;
+	}
 
 public:
 
-	bool Is_Finished() { return finished; }
+	bool IsFinished() { return m_bFinished; }
 
-	Runtime(std::string& outputString) : output(outputString) {}
+	Runtime(std::string& outputString) : m_rOutputStr(outputString) {}
 
-	void step_execution();
+	void StepExecution();
 
-	void set_stream(std::string str) {
-		code_str = str;
-		code = std::istrstream(code_str.c_str());
-		tk.set_stream(code);
-		output = "";
-		finished = false;
+	void SetStream(std::string str)
+	{
+		m_codeStr = str;
+		m_code = std::istrstream(m_codeStr.c_str());
+		m_textTokeniser.SetStream(m_code);
+		m_rOutputStr = "";
+		m_bFinished = false;
 	}
 
-	void reset_stream() {
-		code = std::istrstream(code_str.c_str());
-		tk.set_stream(code);
-		output = "";
-		finished = false;
+	void Reset()
+	{
+		ResetStream();
+		m_stack.Clear();
 	}
 
-	int run();
+	int Run();
 
-	const std::deque<int>& getStack() { return stack.getStack(); }
+	const std::deque<int>& GetStack() { return m_stack.GetStack(); }
 };

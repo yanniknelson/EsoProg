@@ -27,61 +27,62 @@ class Program {
 		Image
 	};
 
-	static int Check_For_Enter(ImGuiInputTextCallbackData* data);
-	void Check_ShortCuts();
+	static int CheckForEnter(ImGuiInputTextCallbackData* data);
+	void CheckShortCuts();
 
-	void handle_New();
-	void handle_Open();
-	void handle_Save_As();
-	void handle_Save();
+	void HandleNew();
+	void HandleOpen();
+	void HandelSaveAs();
+	void HandleSave();
 
 	void CreateMenuBar();
 	
 	//shortcut flags
-	bool shortcut_used = false;
-	ImGuiKey_ last_shortcut_used = ImGuiKey_None;
+	bool m_bShortcutUsed = false;
+	ImGuiKey_ m_lastShortcutUsed = ImGuiKey_None;
 
 	//file dialog box flags
-	bool enable_file_dialog = false;
-	FileDialogBox::FileDialogType dialogType = FileDialogBox::FileDialogType::Open;
-	ImGuiWindowFlags_ file_dialog_on_top = ImGuiWindowFlags_None;
-	std::fstream fs;
+	bool m_bEnableFileDialog = false;
+	FileDialogBox::FileDialogType m_dialogType = FileDialogBox::FileDialogType::Open;
+	ImGuiWindowFlags_ m_fileDialogOnTop = ImGuiWindowFlags_None;
+	std::fstream m_fileStream;
 
 	FileType OpenFile(std::filesystem::path path);
 	
 	//file management
-	bool file_is_new = true;
-	fs::path currentFilePath = "";
+	bool m_bFileIsNew = true;
+	fs::path m_currentFilePath = "";
 
 	//Image
-	unsigned char* image_data;
-	int image_width = 0;
-	int image_height = 0;
-	int num_components = 0;
-	bool image_loaded = false;
-	float aspect_ratio = 1.f;
+	unsigned char* m_imageData;
+	int m_imageWidth = 0;
+	int m_imageHeight = 0;
+	int m_NumComponents = 0;
+	bool m_bImageLoaded = false;
+	float m_aspectRatio = 1.f;
 
-	GLuint texture;
+	GLuint m_texture;
 
 	//Interpreting
-	PietTextTokeniser tk;
-	bool is_token_error = false;
-	bool is_compiled = false;
-	int token_error_line = 0;
-	std::string output = "";
-	Runtime runtime{ output };
+	PietTextTokeniser m_textValidationTokeniser;
+	bool m_bIsTokenError = false;
+	bool m_bIsCompiled = false;
+	int m_tokenErrorLine = 0;
+	std::string m_output = "";
+	Runtime runtime{ m_output };
 
-	ImGuiInputTextFlags code_editor_flags = ImGuiInputTextFlags_CallbackCharFilter | ImGuiInputTextFlags_EnterReturnsTrue;
-	std::string code{ "" };
+	ImGuiInputTextFlags m_codeEditorFlags = ImGuiInputTextFlags_CallbackCharFilter | ImGuiInputTextFlags_EnterReturnsTrue;
+	std::string m_code{ "" };
 
 public:
 
-	Program() {
+	Program()
+	{
 		//setup the current directory as the initial path in the file dialog box
 		FileDialogBox::Init_Path(fs::current_path());
 		FileDialogBox::Set_Allowed_Type({".txt", ".jpg", ".png", ".gif", ".ppm"});
 
-		glGenTextures(1, &texture);
+		glGenTextures(1, &m_texture);
 
 		//Merge font awesome into the default font
 		ImGuiIO io = ImGui::GetIO();

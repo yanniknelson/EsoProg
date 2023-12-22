@@ -1,132 +1,189 @@
 #include "Runtime.h"
 
-void Runtime::step_execution(PietToken& token, PietToken& value) {
+void Runtime::StepExecution(PietToken& token, PietToken& value)
+{
 	int top = 0;
 	int second = 0;
 	int val = 0;
-	switch (token.kind)
+
+	switch (token.m_kind)
 	{
-	case(PietToken::Kind::Push):
-		stack.push(value.value);
+	case(PietToken::TokenType::Push):
+	{
+		m_stack.Push(value.m_value);
 		break;
-	case(PietToken::Kind::Pop):
-		if (stack.get_size() > 0) {
-			stack.pop();
+	}
+	case(PietToken::TokenType::Pop):
+	{
+		if (m_stack.GetSize() > 0)
+		{
+			m_stack.Pop();
 		}
 		break;
-	case(PietToken::Kind::Add):
-		if (stack.get_size() >= 2) {
-			stack.push(stack.pop() + stack.pop());
+	}
+	case(PietToken::TokenType::Add):
+	{
+		if (m_stack.GetSize() >= 2)
+		{
+			m_stack.Push(m_stack.Pop() + m_stack.Pop());
 		}
 		break;
-	case(PietToken::Kind::Subtract):
-		if (stack.get_size() >= 2) {
-			top = stack.pop();
-			second = stack.pop();
-			stack.push(second - top);
+	}
+	case(PietToken::TokenType::Subtract):
+	{
+		if (m_stack.GetSize() >= 2)
+		{
+			top = m_stack.Pop();
+			second = m_stack.Pop();
+			m_stack.Push(second - top);
 		}
 		break;
-	case(PietToken::Kind::Multiply):
-		if (stack.get_size() >= 2) {
-			stack.push(stack.pop() * stack.pop());
+	}
+	case(PietToken::TokenType::Multiply):
+	{
+		if (m_stack.GetSize() >= 2)
+		{
+			m_stack.Push(m_stack.Pop() * m_stack.Pop());
 		}
 		break;
-	case(PietToken::Kind::Divide):
-		if (stack.get_size() >= 2) {
-			top = stack.pop();
-			second = stack.pop();
-			stack.push(second / top);
+	}
+	case(PietToken::TokenType::Divide):
+	{
+		if (m_stack.GetSize() >= 2)
+		{
+			top = m_stack.Pop();
+			second = m_stack.Pop();
+			m_stack.Push(second / top);
 		}
 		break;
-	case(PietToken::Kind::Modulo):
-		if (stack.get_size() >= 2) {
-			top = stack.pop();
-			second = stack.pop();
-			stack.push((top + (second % top)) % top);
+	}
+	case(PietToken::TokenType::Modulo):
+	{
+		if (m_stack.GetSize() >= 2)
+		{
+			top = m_stack.Pop();
+			second = m_stack.Pop();
+			m_stack.Push((top + (second % top)) % top);
 		}
 		break;
-	case(PietToken::Kind::Not):
-		if (stack.get_size() > 0) {
-			val = stack.pop() == 0 ? 1 : 0;
-			stack.push(val);
+	}
+	case(PietToken::TokenType::Not):
+	{
+		if (m_stack.GetSize() > 0)
+		{
+			val = m_stack.Pop() == 0 ? 1 : 0;
+			m_stack.Push(val);
 		}
 		break;
-	case(PietToken::Kind::Greater):
-		if (stack.get_size() >= 2) {
-			top = stack.pop();
-			second = stack.pop();
+	}
+	case(PietToken::TokenType::Greater):
+	{
+		if (m_stack.GetSize() >= 2)
+		{
+			top = m_stack.Pop();
+			second = m_stack.Pop();
 			val = (second > top) ? 1 : 0;
-			stack.push(val);
+			m_stack.Push(val);
 		}
 		break;
-	case(PietToken::Kind::Pointer):
+	}
+	case(PietToken::TokenType::Pointer):
 		break;
-	case(PietToken::Kind::Switch):
+	case(PietToken::TokenType::Switch):
 		break;
-	case(PietToken::Kind::Duplicate):
-		if (stack.get_size() > 0) {
-			val = stack.pop();
-			stack.push(val);
-			stack.push(val);
+	case(PietToken::TokenType::Duplicate):
+	{
+		if (m_stack.GetSize() > 0)
+		{
+			val = m_stack.Pop();
+			m_stack.Push(val);
+			m_stack.Push(val);
 		}
 		break;
-	case(PietToken::Kind::Roll):
-		if (stack.get_size() >= 2) {
-			top = stack.pop();
-			second = stack.pop();
-			stack.roll(second, top);
+	}
+	case(PietToken::TokenType::Roll):
+	{
+		if (m_stack.GetSize() >= 2)
+		{
+			top = m_stack.Pop();
+			second = m_stack.Pop();
+			m_stack.Roll(second, top);
 		}
 		break;
-	case(PietToken::Kind::Input_Char):
+	}
+	case(PietToken::TokenType::Input_Char):
 		break;
-	case(PietToken::Kind::Input_Val):
+	case(PietToken::TokenType::Input_Val):
 		break;
-	case(PietToken::Kind::Output_Char):
-		if (stack.get_size() > 0) {
-			output += (char)stack.pop();
+	case(PietToken::TokenType::Output_Char):
+	{
+		if (m_stack.GetSize() > 0)
+		{
+			m_rOutputStr += (char)m_stack.Pop();
 		}
 		break;
-	case(PietToken::Kind::Output_Val):
-		if (stack.get_size() > 0) {
-			output += std::to_string(stack.pop());
+	}
+	case(PietToken::TokenType::Output_Val):
+	{
+		if (m_stack.GetSize() > 0)
+		{
+			m_rOutputStr += std::to_string(m_stack.Pop());
 		}
 		break;
-	case (PietToken::Kind::End):
-		finished = true;
+	}
+	case (PietToken::TokenType::End):
+	{
+		m_bFinished = true;
+		break;
+	}
 	default:
 		break;
 	}
 }
 
-void Runtime::step_execution() {
-	PietToken token = startToken;
-	PietToken value = startToken;
-	if (token.kind != PietToken::Kind::End) {
-		token = tk.pop();
-		if (token.kind == PietToken::Kind::Push) {
-			value = tk.pop();
-			if (value.kind != PietToken::Kind::Value) {
+void Runtime::StepExecution()
+{
+	PietToken token = m_tStartToken;
+	PietToken value = m_tStartToken;
+
+	if (token.m_kind != PietToken::TokenType::End)
+	{
+		token = m_textTokeniser.Pop();
+		if (token.m_kind == PietToken::TokenType::Push)
+		{
+			value = m_textTokeniser.Pop();
+			if (value.m_kind != PietToken::TokenType::Value)
+			{
 				return;
 			}
 		}
-		step_execution(token, value);
+		StepExecution(token, value);
 	}
+
 	return;
 }
 
-int Runtime::run() {
-	reset_stream();
-	PietToken token = startToken;
-	PietToken value = startToken;
-	while (token.kind != PietToken::Kind::End) {
-		token = tk.pop();
-		if (token.kind == PietToken::Kind::Push) {
-			value = tk.pop();
-			if (value.kind != PietToken::Kind::Value) {
+int Runtime::Run()
+{
+	ResetStream();
+
+	PietToken token = m_tStartToken;
+	PietToken value = m_tStartToken;
+
+	while (token.m_kind != PietToken::TokenType::End)
+	{
+		token = m_textTokeniser.Pop();
+		if (token.m_kind == PietToken::TokenType::Push)
+		{
+			value = m_textTokeniser.Pop();
+			if (value.m_kind != PietToken::TokenType::Value)
+			{
 				return -1;
 			}
 		}
-		step_execution(token, value);
+
+		StepExecution(token, value);
 	}
+
 	return 0;
 }
