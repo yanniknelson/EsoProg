@@ -1,5 +1,6 @@
 #include <strstream>
 #include <iostream>
+#include <iomanip>
 
 #include "PietTokeniser.h"
 
@@ -16,12 +17,11 @@ public:
 	PietImageTokeniser() {}
 
 	void SetImage(const unsigned char* imageData, const int width, const int height);
+	void Reset();
 
 	int GetInstructionNumber();
 
-private:
-
-	/* 
+	/*
 	* Bellow is a table representing the Piet colour pallette
 	* |__________________________________________________________________________________|
 	* | #FFC0C0   | #FFFFC0      | #C0FFC0     | #C0FFFF    | #C0C0FF    | #FFC0FF       |
@@ -38,20 +38,23 @@ private:
 	* |__________________________________________________________________________________|
 	*/
 
-	enum class Hue : uint8_t
+	static enum class Hue : uint8_t
 	{
 		Red,
-		Yellow, 
-		Green, 
-		Cyan, 
-		Blue, 
-		Magenta, 
-		COUNT,
+		Yellow,
+		Green,
+		Cyan,
+		Blue,
+		Magenta,
 		Black,
-		White
+		White,
+		COUNT
 	};
-	
-	enum class Brightness : uint8_t
+
+	static const std::string m_hueStrings[(int)Hue::COUNT];
+
+
+	static enum class Brightness : uint8_t
 	{
 		Light,
 		Standard,
@@ -59,12 +62,45 @@ private:
 		COUNT
 	};
 
+	static const std::string m_brightnessStrings[(int)Brightness::COUNT];
+
 	struct PietColour
 	{
 		Hue m_hue{ Hue::COUNT };
-		Brightness m_Lightness{ Brightness::COUNT };
+		Brightness m_brightness{ Brightness::COUNT };
 	};
 
+	class RGB;
+
+	/// <summary>
+	/// Convert from RGB value to Hue Brightness pair (using struct for readability)
+	/// </summary>
+	/// <param name="RGB - "> RGB colour info </param>
+	static PietColour RGBToColourRep(const RGB col);
+
+	class RGB
+	{
+	public:
+		unsigned char r = 0.f;
+		unsigned char g = 0.f;
+		unsigned char b = 0.f;
+
+		friend std::ostream& operator<<(std::ostream& os, const RGB& col)
+		{
+			const int outint = (((col.r << 8) | col.g) << 8) | col.b;
+			PietImageTokeniser::PietColour pietCol = PietImageTokeniser::RGBToColourRep(col);
+			os << std::hex << outint << "(" << PietImageTokeniser::m_brightnessStrings[(int)pietCol.m_brightness] << " " << PietImageTokeniser::m_hueStrings[(int)pietCol.m_hue] << ")";
+			return os;
+		}
+
+		friend bool operator==(const RGB& col1, const RGB& col2)
+		{
+			return col1.r == col2.r && col1.g == col2.g && col1.b == col2.b;
+		}
+
+	};
+
+private:	
 
 	PietToken tLastPopped{ PietToken::TokenType::End };
 	const unsigned char* m_imageData{ nullptr };
@@ -79,22 +115,14 @@ private:
 
 	struct Location
 	{
-		int x;
-		int y;
+		int x = 0;
+		int y = 0;
 	};
 
 	Direction m_direction{ Direction::Right };
 	Direction m_codelChooser{Direction::Left};
 	Location m_currentCodel{ 0, 0 };
 
-	/// <summary>
-	/// Convert from RGB value to Hue Brightness pair (using struct for readability)
-	/// </summary>
-	/// <param name="R - "> Red value </param>
-	/// <param name="G - "> Green value </param>
-	/// <param name="B - "> Blue value </param>
-	/// <returns> Hue/Brightness pair </returns>
-	const PietColour RGBToColourRep(const char R,const char G,const char B) const;
-
+	RGB GetRGBFromLoation(const Location& loc) const;
 
 };

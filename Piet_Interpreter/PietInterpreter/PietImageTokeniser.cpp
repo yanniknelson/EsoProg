@@ -1,5 +1,8 @@
 #include "PietImageTokeniser.h"
 
+const std::string PietImageTokeniser::m_hueStrings[(int)PietImageTokeniser::Hue::COUNT] = {"Red", "Yellow", "Green", "Cyan", "Blue", "Magenta", "Black", "White"};
+const std::string PietImageTokeniser::m_brightnessStrings[(int)PietImageTokeniser::Brightness::COUNT] = { "Light", "", "Dark"};
+
 const PietToken& PietImageTokeniser::Pop()
 {
 	return m_tLastPopped;
@@ -7,10 +10,20 @@ const PietToken& PietImageTokeniser::Pop()
 
 void PietImageTokeniser::SetImage(const unsigned char* imageData, const int width, const int height)
 {
+	Reset();
 	m_imageData = imageData;
 	m_imageWidth = width;
 	m_imageHeight = height;
 	m_instructionNumber = 1;
+
+	std::cout << GetRGBFromLoation(m_currentCodel) << std::endl;
+}
+
+void PietImageTokeniser::Reset()
+{
+	m_direction = Direction::Right;
+	m_codelChooser = Direction::Left;
+	m_currentCodel = { 0, 0 };
 }
 
 int PietImageTokeniser::GetInstructionNumber()
@@ -18,7 +31,7 @@ int PietImageTokeniser::GetInstructionNumber()
 	return m_instructionNumber;
 }
 
-const PietImageTokeniser::PietColour PietImageTokeniser::RGBToColourRep(const char R, const char G, const char B) const
+PietImageTokeniser::PietColour PietImageTokeniser::RGBToColourRep(const PietImageTokeniser::RGB colour)
 {
 
 	/*
@@ -64,50 +77,66 @@ const PietImageTokeniser::PietColour PietImageTokeniser::RGBToColourRep(const ch
 
 	int hueIndx = 0;
 
-	bool bHasFF = R == 0xFF || G == 0xFF || B == 0xFF;
-	bool bHasC0 = R == 0xC0 || G == 0xC0 || B == 0xC0;
+	bool bHasFF = colour.r == 0xFF || colour.g == 0xFF || colour.b == 0xFF;
+	bool bHasC0 = colour.r == 0xC0 || colour.g == 0xC0 || colour.b == 0xC0;
 
 	if (bHasFF && bHasC0)
 	{
-		retVal.m_Lightness = Brightness::Light;
+		retVal.m_brightness = Brightness::Light;
 	}
 	else if (bHasFF)
 	{
-		retVal.m_Lightness = Brightness::Standard;
+		retVal.m_brightness = Brightness::Standard;
 	}
 	else
 	{
-		retVal.m_Lightness = Brightness::Dark;
+		retVal.m_brightness = Brightness::Dark;
 		// If the colour is dark all the hex FFs will be C0 (see NOTE 2)
-		if (R == 0xC0)
+		if (colour.r == 0xC0)
 		{
-			hueIndx &= 0b100;
+			hueIndx |= 0b100;
 		}
-		if (G == 0xC0)
+		if (colour.g == 0xC0)
 		{
-			hueIndx &= 0b010;
+			hueIndx |= 0b010;
 		}
-		if (B == 0xC0)
+		if (colour.b == 0xC0)
 		{
-			hueIndx &= 0b001;
+			hueIndx |= 0b001;
 		}
 	}
 
 	// See NOTE 2
-	if (R == 0xFF)
+	if (colour.r == 0xFF)
 	{
-		hueIndx &= 0b100;
+		hueIndx |= 0b100;
 	}
-	if (G == 0xFF)
+	if (colour.g == 0xFF)
 	{
-		hueIndx &= 0b010;
+		hueIndx |= 0b010;
 	}
-	if (B == 0xFF)
+	if (colour.b == 0xFF)
 	{
-		hueIndx &= 0b001;
+		hueIndx |= 0b001;
 	}
    
 	retVal.m_hue = hueTable[hueIndx];
 
 	return retVal;
+}
+
+PietImageTokeniser::RGB PietImageTokeniser::GetRGBFromLoation(const PietImageTokeniser::Location& loc) const
+{
+	RGB retCol;
+
+	if (loc. y < m_imageHeight && loc.x < m_imageWidth)
+	{
+		int indx = (m_imageWidth * loc.y + loc.x) * 4;
+
+		retCol.r = m_imageData[indx];
+		retCol.g = m_imageData[indx + 1];
+		retCol.b = m_imageData[indx + 2];
+	}
+
+	return retCol;
 }

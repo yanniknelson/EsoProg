@@ -300,6 +300,11 @@ void Program::Render()
 			ImGui::Image((void*)(intptr_t)m_texture, desired);
 		}
 
+		if (ImGui::Button("Test"))
+		{
+			runtime.SetImage(m_imageData, m_imageWidth, m_imageHeight);
+		}
+
 		ImGui::End();
 	}
 

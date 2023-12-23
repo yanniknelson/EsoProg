@@ -11,7 +11,7 @@ class Runtime
 {
 
 	PietTextTokeniser m_textTokeniser;
-	PietImageTokeniser m_ImageTokeniser;
+	PietImageTokeniser m_imageTokeniser;
 
 	bool m_bFinished = false;
 
@@ -23,10 +23,11 @@ class Runtime
 
 	void StepExecution(PietToken& token, PietToken& value);
 
-	void ResetStream()
+	void ResetTokenisers()
 	{
 		m_code = std::stringstream(m_codeStr);
 		m_textTokeniser.SetTextStream(m_code);
+		m_imageTokeniser.Reset();
 		m_rOutputStr = "";
 		m_bFinished = false;
 	}
@@ -50,9 +51,14 @@ public:
 		m_bFinished = false;
 	}
 
+	void SetImage(const unsigned char* imageData, const int imageWidth, const int imageHeight)
+	{
+		m_imageTokeniser.SetImage(imageData, imageWidth, imageHeight);
+	}
+
 	void Reset()
 	{
-		ResetStream();
+		ResetTokenisers();
 		m_stack.Clear();
 	}
 

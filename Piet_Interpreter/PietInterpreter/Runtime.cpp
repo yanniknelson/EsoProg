@@ -163,7 +163,7 @@ void Runtime::StepExecution()
 
 int Runtime::Run()
 {
-	ResetStream();
+	ResetTokenisers();
 
 	PietToken token = m_tDefaultToken;
 	PietToken value = m_tDefaultToken;
