@@ -2,13 +2,9 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "Resources/stb_image.h"
 
-int Program::CheckForEnter(ImGuiInputTextCallbackData* data)
+int Program::TextInputCallback(ImGuiInputTextCallbackData* data)
 {
-	//if the key pressed was enter (catching windows and linux new lines) set the userdata flag to true
-	if (data->EventChar == 10 || data->EventChar == 13)
-	{
-		*((bool*)data->UserData) = true;
-	}
+	*((bool*)data->UserData) = false;
 
 	//don't change the input key
 	return 0;
@@ -216,23 +212,20 @@ void Program::Render()
 	if (ImGui::Begin("Code Editor", &code_editor_open, m_fileDialogOnTop))
 	{
 		ImGui::Text("Warning: Pressing ESC will delete all non submitted changes");
-		bool enterPressed = false;
-		if (ImGui::InputTextMultiline("##code", &m_code, ImVec2(-FLT_MIN, ImGui::GetContentRegionAvail().y - (ImGui::GetTextLineHeight() * 1.5)), ImGuiInputTextFlags_CallbackCharFilter | ImGuiInputTextFlags_EnterReturnsTrue, CheckForEnter, &enterPressed))
+
+		if (ImGui::InputTextMultiline("##code", &m_code, ImVec2(-FLT_MIN, ImGui::GetContentRegionAvail().y - (ImGui::GetTextLineHeight() * 1.5)), ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_CallbackEdit, TextInputCallback, &m_bVerificationAttempted))
 		{
-			//std::cout << code << std::endl;
+			std::cout << "code changed" << std::endl;
+			m_bVerificationAttempted = false;
 		}
 
-		if (enterPressed)
+		if (ImGui::Button("Verify"))
 		{
-
-		}
-
-		if (ImGui::Button("Compile"))
-		{
+			m_bVerificationAttempted = true;
 			m_bIsTokenError = false;
-			std::istrstream input(m_code.c_str());
-			m_textValidationTokeniser.SetStream(input);
-			PietToken token = m_textValidationTokeniser.Pop();
+			std::stringstream input(m_code.c_str());
+			m_textValidationTokeniser.SetTextStream(input);
+			PietToken token = Runtime::m_tDefaultToken;
 
 			while (token.m_kind != PietToken::TokenType::End)
 			{
@@ -248,12 +241,11 @@ void Program::Render()
 
 			if (!m_bIsTokenError)
 			{
-				runtime.SetStream(m_code);
-				m_bIsCompiled = true;
+				runtime.SetTextStream(m_code);
 			}
 		}
 
-		if (m_bIsCompiled)
+		if (m_bVerificationAttempted)
 		{
 			if (m_bIsTokenError)
 			{

@@ -27,7 +27,7 @@ class Program {
 		Image
 	};
 
-	static int CheckForEnter(ImGuiInputTextCallbackData* data);
+	static int TextInputCallback(ImGuiInputTextCallbackData* data);
 	void CheckShortCuts();
 
 	void HandleNew();
@@ -66,7 +66,7 @@ class Program {
 	//Interpreting
 	PietTextTokeniser m_textValidationTokeniser;
 	bool m_bIsTokenError = false;
-	bool m_bIsCompiled = false;
+	bool m_bVerificationAttempted = false;
 	int m_tokenErrorLine = 0;
 	std::string m_output = "";
 	Runtime runtime{ m_output };

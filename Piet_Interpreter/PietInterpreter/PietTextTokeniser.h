@@ -18,7 +18,7 @@ public:
 
 	PietTextTokeniser() {};
 
-	void SetStream(std::istrstream& m_code)
+	void SetTextStream(std::stringstream& m_code)
 	{
 		m_pStrStream = &m_code;
 		m_lineNumber = 1;
@@ -38,7 +38,7 @@ private:
 	/// <returns> TokenType enum corresponding to input string </returns>
 	PietToken::TokenType StringToTokenType(std::string& rString) const;
 
-	std::istrstream* m_pStrStream{ nullptr };
+	std::stringstream* m_pStrStream{ nullptr };
 	PietToken m_tLastPopped{ PietToken::TokenType::End };
 	int m_lineNumber = 1;
 

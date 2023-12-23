@@ -65,6 +65,28 @@ private:
 		Brightness m_Lightness{ Brightness::COUNT };
 	};
 
+
+	PietToken tLastPopped{ PietToken::TokenType::End };
+	const unsigned char* m_imageData{ nullptr };
+	int m_imageWidth = 0;
+	int m_imageHeight = 0;
+	int m_instructionNumber = 1;
+
+	enum class Direction
+	{
+		Up, Right, Down, Left
+	};
+
+	struct Location
+	{
+		int x;
+		int y;
+	};
+
+	Direction m_direction{ Direction::Right };
+	Direction m_codelChooser{Direction::Left};
+	Location m_currentCodel{ 0, 0 };
+
 	/// <summary>
 	/// Convert from RGB value to Hue Brightness pair (using struct for readability)
 	/// </summary>
@@ -74,10 +96,5 @@ private:
 	/// <returns> Hue/Brightness pair </returns>
 	const PietColour RGBToColourRep(const char R,const char G,const char B) const;
 
-	PietToken tLastPopped{ PietToken::TokenType::End };
-	const unsigned char* m_imageData{ nullptr };
-	int m_imageWidth = 0;
-	int m_imageHeight = 0;
-	int m_instructionNumber = 1;
 
 };

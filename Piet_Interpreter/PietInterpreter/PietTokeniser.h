@@ -1,3 +1,5 @@
+#pragma once
+
 #include "PietToken.h"
 
 class PietTokeniser

@@ -1,33 +1,23 @@
 #include "PietTextTokeniser.h"
+#include "PietImageTokeniser.h"
 #include "PietStack.h"
+
+#include <iostream>
+#include <sstream>
+
 #include <string>
 
 class Runtime
 {
 
-	enum class Direction
-	{
-		Up, Right, Down, Left
-	};
-
-	struct Location
-	{
-		int x;
-		int y;
-	};
-
 	PietTextTokeniser m_textTokeniser;
-	Direction dp;
-	Direction cc;
-	Location m_currentPixel{ 0, 0 };
+	PietImageTokeniser m_ImageTokeniser;
 
 	bool m_bFinished = false;
 
-	PietToken m_tStartToken{ PietToken::TokenType::Start };
-
 	PietStack m_stack;
 	std::string m_codeStr = "";
-	std::istrstream m_code = std::istrstream("");
+	std::stringstream m_code;
 
 	std::string& m_rOutputStr;
 
@@ -35,13 +25,15 @@ class Runtime
 
 	void ResetStream()
 	{
-		m_code = std::istrstream(m_codeStr.c_str());
-		m_textTokeniser.SetStream(m_code);
+		m_code = std::stringstream(m_codeStr);
+		m_textTokeniser.SetTextStream(m_code);
 		m_rOutputStr = "";
 		m_bFinished = false;
 	}
 
 public:
+
+	static const PietToken m_tDefaultToken;
 
 	bool IsFinished() { return m_bFinished; }
 
@@ -49,11 +41,11 @@ public:
 
 	void StepExecution();
 
-	void SetStream(std::string str)
+	void SetTextStream(std::string str)
 	{
 		m_codeStr = str;
-		m_code = std::istrstream(m_codeStr.c_str());
-		m_textTokeniser.SetStream(m_code);
+		m_code.swap(std::stringstream(m_codeStr.c_str()));
+		m_textTokeniser.SetTextStream(m_code);
 		m_rOutputStr = "";
 		m_bFinished = false;
 	}

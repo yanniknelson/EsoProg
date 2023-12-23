@@ -1,5 +1,9 @@
 #include "PietTextTokeniser.h"
 
+#include <iostream>
+#include <sstream>
+
+
 const PietToken& PietTextTokeniser::Pop()
 {
 	if (!m_pStrStream->rdbuf()->in_avail())

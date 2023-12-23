@@ -1,5 +1,7 @@
 #include "Runtime.h"
 
+const PietToken Runtime::m_tDefaultToken = { PietToken::TokenType::Start };
+
 void Runtime::StepExecution(PietToken& token, PietToken& value)
 {
 	int top = 0;
@@ -143,22 +145,18 @@ void Runtime::StepExecution(PietToken& token, PietToken& value)
 
 void Runtime::StepExecution()
 {
-	PietToken token = m_tStartToken;
-	PietToken value = m_tStartToken;
 
-	if (token.m_kind != PietToken::TokenType::End)
+	PietToken token = m_textTokeniser.Pop();
+	PietToken value = m_tDefaultToken;
+	if (token.m_kind == PietToken::TokenType::Push)
 	{
-		token = m_textTokeniser.Pop();
-		if (token.m_kind == PietToken::TokenType::Push)
+		value = m_textTokeniser.Pop();
+		if (value.m_kind != PietToken::TokenType::Value)
 		{
-			value = m_textTokeniser.Pop();
-			if (value.m_kind != PietToken::TokenType::Value)
-			{
-				return;
-			}
+			return;
 		}
-		StepExecution(token, value);
 	}
+	StepExecution(token, value);
 
 	return;
 }
@@ -167,8 +165,8 @@ int Runtime::Run()
 {
 	ResetStream();
 
-	PietToken token = m_tStartToken;
-	PietToken value = m_tStartToken;
+	PietToken token = m_tDefaultToken;
+	PietToken value = m_tDefaultToken;
 
 	while (token.m_kind != PietToken::TokenType::End)
 	{
