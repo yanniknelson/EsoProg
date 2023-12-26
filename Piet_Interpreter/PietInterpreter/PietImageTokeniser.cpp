@@ -217,15 +217,18 @@ bool PietImageTokeniser::isValidLocation(const Location& loc, const std::vector<
 	return isValidLocation(loc) && !visited[loc.x][loc.y];
 }
 
-PietImageTokeniser::Location PietImageTokeniser::FindEndOfEdge(Location EdgeLoc, Direction direction, Direction chooser) const
+PietImageTokeniser::Location PietImageTokeniser::FindEndOfEdge(Location EdgeLoc, Direction directionPointer, Direction chooser) const
 {
+	// Since the chooser direction is relative to the direciton pointer, we can use them to find the global real direction
 	static PietImageTokeniser::Direction searchDirLookup[4][2] = { /*Up*/{/*Left*/Direction::Left, /*Right*/Direction::Right}
 																 , /*Down*/{/*Left*/Direction::Right, /*Right*/Direction::Left}
 																 , /*Left*/{/*Left*/Direction::Down, /*Right*/Direction::Up}
 																 , /*Right*/{/*Left*/Direction::Up, /*Right*/Direction::Down} };
 
-	PietImageTokeniser::Direction SearchDir = searchDirLookup[(int)direction][(int)chooser - (int)Direction::Left];
+	PietImageTokeniser::Direction SearchDir = searchDirLookup[(int)directionPointer][(int)chooser - (int)Direction::Left];
 
+	// The edge ends when the colour changes so we check the block ahead of us before we move, if its a different colour 
+	// (or no longer valid) we return our current location otherwise we move to it
 	const RGB blockCol = GetRGBFromLoation(EdgeLoc);
 
 	PietImageTokeniser::Location focus = EdgeLoc;
@@ -238,7 +241,7 @@ PietImageTokeniser::Location PietImageTokeniser::FindEndOfEdge(Location EdgeLoc,
 	return focus;
 }
 
-void PietImageTokeniser::FindLeavingCodel(BlockInfo& blockInfo)
+void PietImageTokeniser::FindEndCodel(BlockInfo& blockInfo)
 {
 	static Direction clockwiseDirectionLookup[(int)Direction::Count] = { Direction::Right, Direction::Left, Direction::Up, Direction::Down };
 
@@ -247,8 +250,8 @@ void PietImageTokeniser::FindLeavingCodel(BlockInfo& blockInfo)
 	PietImageTokeniser::Location currentCorner = blockInfo.m_startingCodel;
 	while (attempts < 8)
 	{
-
-
+		// To find the end codel we go to the edge furthest in the direction we're pointing, go to the end of that edge chosen by the codel chooser
+		// then try to move in the direction we're facing, if the location is valid and the colour isn't black then that's the next block and our end location
 		blockInfo.m_leavingCodel = FindEndOfEdge(GetEdge(blockInfo, blockInfo.m_leavingDirectionPointer), blockInfo.m_leavingDirectionPointer, blockInfo.m_leavingCodelChooser);
 		blockInfo.m_endingCodel = MoveInDirection(blockInfo.m_leavingCodel, blockInfo.m_leavingDirectionPointer);
 
@@ -259,6 +262,8 @@ void PietImageTokeniser::FindLeavingCodel(BlockInfo& blockInfo)
 			return;
 		}
 
+		// If that wasn't the right location then we flip the codel chooser or the direction pointer (first fail we flip codel chooser, second direction, third codel chooser again etc...)
+		// once we've done this 8 times we've exhuated all possible exit points there is no end point and the program should end.
 		if (switchCodelChooser)
 		{
 			if (blockInfo.m_leavingCodelChooser == Direction::Left)
@@ -279,6 +284,7 @@ void PietImageTokeniser::FindLeavingCodel(BlockInfo& blockInfo)
 		attempts++;
 	}
 
+	//Set the ending codel back to the startingCodel to indicate we can't leave this block
 	blockInfo.m_endingCodel = blockInfo.m_startingCodel;
 }
 
@@ -286,14 +292,16 @@ PietImageTokeniser::BlockInfo PietImageTokeniser::GetBlockInfo(Location startLoc
 {
 	BlockInfo retInfo(startLocation, startDirectionPointer, StartCodelChooser);
 
-	std::vector<std::vector<bool>> visited(m_imageWidth, std::vector<bool>(m_imageHeight, false));
-
 	retInfo.m_rgbColour = GetRGBFromLoation(retInfo.m_startingCodel);
 	retInfo.m_pietColour = RGBToPietColour(retInfo.m_rgbColour);
-	visited[retInfo.m_startingCodel.x][retInfo.m_startingCodel.y] = true;
 
+	std::vector<std::vector<bool>> visited(m_imageWidth, std::vector<bool>(m_imageHeight, false));
+	visited[retInfo.m_startingCodel.x][retInfo.m_startingCodel.y] = true;
 	std::deque<PietImageTokeniser::Location> ToVisit = { retInfo.m_startingCodel };
 
+	// Run through all the pixels of the shape using floodfill
+	// count the pxiels to find the size, find the highest/lowest/leftmost/rightmost locations in the block
+	// we stop flooding when we detect a change in colour
 	while (!ToVisit.empty())
 	{
 		const PietImageTokeniser::Location focus = ToVisit.front();
@@ -333,7 +341,8 @@ PietImageTokeniser::BlockInfo PietImageTokeniser::GetBlockInfo(Location startLoc
 		}
 	}
 
-	FindLeavingCodel(retInfo);
+	// We now have all the information we need to find the end codel for this block
+	FindEndCodel(retInfo);
 
 	return retInfo;
 }

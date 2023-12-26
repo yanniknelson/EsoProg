@@ -179,9 +179,9 @@ private:
 		{
 		};
 
-		friend std::ostream& operator<<(std::ostream& os, const BlockInfo& loc)
+		friend std::ostream& operator<<(std::ostream& os, const BlockInfo& block)
 		{
-			os << "Block Start: " << loc.m_startingCodel << " Block Leave: " << loc.m_leavingCodel << " Block Size: " << loc.m_size << " Block Colour: " << loc.m_rgbColour << " (" << loc.m_pietColour << ") Top Edge : " << loc.m_topEdge << " Bottom Edge : " << loc.m_bottomEdge << " Left Edge : " << loc.m_leftEdge << " Right Edge : " << loc.m_rightEdge;
+			os << "Block Start: " << block.m_startingCodel << " Block Leave: " << block.m_leavingCodel << " Block Size: " << block.m_size << " Block Colour: " << block.m_rgbColour << " (" << block.m_pietColour << ") Top Edge : " << block.m_topEdge << " Bottom Edge : " << block.m_bottomEdge << " Left Edge : " << block.m_leftEdge << " Right Edge : " << block.m_rightEdge;
 			return os;
 		}
 	};
@@ -201,16 +201,68 @@ private:
 	/// </summary>
 	/// <param name="RGB - "> RGB colour info </param>
 	static PietColour RGBToPietColour(const RGB col);
+
+	/// <summary>
+	/// Returns a location directly neighbouring the provided location in which ever direction specified
+	/// </summary>
+	/// <param name="loc - ">The intial location</param>
+	/// <param name="dir - ">The direction of desired neighbing location</param>
+	/// <returns>the neighbouring location in specified direction</returns>
 	static inline Location MoveInDirection(Location loc, Direction dir);
+
+	/// <summary>
+	/// Wrapper for getting m_topEdge/m_bottomEdge/m_leftEdge/m_rightEdge from a BlockInfo struct
+	/// </summary>
+	/// <param name="block - ">The block whose edge we desire</param>
+	/// <param name="edge - ">The edge we desire (Up -> Top etc...)</param>
+	/// <returns>A location on the desired edge</returns>
 	static inline Location GetEdge(BlockInfo& block, Direction edge);
 
+	/// <summary>
+	/// Query the image data
+	/// </summary>
+	/// <param name="loc - ">The pixel coordinates whose data we desire</param>
+	/// <returns>The RGB data of the desired pixel</returns>
 	RGB GetRGBFromLoation(const Location& loc) const;
 
+	/// <summary>
+	/// Check the location is within the image
+	/// </summary>
+	/// <param name="loc - ">The location to be verified</param>
+	/// <returns>The validy of the location</returns>
 	bool isValidLocation(const Location& loc) const;
+
+	/// <summary>
+	/// Check the location is within the image and if the location has been visited already
+	/// </summary>
+	/// <param name="loc - ">The location to be verified</param>
+	/// <param name="visited - ">A 2D vector of bools representing the visited locations</param>
+	/// <returns>Will return true if the location is valid and has not been visited</returns>
 	bool isValidLocation(const Location& loc, const std::vector<std::vector<bool>>& visited) const;
 
-	Location FindEndOfEdge(Location EdgeLoc, Direction direction, Direction Chooser) const;
-	void FindLeavingCodel(BlockInfo& block);
+
+	/// <summary>
+	/// Will find the end point of a block's edge
+	/// </summary>
+	/// <param name="EdgeLoc - ">Any location on the edge</param>
+	/// <param name="directionPointer - ">Direction facing outwards from the edge</param>
+	/// <param name="chooser - ">Direction, relative to the outward direction, we wish to search for the edge</param>
+	/// <returns>The location marking the end of the edge</returns>
+	Location FindEndOfEdge(Location EdgeLoc, Direction directionPointer, Direction chooser) const;
+	
+	/// <summary>
+	/// Will find the end codel for a block
+	/// </summary>
+	/// <param name="block - ">The block we with to find the end codel of</param>
+	void FindEndCodel(BlockInfo& block);
+
+	/// <summary>
+	/// Finds the size, colour, edges, leaving location, end location, end direction pointer, end codel cooder of the block in whcih startLocation resides
+	/// </summary>
+	/// <param name="startLocation - ">A location within the block we want information about</param>
+	/// <param name="startDirectionPointer - ">The initial edge we'd like to leave the block from (will affect the end direction pointer, end codel chooser, leaving location and end location)</param>
+	/// <param name="StartCodelChooser - ">The end of the leaving edge we wish to leave from (will affect the end direction pointer, end codel chooser, leaving location and end location)</param>
+	/// <returns>The populated Info for the requested block</returns>
 	BlockInfo GetBlockInfo(Location startLocation, Direction startDirectionPointer, Direction StartCodelChooser);
 
 };
