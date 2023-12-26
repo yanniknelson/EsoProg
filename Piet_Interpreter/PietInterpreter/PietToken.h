@@ -9,10 +9,10 @@ public:
 	enum class TokenType
 	{
 		Start, Value, Push, Pop, Add, Subtract, Multiply, Divide, Modulo, Not, Greater,
-		Pointer, Switch, Duplicate, Roll, Input, Output, INT, CHAR, Input_Char, Input_Val, Output_Char, Output_Val, End, Unrecognised_Token
+		Pointer, Switch, Duplicate, Roll, Input, Output, INT, CHAR, Input_Char, Input_Val, Output_Char, Output_Val, NOP, End, Unrecognised_Token
 	};
 
-	TokenType m_kind = TokenType::Start;
+	TokenType m_type = TokenType::Start;
 	int m_value;
 
 	/// <summary>
@@ -23,7 +23,7 @@ public:
 	/// <returns></returns>
 	friend std::ostream& operator<<(std::ostream& os, const PietToken& tk)
 	{
-		switch (tk.m_kind)
+		switch (tk.m_type)
 		{
 		case(TokenType::Value):
 		{
@@ -32,7 +32,7 @@ public:
 		}
 		case(TokenType::Push):
 		{
-			os << "Push";
+			os << "Push " << tk.m_value;
 			break;
 		}
 		case(TokenType::Pop):
@@ -113,6 +113,11 @@ public:
 		case(TokenType::Output_Val):
 		{
 			os << "Output_Val";
+			break;
+		}
+		case(TokenType::NOP):
+		{
+			os << "NOP";
 			break;
 		}
 		case(TokenType::End):

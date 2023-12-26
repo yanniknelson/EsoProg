@@ -69,7 +69,7 @@ class Program {
 	bool m_bVerificationAttempted = false;
 	int m_tokenErrorLine = 0;
 	std::string m_output = "";
-	Runtime runtime{ m_output };
+	Runtime m_runtime{ m_output };
 
 	ImGuiInputTextFlags m_codeEditorFlags = ImGuiInputTextFlags_CallbackCharFilter | ImGuiInputTextFlags_EnterReturnsTrue;
 	std::string m_code{ "" };

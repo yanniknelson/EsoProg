@@ -2,17 +2,17 @@
 
 const PietToken Runtime::m_tDefaultToken = { PietToken::TokenType::Start };
 
-void Runtime::StepExecution(PietToken& token, PietToken& value)
+void Runtime::StepExecution(PietToken& token)
 {
 	int top = 0;
 	int second = 0;
 	int val = 0;
 
-	switch (token.m_kind)
+	switch (token.m_type)
 	{
 	case(PietToken::TokenType::Push):
 	{
-		m_stack.Push(value.m_value);
+		m_stack.Push(token.m_value);
 		break;
 	}
 	case(PietToken::TokenType::Pop):
@@ -133,6 +133,10 @@ void Runtime::StepExecution(PietToken& token, PietToken& value)
 		}
 		break;
 	}
+	case(PietToken::TokenType::NOP):
+	{
+		break;
+	}
 	case (PietToken::TokenType::End):
 	{
 		m_bFinished = true;
@@ -143,44 +147,73 @@ void Runtime::StepExecution(PietToken& token, PietToken& value)
 	}
 }
 
-void Runtime::StepExecution()
+void Runtime::StepExecution(SourceType sourceType)
 {
 
-	PietToken token = m_textTokeniser.Pop();
+	PietToken token = m_tDefaultToken;
 	PietToken value = m_tDefaultToken;
-	if (token.m_kind == PietToken::TokenType::Push)
+
+	switch (sourceType)
 	{
-		value = m_textTokeniser.Pop();
-		if (value.m_kind != PietToken::TokenType::Value)
+	case(SourceType::Text):
+	{
+		token = m_textTokeniser.Pop();
+		value = m_tDefaultToken;
+		if (token.m_type == PietToken::TokenType::Push)
 		{
-			return;
+			value = m_textTokeniser.Pop();
+			if (value.m_type != PietToken::TokenType::Value)
+			{
+				return;
+			}
+			token.m_value = value.m_value;
 		}
 	}
-	StepExecution(token, value);
+	case(SourceType::Image):
+	{
+		token = m_imageTokeniser.Pop();
+		break;
+	}
+	}
+
+	StepExecution(token);
 
 	return;
 }
 
-int Runtime::Run()
+int Runtime::Run(SourceType sourceType)
 {
 	ResetTokenisers();
 
 	PietToken token = m_tDefaultToken;
 	PietToken value = m_tDefaultToken;
 
-	while (token.m_kind != PietToken::TokenType::End)
+	while (!m_bFinished)
 	{
-		token = m_textTokeniser.Pop();
-		if (token.m_kind == PietToken::TokenType::Push)
+		switch (sourceType)
 		{
-			value = m_textTokeniser.Pop();
-			if (value.m_kind != PietToken::TokenType::Value)
+		case(SourceType::Text):
+		{
+			token = m_textTokeniser.Pop();
+			if (token.m_type == PietToken::TokenType::Push)
 			{
-				return -1;
+				value = m_textTokeniser.Pop();
+				if (value.m_type != PietToken::TokenType::Value)
+				{
+					return -1;
+				}
 			}
+			token.m_value = value.m_value;
+			break;
+		}
+		case(SourceType::Image):
+		{
+			token = m_imageTokeniser.Pop();
+			break;
+		}
 		}
 
-		StepExecution(token, value);
+		StepExecution(token);
 	}
 
 	return 0;

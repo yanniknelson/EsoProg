@@ -163,6 +163,7 @@ Program::FileType Program::OpenFile(std::filesystem::path path)
 			glGenerateMipmap(GL_TEXTURE_2D);
 			m_bImageLoaded = true;
 		}
+		m_runtime.SetImage(m_imageData, m_imageWidth, m_imageHeight);
 
 		return FileType::Image;
 	}
@@ -227,11 +228,11 @@ void Program::Render()
 			m_textValidationTokeniser.SetTextStream(input);
 			PietToken token = Runtime::m_tDefaultToken;
 
-			while (token.m_kind != PietToken::TokenType::End)
+			while (token.m_type != PietToken::TokenType::End)
 			{
 				//std::cout << m_textValidationTokeniser.get_line_number() << " " << token << std::endl;
 				token = m_textValidationTokeniser.Pop();
-				if (token.m_kind == PietToken::TokenType::Unrecognised_Token)
+				if (token.m_type == PietToken::TokenType::Unrecognised_Token)
 				{
 					m_bIsTokenError = true;
 					m_tokenErrorLine = m_textValidationTokeniser.GetLineNumber();
@@ -241,7 +242,7 @@ void Program::Render()
 
 			if (!m_bIsTokenError)
 			{
-				runtime.SetTextStream(m_code);
+				m_runtime.SetTextStream(m_code);
 			}
 		}
 
@@ -258,7 +259,7 @@ void Program::Render()
 				if (ImGui::Button("Run"))
 				{
 					m_output = "";
-					runtime.Run(); // add a run speed
+					m_runtime.Run(Runtime::SourceType::Text); // add a run speed
 				}
 
 				ImGui::SameLine();
@@ -270,15 +271,15 @@ void Program::Render()
 				ImGui::SameLine();
 				if (ImGui::Button("Step"))
 				{
-					runtime.StepExecution();
+					m_runtime.StepExecution(Runtime::SourceType::Text);
 				}
 
-				if (runtime.IsFinished())
+				if (m_runtime.IsFinished())
 				{
 					ImGui::SameLine();
 					if (ImGui::Button("Reset"))
 					{
-						runtime.Reset();
+						m_runtime.Reset();
 					}
 				}
 			}
@@ -302,7 +303,13 @@ void Program::Render()
 
 		if (ImGui::Button("Test"))
 		{
-			runtime.SetImage(m_imageData, m_imageWidth, m_imageHeight);
+			m_runtime.Run(Runtime::SourceType::Image);
+		}
+
+		ImGui::SameLine();
+		if (ImGui::Button("Step"))
+		{
+			m_runtime.StepExecution(Runtime::SourceType::Image);
 		}
 
 		ImGui::End();
@@ -315,7 +322,7 @@ void Program::Render()
 		ImGui::Text("The rStack is displayed with the deepest value at the top");
 		if (ImGui::BeginListBox("##Stack", ImGui::GetContentRegionAvail()))
 		{
-			const std::deque<int>& rStack = runtime.GetStack();
+			const std::deque<int>& rStack = m_runtime.GetStack();
 			for (int i = rStack.size() - 1; i >= 0; i--)
 			{
 				std::string lbl = std::to_string(rStack[i]) + "##" + std::to_string(i);

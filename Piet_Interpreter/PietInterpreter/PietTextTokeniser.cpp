@@ -8,7 +8,7 @@ const PietToken& PietTextTokeniser::Pop()
 {
 	if (!m_pStrStream->rdbuf()->in_avail())
 	{
-		m_tLastPopped.m_kind = PietToken::TokenType::End;
+		m_tLastPopped.m_type = PietToken::TokenType::End;
 		m_tLastPopped.m_value = NAN;
 		return m_tLastPopped;
 	}
@@ -23,57 +23,57 @@ const PietToken& PietTextTokeniser::Pop()
 	if (isdigit(ch))
 	{
 		m_pStrStream->putback(ch);
-		m_tLastPopped.m_kind = PietToken::TokenType::Value;
+		m_tLastPopped.m_type = PietToken::TokenType::Value;
 		*m_pStrStream >> m_tLastPopped.m_value;
 	}
 	else
 	{
 		m_pStrStream->putback(ch);
 		*m_pStrStream >> word;
-		m_tLastPopped.m_kind = StringToTokenType(word);
+		m_tLastPopped.m_type = StringToTokenType(word);
 		m_tLastPopped.m_value = NAN;
 
-		if (m_tLastPopped.m_kind == PietToken::TokenType::CHAR || m_tLastPopped.m_kind == PietToken::TokenType::INT)
+		if (m_tLastPopped.m_type == PietToken::TokenType::CHAR || m_tLastPopped.m_type == PietToken::TokenType::INT)
 		{
-			m_tLastPopped.m_kind = PietToken::TokenType::Unrecognised_Token;
+			m_tLastPopped.m_type = PietToken::TokenType::Unrecognised_Token;
 		}
 
-		if (m_tLastPopped.m_kind == PietToken::TokenType::Input)
+		if (m_tLastPopped.m_type == PietToken::TokenType::Input)
 		{
 			word = "";
 			*m_pStrStream >> word;
-			m_tLastPopped.m_kind = StringToTokenType(word);
+			m_tLastPopped.m_type = StringToTokenType(word);
 
-			if (m_tLastPopped.m_kind == PietToken::TokenType::CHAR)
+			if (m_tLastPopped.m_type == PietToken::TokenType::CHAR)
 			{
-				m_tLastPopped.m_kind = PietToken::TokenType::Input_Char;
+				m_tLastPopped.m_type = PietToken::TokenType::Input_Char;
 			}
-			else if (m_tLastPopped.m_kind == PietToken::TokenType::INT)
+			else if (m_tLastPopped.m_type == PietToken::TokenType::INT)
 			{
-				m_tLastPopped.m_kind = PietToken::TokenType::Input_Val;
+				m_tLastPopped.m_type = PietToken::TokenType::Input_Val;
 			}
 			else
 			{
-				m_tLastPopped.m_kind = PietToken::TokenType::Unrecognised_Token;
+				m_tLastPopped.m_type = PietToken::TokenType::Unrecognised_Token;
 			}
 		}
-		else if (m_tLastPopped.m_kind == PietToken::TokenType::Output)
+		else if (m_tLastPopped.m_type == PietToken::TokenType::Output)
 		{
 			word = "";
 			*m_pStrStream >> word;
-			m_tLastPopped.m_kind = StringToTokenType(word);
+			m_tLastPopped.m_type = StringToTokenType(word);
 
-			if (m_tLastPopped.m_kind == PietToken::TokenType::CHAR)
+			if (m_tLastPopped.m_type == PietToken::TokenType::CHAR)
 			{
-				m_tLastPopped.m_kind = PietToken::TokenType::Output_Char;
+				m_tLastPopped.m_type = PietToken::TokenType::Output_Char;
 			}
-			else if (m_tLastPopped.m_kind == PietToken::TokenType::INT)
+			else if (m_tLastPopped.m_type == PietToken::TokenType::INT)
 			{
-				m_tLastPopped.m_kind = PietToken::TokenType::Output_Val;
+				m_tLastPopped.m_type = PietToken::TokenType::Output_Val;
 			}
 			else
 			{
-				m_tLastPopped.m_kind = PietToken::TokenType::Unrecognised_Token;
+				m_tLastPopped.m_type = PietToken::TokenType::Unrecognised_Token;
 			}
 		}
 		

@@ -9,7 +9,6 @@
 
 class Runtime
 {
-
 	PietTextTokeniser m_textTokeniser;
 	PietImageTokeniser m_imageTokeniser;
 
@@ -21,7 +20,7 @@ class Runtime
 
 	std::string& m_rOutputStr;
 
-	void StepExecution(PietToken& token, PietToken& value);
+	void StepExecution(PietToken& token);
 
 	void ResetTokenisers()
 	{
@@ -34,13 +33,19 @@ class Runtime
 
 public:
 
+	enum class SourceType
+	{
+		Text,
+		Image
+	};
+
 	static const PietToken m_tDefaultToken;
 
 	bool IsFinished() { return m_bFinished; }
 
 	Runtime(std::string& outputString) : m_rOutputStr(outputString) {}
 
-	void StepExecution();
+	void StepExecution(SourceType sourceType);
 
 	void SetTextStream(std::string str)
 	{
@@ -62,7 +67,7 @@ public:
 		m_stack.Clear();
 	}
 
-	int Run();
+	int Run(SourceType sourceType);
 
 	const std::deque<int>& GetStack() { return m_stack.GetStack(); }
 };

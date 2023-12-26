@@ -133,7 +133,7 @@ private:
 
 	struct PietColour
 	{
-		Hue m_hue{ Hue::COUNT };
+		Hue m_hue{ Hue::White };
 		Brightness m_brightness{ Brightness::COUNT };
 
 		friend std::ostream& operator<<(std::ostream& os, const PietColour& pietCol)
@@ -160,15 +160,15 @@ private:
 		PietColour m_pietColour;
 
 		Direction m_startingDirectionPointer = Direction::Count;
-		Direction m_leavingDirectionPointer = Direction::Count;
+		Direction m_endingDirectionPointer = Direction::Count;
 		Direction m_startingCodelChooser = Direction::Count;
-		Direction m_leavingCodelChooser = Direction::Count;
+		Direction m_endingCodelChooser = Direction::Count;
 
-		BlockInfo(Location loc, Direction directionPointer, Direction codelChooser) 
+		BlockInfo(Location loc = { 0,0 }, Direction directionPointer = Direction::Right, Direction codelChooser = Direction::Left)
 			: m_startingDirectionPointer(directionPointer)
-			, m_leavingDirectionPointer(directionPointer)
+			, m_endingDirectionPointer(directionPointer)
 			, m_startingCodelChooser(codelChooser)
-			, m_leavingCodelChooser(codelChooser)
+			, m_endingCodelChooser(codelChooser)
 			, m_startingCodel(loc)
 			, m_leavingCodel(loc)
 			, m_endingCodel(loc)
@@ -181,7 +181,7 @@ private:
 
 		friend std::ostream& operator<<(std::ostream& os, const BlockInfo& block)
 		{
-			os << "Block Start: " << block.m_startingCodel << " Block Leave: " << block.m_leavingCodel << " Block Size: " << block.m_size << " Block Colour: " << block.m_rgbColour << " (" << block.m_pietColour << ") Top Edge : " << block.m_topEdge << " Bottom Edge : " << block.m_bottomEdge << " Left Edge : " << block.m_leftEdge << " Right Edge : " << block.m_rightEdge;
+			os << "Block Start: " << block.m_startingCodel << " Block Leave: " << block.m_leavingCodel << " Block End: " << block.m_endingCodel << " Block Size: " << block.m_size << " Block Colour: " << block.m_rgbColour << " (" << block.m_pietColour << ") Top Edge : " << block.m_topEdge << " Bottom Edge : " << block.m_bottomEdge << " Left Edge : " << block.m_leftEdge << " Right Edge : " << block.m_rightEdge;
 			return os;
 		}
 	};
@@ -196,6 +196,8 @@ private:
 	Direction m_globalStartCodelChooser{ Direction::Left };
 	Location m_globalStartCodel{ 0, 0 };
 
+	BlockInfo m_currentBlock{};
+
 	/// <summary>
 	/// Convert from RGB value to Hue Brightness pair (using struct for readability)
 	/// </summary>
@@ -208,7 +210,7 @@ private:
 	/// <param name="loc - ">The intial location</param>
 	/// <param name="dir - ">The direction of desired neighbing location</param>
 	/// <returns>the neighbouring location in specified direction</returns>
-	static inline Location MoveInDirection(Location loc, Direction dir);
+	static inline Location MoveInDirection(const Location loc, const Direction dir);
 
 	/// <summary>
 	/// Wrapper for getting m_topEdge/m_bottomEdge/m_leftEdge/m_rightEdge from a BlockInfo struct
@@ -216,7 +218,9 @@ private:
 	/// <param name="block - ">The block whose edge we desire</param>
 	/// <param name="edge - ">The edge we desire (Up -> Top etc...)</param>
 	/// <returns>A location on the desired edge</returns>
-	static inline Location GetEdge(BlockInfo& block, Direction edge);
+	static inline Location GetEdge(const BlockInfo & block, const Direction edge);
+
+	static PietToken::TokenType ConvertColoursToInstruction(const PietColour colour1, const PietColour colour2);
 
 	/// <summary>
 	/// Query the image data
@@ -248,7 +252,7 @@ private:
 	/// <param name="directionPointer - ">Direction facing outwards from the edge</param>
 	/// <param name="chooser - ">Direction, relative to the outward direction, we wish to search for the edge</param>
 	/// <returns>The location marking the end of the edge</returns>
-	Location FindEndOfEdge(Location EdgeLoc, Direction directionPointer, Direction chooser) const;
+	Location FindEndOfEdge(const Location EdgeLoc, const Direction directionPointer, const Direction chooser) const;
 	
 	/// <summary>
 	/// Will find the end codel for a block
@@ -263,6 +267,6 @@ private:
 	/// <param name="startDirectionPointer - ">The initial edge we'd like to leave the block from (will affect the end direction pointer, end codel chooser, leaving location and end location)</param>
 	/// <param name="StartCodelChooser - ">The end of the leaving edge we wish to leave from (will affect the end direction pointer, end codel chooser, leaving location and end location)</param>
 	/// <returns>The populated Info for the requested block</returns>
-	BlockInfo GetBlockInfo(Location startLocation, Direction startDirectionPointer, Direction StartCodelChooser);
+	BlockInfo GetBlockInfo(const Location startLocation, const Direction startDirectionPointer, const Direction StartCodelChooser);
 
 };
