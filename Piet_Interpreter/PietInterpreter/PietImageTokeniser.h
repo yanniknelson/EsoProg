@@ -1,6 +1,7 @@
 #include <strstream>
 #include <iostream>
 #include <iomanip>
+#include <vector>
 
 #include "PietTokeniser.h"
 
@@ -98,9 +99,30 @@ public:
 			return col1.r == col2.r && col1.g == col2.g && col1.b == col2.b;
 		}
 
+		friend bool operator==(const RGB& col1, const int& col2)
+		{
+			const int tester = (((col1.r << 8) | col1.g) << 8) | col1.b;
+			return tester == col2;
+		}
+
+		friend bool operator==(const int& col1, const RGB& col2)
+		{
+			return col2 == col1;
+		}
+
+		friend bool operator!=(const RGB& col1, const int& col2)
+		{
+			return !(col1 == col2);
+		}
+
+		friend bool operator!=(const int& col1, const RGB& col2)
+		{
+			return !(col1 == col2);
+		}
+
 	};
 
-private:	
+private:
 
 	PietToken tLastPopped{ PietToken::TokenType::End };
 	const unsigned char* m_imageData{ nullptr };
@@ -108,15 +130,40 @@ private:
 	int m_imageHeight = 0;
 	int m_instructionNumber = 1;
 
-	enum class Direction
+	enum class Direction : uint8_t
 	{
-		Up, Right, Down, Left
+		Up, Down, Left, Right, Count
 	};
 
 	struct Location
 	{
 		int x = 0;
 		int y = 0;
+
+		friend bool operator==(const Location& loc1, const Location& loc2)
+		{
+			return loc1.x == loc2.x && loc1.y == loc2.y;
+		}
+
+		friend bool operator!=(const Location& loc1, const Location& loc2)
+		{
+			return !(loc1 == loc2);
+		}
+
+		friend std::ostream& operator<<(std::ostream& os, const Location& loc)
+		{
+			os << loc.x << ", " << loc.y;
+			return os;
+		}
+	};
+
+	struct BlockInfo
+	{
+		int size{ 0 };
+		Location TopEdge{ -1, -1 };
+		Location BottomEdge{ -1, -1 };
+		Location LeftEdge{ -1, -1 };
+		Location RightEdge{ -1, -1 };
 	};
 
 	Direction m_direction{ Direction::Right };
@@ -124,5 +171,15 @@ private:
 	Location m_currentCodel{ 0, 0 };
 
 	RGB GetRGBFromLoation(const Location& loc) const;
+
+	Location MoveInDirection(Location loc, Direction dir) const;
+	bool isValidLocation(const Location& loc) const;
+	bool isValidLocation(const Location& loc, const std::vector<std::vector<bool>>& visited) const;
+
+	int GetSizeOfCurrentBlock() const;
+	Location GetNextCodel();
+
+	Location FindFurthestEdge(Location currentLoc, Direction direction) const;
+	Location FindEndOfEdge(Location EdgeLoc, Direction direction, Direction Chooser) const;
 
 };

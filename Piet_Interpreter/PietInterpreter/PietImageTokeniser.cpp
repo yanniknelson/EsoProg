@@ -1,5 +1,8 @@
 #include "PietImageTokeniser.h"
 
+#include <deque>
+#include <vector>
+
 const std::string PietImageTokeniser::m_hueStrings[(int)PietImageTokeniser::Hue::COUNT] = {"Red", "Yellow", "Green", "Cyan", "Blue", "Magenta", "Black", "White"};
 const std::string PietImageTokeniser::m_brightnessStrings[(int)PietImageTokeniser::Brightness::COUNT] = { "Light", "", "Dark"};
 
@@ -16,7 +19,13 @@ void PietImageTokeniser::SetImage(const unsigned char* imageData, const int widt
 	m_imageHeight = height;
 	m_instructionNumber = 1;
 
-	std::cout << GetRGBFromLoation(m_currentCodel) << std::endl;
+	Location previous = { -1,-1 };
+	while (previous != m_currentCodel)
+	{
+		std::cout << m_currentCodel << std::endl;
+		previous = m_currentCodel;
+		m_currentCodel = GetNextCodel();
+	}
 }
 
 void PietImageTokeniser::Reset()
@@ -139,4 +148,217 @@ PietImageTokeniser::RGB PietImageTokeniser::GetRGBFromLoation(const PietImageTok
 	}
 
 	return retCol;
+}
+
+PietImageTokeniser::Location PietImageTokeniser::MoveInDirection(Location loc, Direction dir) const
+{
+	switch (dir)
+	{
+	case (Direction::Up):
+	{
+		return Location{ loc.x, loc.y - 1 };
+		break;
+	}
+	case (Direction::Down):
+	{
+		return Location{ loc.x, loc.y + 1 };
+		break;
+	}
+	case (Direction::Left):
+	{
+		return Location{ loc.x - 1, loc.y };
+		break;
+	}
+	case (Direction::Right):
+	{
+		return Location{ loc.x + 1, loc.y };
+		break;
+	}
+	}
+
+	return loc;
+}
+
+bool PietImageTokeniser::isValidLocation(const Location& loc) const
+{
+	if (loc.x < 0 || loc.x > m_imageWidth - 1 || loc.y < 0 || loc.y > m_imageHeight - 1)
+	{
+		return false;
+	}
+	return true;
+}
+
+bool PietImageTokeniser::isValidLocation(const Location& loc, const std::vector<std::vector<bool>>& visited) const
+{
+	return isValidLocation(loc) && !visited[loc.x][loc.y];
+}
+
+int PietImageTokeniser::GetSizeOfCurrentBlock() const
+{
+	std::vector<std::vector<bool>> visited(m_imageWidth, std::vector<bool>(m_imageHeight, false));
+
+	int count = 0;
+	const RGB blockCol = GetRGBFromLoation(m_currentCodel);
+	visited[m_currentCodel.x][m_currentCodel.y] = true;
+
+	std::deque<PietImageTokeniser::Location> ToVisit = { m_currentCodel };
+
+	while (!ToVisit.empty())
+	{
+		const PietImageTokeniser::Location focus = ToVisit.front();
+		ToVisit.pop_front();
+		if (GetRGBFromLoation(focus) == blockCol)
+		{
+			count++;
+
+
+			for (int dir = 0; dir < (int)Direction::Count; dir++)
+			{
+				if (isValidLocation(MoveInDirection(focus, (Direction)dir), visited))
+				{
+					ToVisit.push_back(MoveInDirection(focus, (Direction)dir));
+					visited[ToVisit.back().x][ToVisit.back().y] = true;
+				}
+			}
+		}
+	}
+
+	return count;
+}
+
+PietImageTokeniser::Location PietImageTokeniser::GetNextCodel()
+{
+	static Direction clockwiseDirectionLookup[(int)Direction::Count] = {Direction::Right, Direction::Left, Direction::Up, Direction::Down};
+
+	int attempts = 0;
+	bool switchCodelChooser = true;
+	PietImageTokeniser::Location currentCorner = m_currentCodel;
+	while (attempts < 8)
+	{
+		if (switchCodelChooser)
+		{
+			currentCorner = FindEndOfEdge(FindFurthestEdge(m_currentCodel, m_direction), m_direction, m_codelChooser);
+		}
+		else
+		{
+			currentCorner = FindEndOfEdge(currentCorner, m_direction, m_codelChooser);
+		}
+		
+		PietImageTokeniser::Location nxt = MoveInDirection(currentCorner, m_direction);
+		if (isValidLocation(nxt) && GetRGBFromLoation(nxt) != 0)
+		{
+			return nxt;
+		}
+
+		if (switchCodelChooser)
+		{
+			if (m_codelChooser == Direction::Left)
+			{
+				m_codelChooser = Direction::Right;
+			}
+			else
+			{
+				m_codelChooser = Direction::Left;
+			}
+		}
+		else
+		{
+			m_direction = clockwiseDirectionLookup[(int)m_direction];
+		}
+
+		switchCodelChooser =! switchCodelChooser;
+		attempts++;
+	}
+
+
+	return m_currentCodel;
+}
+
+PietImageTokeniser::Location PietImageTokeniser::FindFurthestEdge(Location currentLoc, Direction direction) const
+{
+	std::vector<std::vector<bool>> visited(m_imageWidth, std::vector<bool>(m_imageHeight, false));
+
+	const RGB blockCol = GetRGBFromLoation(currentLoc);
+	visited[currentLoc.x][currentLoc.y] = true;
+
+	PietImageTokeniser::Location currentWaveFront = currentLoc;
+
+	std::deque<PietImageTokeniser::Location> ToVisit = { currentLoc };
+
+	while (!ToVisit.empty())
+	{
+		const PietImageTokeniser::Location focus = ToVisit.front();
+		ToVisit.pop_front();
+		if (GetRGBFromLoation(focus) == blockCol)
+		{
+
+			switch (direction)
+			{
+			case (Direction::Up):
+			{
+				if ( focus.y < currentWaveFront.y)
+				{
+					currentWaveFront = focus;
+				}
+				break;
+			}
+			case (Direction::Down):
+			{
+				if (focus.y > currentWaveFront.y)
+				{
+					currentWaveFront = focus;
+				}
+				break;
+			}
+			case (Direction::Left):
+			{
+				if (focus.x < currentWaveFront.x)
+				{
+					currentWaveFront = focus;
+				}
+				break;
+			}
+			case (Direction::Right):
+			{
+				if (focus.x > currentWaveFront.x)
+				{
+					currentWaveFront = focus;
+				}
+				break;
+			}
+			}
+
+			for (int dir = 0; dir < (int)Direction::Count; dir++)
+			{
+				if (isValidLocation(MoveInDirection(focus, (Direction)dir), visited))
+				{
+					ToVisit.push_back(MoveInDirection(focus, (Direction)dir));
+					visited[ToVisit.back().x][ToVisit.back().y] = true;
+				}
+			}
+		}
+	}
+
+	return currentWaveFront;
+}
+
+PietImageTokeniser::Location PietImageTokeniser::FindEndOfEdge(Location EdgeLoc, Direction direction, Direction chooser) const
+{
+	static PietImageTokeniser::Direction searchDirLookup[4][2] = { /*Up*/{/*Left*/Direction::Left, /*Right*/Direction::Right} 
+																 , /*Down*/{/*Left*/Direction::Right, /*Right*/Direction::Left}
+																 , /*Left*/{/*Left*/Direction::Down, /*Right*/Direction::Up}
+																 , /*Right*/{/*Left*/Direction::Up, /*Right*/Direction::Down} };
+
+	PietImageTokeniser::Direction SearchDir = searchDirLookup[(int)direction][(int)chooser - (int)Direction::Left];
+
+	const RGB blockCol = GetRGBFromLoation(EdgeLoc);
+
+	PietImageTokeniser::Location focus = EdgeLoc;
+
+	while (isValidLocation(MoveInDirection(focus, SearchDir)) ? GetRGBFromLoation(MoveInDirection(focus, SearchDir)) == blockCol : false)
+	{
+		focus = MoveInDirection(focus, SearchDir);
+	}
+
+	return focus;
 }
