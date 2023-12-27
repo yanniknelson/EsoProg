@@ -18,9 +18,13 @@ public:
 	PietImageTokeniser() {}
 
 	void SetImage(const unsigned char* imageData, const int width, const int height);
+	void SetCodelSize(const int size);
 	void Reset();
 
 	int GetInstructionNumber();
+
+	void ToggleCodelChooser();
+	void RotateDirectionPointer(const int times);
 
 private:
 
@@ -188,9 +192,12 @@ private:
 
 	PietToken tLastPopped{ PietToken::TokenType::End };
 	const unsigned char* m_imageData{ nullptr };
+	int m_realImageWidth = 0;
+	int m_realImageHeight = 0;
 	int m_imageWidth = 0;
 	int m_imageHeight = 0;
 	int m_instructionNumber = 1;
+	int m_codelSize = 1;
 
 	Direction m_globalStartDirectionPointer{ Direction::Right };
 	Direction m_globalStartCodelChooser{ Direction::Left };
@@ -219,6 +226,10 @@ private:
 	/// <param name="edge - ">The edge we desire (Up -> Top etc...)</param>
 	/// <returns>A location on the desired edge</returns>
 	static inline Location GetEdge(const BlockInfo & block, const Direction edge);
+
+	static void ToggleCodelChooser(BlockInfo& blockinfo);
+
+	static void RotateDirectionPointer(BlockInfo& blockinfo, const int times);
 
 	static PietToken::TokenType ConvertColoursToInstruction(const PietColour colour1, const PietColour colour2);
 

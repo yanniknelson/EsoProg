@@ -28,6 +28,7 @@ class Program {
 	};
 
 	static int TextInputCallback(ImGuiInputTextCallbackData* data);
+	static int ValueInputChanged(ImGuiInputTextCallbackData* data);
 	void CheckShortCuts();
 
 	void HandleNew();
@@ -54,12 +55,14 @@ class Program {
 	fs::path m_currentFilePath = "";
 
 	//Image
-	unsigned char* m_imageData;
+	unsigned char* m_imageData{ nullptr };
 	int m_imageWidth = 0;
 	int m_imageHeight = 0;
 	int m_NumComponents = 0;
 	bool m_bImageLoaded = false;
 	float m_aspectRatio = 1.f;
+
+	bool m_isStepping = false;
 
 	GLuint m_texture;
 
@@ -73,6 +76,9 @@ class Program {
 
 	ImGuiInputTextFlags m_codeEditorFlags = ImGuiInputTextFlags_CallbackCharFilter | ImGuiInputTextFlags_EnterReturnsTrue;
 	std::string m_code{ "" };
+	std::string m_programInput{ "1" };
+	std::string m_codelSizeStr{ "1" };
+	int m_codelSize{ 1 };
 
 public:
 

@@ -10,6 +10,13 @@ int Program::TextInputCallback(ImGuiInputTextCallbackData* data)
 	return 0;
 }
 
+int Program::ValueInputChanged(ImGuiInputTextCallbackData* data)
+{
+	*((int*)data->UserData) = std::stoi(data->Buf);
+
+	return 0;
+}
+
 void Program::HandleNew()
 {
 	//std::cout << "New\n";
@@ -259,7 +266,8 @@ void Program::Render()
 				if (ImGui::Button("Run"))
 				{
 					m_output = "";
-					m_runtime.Run(Runtime::SourceType::Text); // add a run speed
+					m_isStepping = false;
+					m_runtime.RunFromStart(Runtime::SourceType::Text); // add a run speed
 				}
 
 				ImGui::SameLine();
@@ -271,6 +279,7 @@ void Program::Render()
 				ImGui::SameLine();
 				if (ImGui::Button("Step"))
 				{
+					m_isStepping = true;
 					m_runtime.StepExecution(Runtime::SourceType::Text);
 				}
 
@@ -287,6 +296,44 @@ void Program::Render()
 		ImGui::End();
 	}
 
+	// Input Value Box --------------------------------------------------------------------------------------------
+	if (m_runtime.IsWaitingForValInput())
+	{
+		if (ImGui::Begin("Input Val"))
+		{
+			ImGui::InputText("##valInput", &m_programInput, ImGuiInputTextFlags_CharsDecimal | ImGuiInputTextFlags_CallbackEdit);
+			if (ImGui::Button("Submit"))
+			{
+				m_runtime.InputVal(std::stoi(m_programInput));
+				m_programInput = "";
+				if (!m_isStepping)
+				{
+					m_runtime.Run();
+				}
+			}
+			ImGui::End();
+		}
+	}
+
+	// Input Char Box --------------------------------------------------------------------------------------------
+	if (m_runtime.IsWaitingForCharInput())
+	{
+		if (ImGui::Begin("Input Char"))
+		{
+			ImGui::InputText("##charInput", &m_programInput, ImGuiInputTextFlags_CharsDecimal | ImGuiInputTextFlags_CallbackEdit);
+			if (ImGui::Button("Submit (will only submit first character)"))
+			{
+				m_runtime.InputChar((char)m_programInput[0]);
+				m_programInput = "";
+				if (!m_isStepping)
+				{
+					m_runtime.Run();
+				}
+			}
+			ImGui::End();
+		}
+	}
+
 	// IMAGE PROGRAM DISPLAY --------------------------------------------------------------------------------------------
 	if (ImGui::Begin("OpenGL Texture Text"))
 	{
@@ -301,15 +348,28 @@ void Program::Render()
 			ImGui::Image((void*)(intptr_t)m_texture, desired);
 		}
 
-		if (ImGui::Button("Test"))
+		if (ImGui::Button("Run"))
 		{
-			m_runtime.Run(Runtime::SourceType::Image);
+			m_isStepping = false;
+			m_runtime.RunFromStart(Runtime::SourceType::Image);
 		}
 
 		ImGui::SameLine();
 		if (ImGui::Button("Step"))
 		{
+			m_isStepping = true;
 			m_runtime.StepExecution(Runtime::SourceType::Image);
+		}
+
+		ImGui::SameLine();
+		{
+			int newCodelSize = m_codelSize;
+			ImGui::InputText("##codelSize", &m_codelSizeStr, ImGuiInputTextFlags_CharsDecimal | ImGuiInputTextFlags_CallbackEdit, ValueInputChanged, &newCodelSize);
+			if (newCodelSize != m_codelSize)
+			{
+				m_codelSize = newCodelSize;
+				m_runtime.SetCodelSize(m_codelSize);
+			}
 		}
 
 		ImGui::End();

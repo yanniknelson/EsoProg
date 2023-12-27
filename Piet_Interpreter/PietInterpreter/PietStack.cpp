@@ -11,6 +11,11 @@ int PietStack::GetSize() const
 	return (int)m_stack.size();
 }
 
+bool PietStack::Empty() const
+{
+	return m_stack.empty();
+}
+
 void PietStack::Push(int val)
 {
 	m_stack.push_front(val);

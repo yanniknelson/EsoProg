@@ -32,6 +32,11 @@ void PietImageTokeniser::SetImage(const unsigned char* imageData, const int widt
 	m_instructionNumber = 1;
 }
 
+void PietImageTokeniser::SetCodelSize(const int size)
+{
+	m_codelSize = size;
+}
+
 void PietImageTokeniser::Reset()
 {
 	m_currentBlock = {};
@@ -40,6 +45,16 @@ void PietImageTokeniser::Reset()
 int PietImageTokeniser::GetInstructionNumber()
 {
 	return m_instructionNumber;
+}
+
+void PietImageTokeniser::ToggleCodelChooser()
+{
+	PietImageTokeniser::ToggleCodelChooser(m_currentBlock);
+}
+
+void PietImageTokeniser::RotateDirectionPointer(const int times)
+{
+	PietImageTokeniser::RotateDirectionPointer(m_currentBlock, times);
 }
 
 PietImageTokeniser::PietColour PietImageTokeniser::RGBToPietColour(const PietImageTokeniser::RGB colour)
@@ -193,6 +208,28 @@ inline PietImageTokeniser::Location PietImageTokeniser::GetEdge(const BlockInfo 
 	return { -1,-1 };
 }
 
+void PietImageTokeniser::ToggleCodelChooser(BlockInfo& blockInfo)
+{
+	if (blockInfo.m_endingCodelChooser == Direction::Left)
+	{
+		blockInfo.m_endingCodelChooser = Direction::Right;
+	}
+	else
+	{
+		blockInfo.m_endingCodelChooser = Direction::Left;
+	}
+}
+
+void PietImageTokeniser::RotateDirectionPointer(BlockInfo& blockInfo, const int times)
+{
+	static Direction clockwiseDirectionLookup[(int)Direction::Count] = { Direction::Right, Direction::Left, Direction::Up, Direction::Down };
+
+	for (int rotation = 0; rotation < times % 4; rotation++)
+	{
+		blockInfo.m_endingDirectionPointer = clockwiseDirectionLookup[(int)blockInfo.m_endingDirectionPointer];
+	}
+}
+
 PietToken::TokenType PietImageTokeniser::ConvertColoursToInstruction(const PietColour colour1, const PietColour colour2)
 {
 	static const PietToken::TokenType conversionTable[6][3] = { {PietToken::TokenType::NOP, PietToken::TokenType::Push, PietToken::TokenType::Pop}
@@ -280,8 +317,6 @@ PietImageTokeniser::Location PietImageTokeniser::FindEndOfEdge(const Location Ed
 
 void PietImageTokeniser::FindEndCodel(BlockInfo& blockInfo)
 {
-	static Direction clockwiseDirectionLookup[(int)Direction::Count] = { Direction::Right, Direction::Left, Direction::Up, Direction::Down };
-
 	int attempts = 0;
 	bool switchCodelChooser = true;
 	PietImageTokeniser::Location currentCorner = blockInfo.m_startingCodel;
@@ -303,18 +338,11 @@ void PietImageTokeniser::FindEndCodel(BlockInfo& blockInfo)
 		// once we've done this 8 times we've exhuated all possible exit points there is no end point and the program should end.
 		if (switchCodelChooser)
 		{
-			if (blockInfo.m_endingCodelChooser == Direction::Left)
-			{
-				blockInfo.m_endingCodelChooser = Direction::Right;
-			}
-			else
-			{
-				blockInfo.m_endingCodelChooser = Direction::Left;
-			}
+			ToggleCodelChooser(blockInfo);
 		}
 		else
 		{
-			blockInfo.m_endingDirectionPointer = clockwiseDirectionLookup[(int)blockInfo.m_endingDirectionPointer];
+			RotateDirectionPointer(blockInfo, 1);
 		}
 
 		switchCodelChooser = !switchCodelChooser;
@@ -377,6 +405,8 @@ PietImageTokeniser::BlockInfo PietImageTokeniser::GetBlockInfo(const Location st
 			}
 		}
 	}
+
+	retInfo.m_size /= m_codelSize * m_codelSize;
 
 	// We now have all the information we need to find the end codel for this block
 	FindEndCodel(retInfo);

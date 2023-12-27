@@ -8,6 +8,8 @@ void Runtime::StepExecution(PietToken& token)
 	int second = 0;
 	int val = 0;
 
+	std::cout << token << std::endl;
+
 	switch (token.m_type)
 	{
 	case(PietToken::TokenType::Push):
@@ -90,9 +92,26 @@ void Runtime::StepExecution(PietToken& token)
 		break;
 	}
 	case(PietToken::TokenType::Pointer):
+	{
+		if (!m_stack.Empty())
+		{
+			top = m_stack.Pop();
+			m_imageTokeniser.RotateDirectionPointer(top);
+		}
 		break;
+	}
 	case(PietToken::TokenType::Switch):
+	{
+		if (!m_stack.Empty())
+		{
+			top = m_stack.Pop();
+			if (top % 2 != 0)
+			{
+				m_imageTokeniser.ToggleCodelChooser();
+			}
+		}
 		break;
+	}
 	case(PietToken::TokenType::Duplicate):
 	{
 		if (m_stack.GetSize() > 0)
@@ -114,8 +133,10 @@ void Runtime::StepExecution(PietToken& token)
 		break;
 	}
 	case(PietToken::TokenType::Input_Char):
+		m_waitingForCharInput = true;
 		break;
 	case(PietToken::TokenType::Input_Val):
+		m_waitingForValInput = true;
 		break;
 	case(PietToken::TokenType::Output_Char):
 	{
@@ -147,8 +168,34 @@ void Runtime::StepExecution(PietToken& token)
 	}
 }
 
+void Runtime::InputChar(int val)
+{
+	m_stack.Push(val);
+	m_waitingForCharInput = false;
+}
+
+void Runtime::InputVal(int val)
+{
+	m_stack.Push(val);
+	m_waitingForValInput = false;
+}
+
+bool Runtime::IsWaitingForValInput() const
+{
+	return m_waitingForValInput;
+}
+
+bool Runtime::IsWaitingForCharInput() const
+{
+	return m_waitingForCharInput;
+}
+
 void Runtime::StepExecution(SourceType sourceType)
 {
+	if (m_waitingForCharInput || m_waitingForValInput)
+	{
+		return;
+	}
 
 	PietToken token = m_tDefaultToken;
 	PietToken value = m_tDefaultToken;
@@ -172,6 +219,11 @@ void Runtime::StepExecution(SourceType sourceType)
 	case(SourceType::Image):
 	{
 		token = m_imageTokeniser.Pop();
+		// To make stepping a little faster could make optional as may confuse flow?
+		while (token.m_type == PietToken::TokenType::NOP)
+		{
+			token = m_imageTokeniser.Pop();
+		}
 		break;
 	}
 	}
@@ -181,16 +233,30 @@ void Runtime::StepExecution(SourceType sourceType)
 	return;
 }
 
-int Runtime::Run(SourceType sourceType)
+void Runtime::SetCodelSize(const int size)
+{
+	m_imageTokeniser.SetCodelSize(size);
+}
+
+int Runtime::RunFromStart(SourceType sourceType)
 {
 	ResetTokenisers();
+
+	m_currentSourceType = sourceType;
+
+	return Run();
+}
+
+int Runtime::Run()
+{
+	
 
 	PietToken token = m_tDefaultToken;
 	PietToken value = m_tDefaultToken;
 
 	while (!m_bFinished)
 	{
-		switch (sourceType)
+		switch (m_currentSourceType)
 		{
 		case(SourceType::Text):
 		{
@@ -214,6 +280,11 @@ int Runtime::Run(SourceType sourceType)
 		}
 
 		StepExecution(token);
+
+		if (m_waitingForCharInput || m_waitingForValInput)
+		{
+			return 0;
+		}
 	}
 
 	return 0;

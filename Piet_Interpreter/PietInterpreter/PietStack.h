@@ -18,6 +18,8 @@ public:
 	/// <returns> The number of elements in the stack </returns>
 	int GetSize() const;
 
+	bool Empty() const;
+
 	/// <summary>
 	/// Add a value onto the top of the stack
 	/// </summary>
