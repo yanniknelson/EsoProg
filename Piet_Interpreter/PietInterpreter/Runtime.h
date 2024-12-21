@@ -21,7 +21,7 @@ public:
 
 	bool IsFinished() { return m_bFinished; }
 
-	Runtime(std::string& outputString) : m_rOutputStr(outputString) {}
+	Runtime(std::ostringstream& rOutputStream, std::ostringstream& rExecutionhistoryStream) : m_rOutputStream(rOutputStream), m_rExecutionHistoryStream(rExecutionhistoryStream) {}
 
 	void StepExecution(SourceType sourceType);
 
@@ -30,7 +30,8 @@ public:
 		m_codeStr = str;
 		m_code.swap(std::stringstream(m_codeStr.c_str()));
 		m_textTokeniser.SetTextStream(m_code);
-		m_rOutputStr = "";
+		m_rOutputStream.str(std::string());
+		m_rExecutionHistoryStream.str(std::string());
 		m_bFinished = false;
 	}
 
@@ -71,7 +72,8 @@ private:
 
 	SourceType m_currentSourceType{ SourceType::Text };
 
-	std::string& m_rOutputStr;
+	std::ostringstream& m_rOutputStream;
+	std::ostringstream& m_rExecutionHistoryStream;
 
 	void StepExecution(PietToken& token);
 
@@ -80,7 +82,8 @@ private:
 		m_code = std::stringstream(m_codeStr);
 		m_textTokeniser.SetTextStream(m_code);
 		m_imageTokeniser.Reset();
-		m_rOutputStr = "";
+		m_rOutputStream.str(std::string());
+		m_rExecutionHistoryStream.str(std::string());
 		m_bFinished = false;
 	}
 };

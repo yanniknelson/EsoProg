@@ -181,7 +181,7 @@ private:
 			, m_leftEdge(loc)
 			, m_rightEdge(loc)
 		{
-		};
+		}
 
 		friend std::ostream& operator<<(std::ostream& os, const BlockInfo& block)
 		{

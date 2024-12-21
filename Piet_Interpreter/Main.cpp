@@ -1,6 +1,12 @@
-﻿// Piet_Interpreter.cpp : Defines the entry point for the application. 
+﻿// Main.cpp : Defines the entry point for the application. 
 
-#include "Piet_Interpreter.h"
+#include "Main.h"
+
+#if !SHOWCONSOLE
+#ifdef _WIN32
+#pragma comment(linker, "/SUBSYSTEM:windows /ENTRY:mainCRTStartup")
+#endif 
+#endif
 
 static void glfw_error_callback(int error, const char* description)
 {
@@ -38,7 +44,7 @@ int main()
 #endif
 
     // Create window with graphics context
-    GLFWwindow* window = glfwCreateWindow(1280, 720, "Piet Interpreter", NULL, NULL);
+    GLFWwindow* window = glfwCreateWindow(1280, 720, EsoProg::i_ProgramName, NULL, NULL);
     if (window == NULL)
         return 1;
 
@@ -94,7 +100,7 @@ int main()
     //static char text[1024 * 16] = "testing";
     ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
-    Program p = Program();
+    EsoProg programInstance = EsoProg();
 
     // Main loop
     while (!glfwWindowShouldClose(window))
@@ -111,7 +117,7 @@ int main()
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
 
-        p.Render();
+        programInstance.Render();
 
         // Rendering
         ImGui::Render();

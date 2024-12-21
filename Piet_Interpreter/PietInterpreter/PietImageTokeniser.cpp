@@ -406,6 +406,8 @@ PietImageTokeniser::BlockInfo PietImageTokeniser::GetBlockInfo(const Location st
 		}
 	}
 
+	// The size of the codels will only affect the size of the blocks not the shape (i.e. the end codel)
+	// as such we only need to re-adjust the block size using the codel size (1 codel has a size of nxn pixels).
 	retInfo.m_size /= m_codelSize * m_codelSize;
 
 	// We now have all the information we need to find the end codel for this block

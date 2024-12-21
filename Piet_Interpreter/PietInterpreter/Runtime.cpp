@@ -8,7 +8,7 @@ void Runtime::StepExecution(PietToken& token)
 	int second = 0;
 	int val = 0;
 
-	std::cout << token << std::endl;
+	m_rExecutionHistoryStream << token << std::endl;
 
 	switch (token.m_type)
 	{
@@ -142,7 +142,7 @@ void Runtime::StepExecution(PietToken& token)
 	{
 		if (m_stack.GetSize() > 0)
 		{
-			m_rOutputStr += (char)m_stack.Pop();
+			m_rOutputStream << (char)m_stack.Pop();
 		}
 		break;
 	}
@@ -150,7 +150,7 @@ void Runtime::StepExecution(PietToken& token)
 	{
 		if (m_stack.GetSize() > 0)
 		{
-			m_rOutputStr += std::to_string(m_stack.Pop());
+			m_rOutputStream << std::to_string(m_stack.Pop());
 		}
 		break;
 	}
@@ -215,6 +215,7 @@ void Runtime::StepExecution(SourceType sourceType)
 			}
 			token.m_value = value.m_value;
 		}
+		break;
 	}
 	case(SourceType::Image):
 	{
@@ -249,8 +250,6 @@ int Runtime::RunFromStart(SourceType sourceType)
 
 int Runtime::Run()
 {
-	
-
 	PietToken token = m_tDefaultToken;
 	PietToken value = m_tDefaultToken;
 

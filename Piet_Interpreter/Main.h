@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "Program.h"
+#include "EsoProg.h"
 
 //ImGui imports
 #include <imgui.h>
@@ -13,3 +13,5 @@
 //Other imports
 #include <stdio.h>
 #include <iostream>
+
+#define SHOWCONSOLE 0

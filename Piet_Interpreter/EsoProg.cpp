@@ -1,8 +1,10 @@
-#include "Program.h"
+#include "EsoProg.h"
 #define STB_IMAGE_IMPLEMENTATION
 #include "Resources/stb_image.h"
 
-int Program::TextInputCallback(ImGuiInputTextCallbackData* data)
+char* EsoProg::i_ProgramName = "EsoProg";
+
+int EsoProg::TextInputCallback(ImGuiInputTextCallbackData* data)
 {
 	*((bool*)data->UserData) = false;
 
@@ -10,28 +12,26 @@ int Program::TextInputCallback(ImGuiInputTextCallbackData* data)
 	return 0;
 }
 
-int Program::ValueInputChanged(ImGuiInputTextCallbackData* data)
+int EsoProg::ValueInputChanged(ImGuiInputTextCallbackData* data)
 {
 	*((int*)data->UserData) = std::stoi(data->Buf);
 
 	return 0;
 }
 
-void Program::HandleNew()
+void EsoProg::HandleNew()
 {
-	//std::cout << "New\n";
 	m_bFileIsNew = true;
 	m_code = "";
 }
 
-void Program::HandleOpen()
+void EsoProg::HandleOpen()
 {
-	//std::cout << "Open\n";
 	m_bEnableFileDialog = true;
 	m_dialogType = FileDialogBox::FileDialogType::Open;
 }
 
-void Program::HandleSave()
+void EsoProg::HandleSave()
 {
 	if (m_bFileIsNew)
 	{
@@ -39,7 +39,6 @@ void Program::HandleSave()
 	}
 	else
 	{
-		//std::cout << "Save\n";
 		std::ofstream fileStream;
 		fileStream.open(m_currentFilePath.string());
 		fileStream << m_code;
@@ -47,14 +46,13 @@ void Program::HandleSave()
 	}
 }
 
-void Program::HandelSaveAs()
+void EsoProg::HandelSaveAs()
 {
-	//std::cout << "Save As\n";
 	m_bEnableFileDialog = true;
 	m_dialogType = FileDialogBox::FileDialogType::Save_As;
 }
 
-void Program::CheckShortCuts()
+void EsoProg::CheckShortCuts()
 {
 	const ImGuiIO& io = ImGui::GetIO();
 	//if a shortcut has just been used and either ctrl or the alpha key is up then enable the triggering of a new shortcut
@@ -100,7 +98,7 @@ void Program::CheckShortCuts()
 
 }
 
-void Program::CreateMenuBar()
+void EsoProg::CreateMenuBar()
 {
 	if (ImGui::BeginMainMenuBar())
 	{
@@ -134,7 +132,7 @@ void Program::CreateMenuBar()
 	}
 }
 
-Program::FileType Program::OpenFile(std::filesystem::path path)
+EsoProg::FileType EsoProg::OpenFile(std::filesystem::path path)
 {
 	if (path.extension() == ".txt")
 	{
@@ -176,7 +174,7 @@ Program::FileType Program::OpenFile(std::filesystem::path path)
 	}
 }
 
-void Program::Render()
+void EsoProg::Render()
 {
 	m_fileDialogOnTop = ImGuiWindowFlags_None;
 	//check if any shortcut is active and handle it
@@ -265,7 +263,6 @@ void Program::Render()
 				ImGui::SameLine();
 				if (ImGui::Button("Run"))
 				{
-					m_output = "";
 					m_isStepping = false;
 					m_runtime.RunFromStart(Runtime::SourceType::Text); // add a run speed
 				}
@@ -335,11 +332,11 @@ void Program::Render()
 	}
 
 	// IMAGE PROGRAM DISPLAY --------------------------------------------------------------------------------------------
-	if (ImGui::Begin("OpenGL Texture Text"))
+	if (ImGui::Begin("Piet Image"))
 	{
 		if (m_bImageLoaded)
 		{
-			ImVec2 area = ImGui::GetContentRegionAvail();
+			const ImVec2 area = ImGui::GetContentRegionAvail();
 			ImVec2 desired = ImVec2(area.x, (int)area.x * m_aspectRatio);
 			if (desired.y > area.y)
 			{
@@ -393,11 +390,23 @@ void Program::Render()
 		ImGui::End();
 	}
 
-	// PROGRAM OUTPUT ----------------------------------------------------------------------------------------------------
-	bool output_display_open = true;
-	if (ImGui::Begin("Program Output:", &output_display_open, m_fileDialogOnTop))
+	// INSTRUCTION HISTORY -----------------------------------------------------------------------------------------------
+	bool displayInstructionHistory = true;
 	{
-		ImGui::TextWrapped(m_output.c_str());
+		if (ImGui::Begin("Execution History", &displayInstructionHistory, m_fileDialogOnTop))
+		{
+			const std::string tmpExecHist = m_executionHistoryStream.str();
+			ImGui::TextWrapped(tmpExecHist.c_str());
+			ImGui::End();
+		}
+	}
+
+	// PROGRAM OUTPUT ----------------------------------------------------------------------------------------------------
+	bool outputDisplayOpen = true;
+	if (ImGui::Begin("Program Output:", &outputDisplayOpen, m_fileDialogOnTop))
+	{
+		const std::string tmpOuput = m_outputStream.str();
+		ImGui::TextWrapped(tmpOuput.c_str());
 		ImGui::End();
 	}
 }

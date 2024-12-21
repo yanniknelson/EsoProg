@@ -20,7 +20,7 @@
 #include "PietInterpreter/Runtime.h"
 
 
-class Program {
+class EsoProg {
 
 	enum FileType {
 		Text,
@@ -71,8 +71,9 @@ class Program {
 	bool m_bIsTokenError = false;
 	bool m_bVerificationAttempted = false;
 	int m_tokenErrorLine = 0;
-	std::string m_output = "";
-	Runtime m_runtime{ m_output };
+	std::ostringstream m_outputStream{ "" };
+	std::ostringstream m_executionHistoryStream{ "" };
+	Runtime m_runtime{ m_outputStream, m_executionHistoryStream };
 
 	ImGuiInputTextFlags m_codeEditorFlags = ImGuiInputTextFlags_CallbackCharFilter | ImGuiInputTextFlags_EnterReturnsTrue;
 	std::string m_code{ "" };
@@ -81,8 +82,9 @@ class Program {
 	int m_codelSize{ 1 };
 
 public:
+	static char* i_ProgramName;
 
-	Program()
+	EsoProg()
 	{
 		//setup the current directory as the initial path in the file dialog box
 		FileDialogBox::Init_Path(fs::current_path());
