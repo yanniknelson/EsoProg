@@ -18,6 +18,7 @@ public:
 	PietImageTokeniser() {}
 
 	void SetImage(const unsigned char* imageData, const int width, const int height);
+	void UnsetImage();
 	void SetCodelSize(const int size);
 	void Reset();
 
@@ -58,9 +59,9 @@ private:
 	class RGB
 	{
 	public:
-		unsigned char r = 0.f;
-		unsigned char g = 0.f;
-		unsigned char b = 0.f;
+		unsigned char r = 0;
+		unsigned char g = 0;
+		unsigned char b = 0;
 
 		friend std::ostream& operator<<(std::ostream& os, const RGB& col)
 		{
@@ -114,7 +115,7 @@ private:
 	* |__________________________________________________________________________________|
 	*/
 
-	static enum class Hue : uint8_t
+	enum class Hue : uint8_t
 	{
 		Red,
 		Yellow,
@@ -127,7 +128,7 @@ private:
 		COUNT
 	};
 
-	static enum class Brightness : uint8_t
+	enum class Brightness : uint8_t
 	{
 		Light,
 		Standard,
@@ -192,8 +193,6 @@ private:
 
 	PietToken tLastPopped{ PietToken::TokenType::End };
 	const unsigned char* m_imageData{ nullptr };
-	int m_realImageWidth = 0;
-	int m_realImageHeight = 0;
 	int m_imageWidth = 0;
 	int m_imageHeight = 0;
 	int m_instructionNumber = 1;

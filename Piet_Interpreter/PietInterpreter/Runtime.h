@@ -39,6 +39,11 @@ public:
 	{
 		m_imageTokeniser.SetImage(imageData, imageWidth, imageHeight);
 	}
+	
+	void UnsetImage()
+	{
+		m_imageTokeniser.UnsetImage();
+	}
 
 	void SetCodelSize(const int size);
 

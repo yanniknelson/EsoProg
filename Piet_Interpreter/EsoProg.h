@@ -23,6 +23,7 @@
 class EsoProg {
 
 	enum FileType {
+		None,
 		Text,
 		Image
 	};
@@ -48,8 +49,12 @@ class EsoProg {
 	ImGuiWindowFlags_ m_fileDialogOnTop = ImGuiWindowFlags_None;
 	std::fstream m_fileStream;
 
-	FileType OpenFile(std::filesystem::path path);
+	void PreFileLoad(const std::filesystem::path path);
+	FileType LoadFile(const std::filesystem::path path);
+	void PostFileLoad(const FileType fileType, const std::filesystem::path path);
 	
+	FileType m_currentFileType = None;
+
 	//file management
 	bool m_bFileIsNew = true;
 	fs::path m_currentFilePath = "";

@@ -132,9 +132,38 @@ void EsoProg::CreateMenuBar()
 	}
 }
 
-EsoProg::FileType EsoProg::OpenFile(std::filesystem::path path)
+void EsoProg::PreFileLoad(const std::filesystem::path path)
 {
-	if (path.extension() == ".txt")
+	switch (m_currentFileType)
+	{
+	case FileType::Image:
+	{
+		m_runtime.UnsetImage();
+		if (m_bImageLoaded)
+		{
+			stbi_image_free(m_imageData);
+			m_bImageLoaded = false;
+		}
+		break;
+	}
+	case FileType::Text:
+	{
+		m_code = "";
+		m_bVerificationAttempted = false;
+	}
+	}
+	m_outputStream.str(std::string());
+	m_executionHistoryStream.str(std::string());
+	m_runtime.Reset();
+}
+
+EsoProg::FileType EsoProg::LoadFile(const std::filesystem::path path)
+{
+	const FileType fileType = path.extension() == ".txt" ? FileType::Text : FileType::Image;
+	PreFileLoad(path);
+	switch (fileType)
+	{
+	case FileType::Text:
 	{
 		m_fileStream.open(path.string(), m_fileStream.in);
 		m_code = "";
@@ -142,9 +171,9 @@ EsoProg::FileType EsoProg::OpenFile(std::filesystem::path path)
 		m_bFileIsNew = false;
 		m_currentFilePath = path;
 		m_fileStream.close();
-		return FileType::Text;
+		break;
 	}
-	else
+	case FileType::Image:
 	{
 		if (m_bImageLoaded)
 		{
@@ -169,10 +198,18 @@ EsoProg::FileType EsoProg::OpenFile(std::filesystem::path path)
 			m_bImageLoaded = true;
 		}
 		m_runtime.SetImage(m_imageData, m_imageWidth, m_imageHeight);
-
-		return FileType::Image;
+		break;
 	}
+	}
+	PostFileLoad(fileType, path);
+	return fileType;
 }
+
+void EsoProg::PostFileLoad(const EsoProg::FileType fileType, const std::filesystem::path path)
+{
+	m_currentFileType = fileType;
+}
+
 
 void EsoProg::Render()
 {
@@ -195,7 +232,7 @@ void EsoProg::Render()
 			{
 			case FileDialogBox::Open:
 			{
-				OpenFile(ret.path);
+				const FileType fileType = LoadFile(ret.path);
 				break;
 			}
 			case FileDialogBox::Save_As:
@@ -219,7 +256,7 @@ void EsoProg::Render()
 	{
 		ImGui::Text("Warning: Pressing ESC will delete all non submitted changes");
 
-		if (ImGui::InputTextMultiline("##code", &m_code, ImVec2(-FLT_MIN, ImGui::GetContentRegionAvail().y - (ImGui::GetTextLineHeight() * 1.5)), ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_CallbackEdit, TextInputCallback, &m_bVerificationAttempted))
+		if (ImGui::InputTextMultiline("##code", &m_code, ImVec2(-FLT_MIN, ImGui::GetContentRegionAvail().y - (ImGui::GetTextLineHeight() * 1.5f)), ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_CallbackEdit, TextInputCallback, &m_bVerificationAttempted))
 		{
 			std::cout << "code changed" << std::endl;
 			m_bVerificationAttempted = false;
@@ -380,9 +417,10 @@ void EsoProg::Render()
 		if (ImGui::BeginListBox("##Stack", ImGui::GetContentRegionAvail()))
 		{
 			const std::deque<int>& rStack = m_runtime.GetStack();
-			for (int i = rStack.size() - 1; i >= 0; i--)
+			const size_t stackSize = rStack.size();
+			for (size_t i = 1; i <= stackSize; i++)
 			{
-				std::string lbl = std::to_string(rStack[i]) + "##" + std::to_string(i);
+				std::string lbl = std::to_string(rStack[stackSize - i]) + "##" + std::to_string(i);
 				ImGui::Selectable(lbl.c_str(), false, ImGuiSelectableFlags_Disabled);
 			}
 			ImGui::EndListBox();

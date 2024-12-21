@@ -32,6 +32,15 @@ void PietImageTokeniser::SetImage(const unsigned char* imageData, const int widt
 	m_instructionNumber = 1;
 }
 
+void PietImageTokeniser::UnsetImage()
+{
+	Reset();
+	m_imageData = nullptr;
+	m_imageWidth = 0;
+	m_imageHeight = 0;
+	m_instructionNumber = 1;
+}
+
 void PietImageTokeniser::SetCodelSize(const int size)
 {
 	m_codelSize = size;
