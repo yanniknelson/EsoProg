@@ -144,15 +144,3 @@ The Piet language consists of 17 commands:
    * in(char) - read a value from STDIN, expecting a character
    * out(number) - pop the top value off the stack and output it as a number
    * out(char) - pop the top value off teh stack and output it as a char (ASCII)
-
-# Credits
-
-The piet programs in this repository where found online at https://www.dangermouse.net/esoteric/piet/samples.html and were created by:
-
-   * piet_pi.png by Richard Mitton (edited by myself to create piet_pi2.png and piet_pi_stop_in_circle.png for testing purposes)
-   * piet_HellowWorld.gif by Thomas Schoch
-   * piet_tetris_big.png by Anthony Maës
-   * hw5.png by Kelly Boothby
-   * fizzbuzz.png by Sergei Lewis
-   * pietquest.png by Sergei Lewis
-   * 99bottles.png by Eddy Ferreira
