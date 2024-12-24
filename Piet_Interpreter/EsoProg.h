@@ -82,7 +82,7 @@ class EsoProg {
 
 	ImGuiInputTextFlags m_codeEditorFlags = ImGuiInputTextFlags_CallbackCharFilter | ImGuiInputTextFlags_EnterReturnsTrue;
 	std::string m_code{ "" };
-	std::string m_programInput{ "1" };
+	std::string m_programInput{ "" };
 	std::string m_codelSizeStr{ "1" };
 	int m_codelSize{ 1 };
 

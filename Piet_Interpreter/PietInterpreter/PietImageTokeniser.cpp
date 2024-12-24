@@ -2,6 +2,10 @@
 
 #include <deque>
 #include <vector>
+#include <map>
+
+PietImageTokeniser::Direction PietImageTokeniser::i_clockwiseDirectionLookup[(int)Direction::Count] = { Direction::Right, Direction::Left, Direction::Up, Direction::Down };
+char* PietImageTokeniser::i_directionStrings[static_cast<int>(Direction::Count) + 1] = {"Up", "Down", "Left", "Right", "Invalid"};
 
 const PietToken& PietImageTokeniser::Pop()
 {
@@ -13,7 +17,7 @@ const PietToken& PietImageTokeniser::Pop()
 		return m_tLastPopped;
 	}
 
-	PietColour nextCol = RGBToPietColour(GetRGBFromLoation(m_currentBlock.m_endingCodel));
+	PietColour nextCol = GetPietColourFromLocation(m_currentBlock.m_endingCodel);
 	m_tLastPopped.m_type = ConvertColoursToInstruction(m_currentBlock.m_pietColour, nextCol);
 	if (m_tLastPopped.m_type == PietToken::TokenType::Push)
 	{
@@ -64,6 +68,36 @@ void PietImageTokeniser::ToggleCodelChooser()
 void PietImageTokeniser::RotateDirectionPointer(const int times)
 {
 	PietImageTokeniser::RotateDirectionPointer(m_currentBlock, times);
+}
+
+PietImageTokeniser::Location PietImageTokeniser::GetCurrentBlockStartLocation() const
+{
+	return m_currentBlock.m_startingCodel;
+}
+
+PietImageTokeniser::Location PietImageTokeniser::GetCurrentBlockEndLocation() const
+{
+	return m_currentBlock.m_endingCodel;
+}
+
+PietImageTokeniser::Direction PietImageTokeniser::GetCurrentBlockStartDirectionPointer() const
+{
+	return m_currentBlock.m_startingDirectionPointer;
+}
+
+PietImageTokeniser::Direction PietImageTokeniser::GetCurrentBlockEndDirectionPointer() const
+{
+	return m_currentBlock.m_endingDirectionPointer;
+}
+
+PietImageTokeniser::Direction PietImageTokeniser::GetCurrentBlockStartCodelChoser() const
+{
+	return m_currentBlock.m_startingCodelChooser;
+}
+
+PietImageTokeniser::Direction PietImageTokeniser::GetCurrentBlockEndCodelChoser() const
+{
+	return m_currentBlock.m_endingCodelChooser;
 }
 
 PietImageTokeniser::PietColour PietImageTokeniser::RGBToPietColour(const PietImageTokeniser::RGB colour)
@@ -189,7 +223,7 @@ inline PietImageTokeniser::Location PietImageTokeniser::MoveInDirection(const Lo
 	return loc;
 }
 
-inline PietImageTokeniser::Location PietImageTokeniser::GetEdge(const BlockInfo & block, const Direction edge)
+/*inline PietImageTokeniser::Location PietImageTokeniser::GetEdge(const BlockInfo& block, const Direction edge)
 {
 	switch (edge)
 	{
@@ -215,7 +249,7 @@ inline PietImageTokeniser::Location PietImageTokeniser::GetEdge(const BlockInfo 
 	}
 	}
 	return { -1,-1 };
-}
+}*/
 
 void PietImageTokeniser::ToggleCodelChooser(BlockInfo& blockInfo)
 {
@@ -231,11 +265,9 @@ void PietImageTokeniser::ToggleCodelChooser(BlockInfo& blockInfo)
 
 void PietImageTokeniser::RotateDirectionPointer(BlockInfo& blockInfo, const int times)
 {
-	static Direction clockwiseDirectionLookup[(int)Direction::Count] = { Direction::Right, Direction::Left, Direction::Up, Direction::Down };
-
 	for (int rotation = 0; rotation < times % 4; rotation++)
 	{
-		blockInfo.m_endingDirectionPointer = clockwiseDirectionLookup[(int)blockInfo.m_endingDirectionPointer];
+		blockInfo.m_endingDirectionPointer = i_clockwiseDirectionLookup[(int)blockInfo.m_endingDirectionPointer];
 	}
 }
 
@@ -274,7 +306,7 @@ PietImageTokeniser::RGB PietImageTokeniser::GetRGBFromLoation(const PietImageTok
 {
 	RGB retCol;
 
-	if (loc.y < m_imageHeight && loc.x < m_imageWidth)
+	if (loc.y < m_imageHeight && loc.y > -1 && loc.x < m_imageWidth && loc.x > -1)
 	{
 		int indx = (m_imageWidth * loc.y + loc.x) * 4;
 
@@ -284,6 +316,29 @@ PietImageTokeniser::RGB PietImageTokeniser::GetRGBFromLoation(const PietImageTok
 	}
 
 	return retCol;
+}
+
+PietImageTokeniser::PietColour PietImageTokeniser::GetPietColourFromLocation(const PietImageTokeniser::Location& loc) const
+{
+	return RGBToPietColour(GetRGBFromLoation(loc));
+}
+
+PietImageTokeniser::Location PietImageTokeniser::SlideAlongWhite(const Location loc, const Direction dir)
+{
+	Location currLocation = loc;
+	while (true)
+	{
+		const Location nextLocation = MoveInDirection(currLocation, dir);
+		if (GetPietColourFromLocation(nextLocation).m_hue == Hue::White)
+		{
+			currLocation = nextLocation;
+		}
+		else
+		{
+			break;
+		}
+	}
+	return currLocation;
 }
 
 bool PietImageTokeniser::isValidLocation(const Location& loc) const
@@ -324,22 +379,22 @@ PietImageTokeniser::Location PietImageTokeniser::FindEndOfEdge(const Location Ed
 	return focus;
 }
 
-void PietImageTokeniser::FindEndCodel(BlockInfo& blockInfo)
+void PietImageTokeniser::FindEndCodel(BlockInfo& rBlockInfo)
 {
 	int attempts = 0;
 	bool switchCodelChooser = true;
-	PietImageTokeniser::Location currentCorner = blockInfo.m_startingCodel;
+	PietImageTokeniser::Location currentCorner = rBlockInfo.m_startingCodel;
 	while (attempts < 8)
 	{
 		// To find the end codel we go to the edge furthest in the direction we're pointing, go to the end of that edge chosen by the codel chooser
 		// then try to move in the direction we're facing, if the location is valid and the colour isn't black then that's the next block and our end location
-		blockInfo.m_leavingCodel = FindEndOfEdge(GetEdge(blockInfo, blockInfo.m_endingDirectionPointer), blockInfo.m_endingDirectionPointer, blockInfo.m_endingCodelChooser);
-		blockInfo.m_endingCodel = MoveInDirection(blockInfo.m_leavingCodel, blockInfo.m_endingDirectionPointer);
+		rBlockInfo.m_leavingCodel = rBlockInfo.m_edgePositions[static_cast<int>(rBlockInfo.m_endingDirectionPointer)][static_cast<int>(rBlockInfo.m_endingCodelChooser) - static_cast<int>(Direction::Left)];//FindEndOfEdge(GetEdge(rBlockInfo, rBlockInfo.m_endingDirectionPointer), rBlockInfo.m_endingDirectionPointer, rBlockInfo.m_endingCodelChooser);
+		rBlockInfo.m_endingCodel = MoveInDirection(rBlockInfo.m_leavingCodel, rBlockInfo.m_endingDirectionPointer);
 
-		if (isValidLocation(blockInfo.m_endingCodel) && GetRGBFromLoation(blockInfo.m_endingCodel) != 0)
+		if (isValidLocation(rBlockInfo.m_endingCodel) && GetRGBFromLoation(rBlockInfo.m_endingCodel) != 0)
 		{
-			blockInfo.m_endingDirectionPointer;
-			blockInfo.m_endingCodelChooser;
+			rBlockInfo.m_endingDirectionPointer;
+			rBlockInfo.m_endingCodelChooser;
 			return;
 		}
 
@@ -347,11 +402,11 @@ void PietImageTokeniser::FindEndCodel(BlockInfo& blockInfo)
 		// once we've done this 8 times we've exhuated all possible exit points there is no end point and the program should end.
 		if (switchCodelChooser)
 		{
-			ToggleCodelChooser(blockInfo);
+			ToggleCodelChooser(rBlockInfo);
 		}
 		else
 		{
-			RotateDirectionPointer(blockInfo, 1);
+			RotateDirectionPointer(rBlockInfo, 1);
 		}
 
 		switchCodelChooser = !switchCodelChooser;
@@ -359,7 +414,58 @@ void PietImageTokeniser::FindEndCodel(BlockInfo& blockInfo)
 	}
 
 	//Set the ending codel back to the startingCodel to indicate we can't leave this block
-	blockInfo.m_endingCodel = blockInfo.m_startingCodel;
+	rBlockInfo.m_endingCodel = rBlockInfo.m_startingCodel;
+}
+
+void PietImageTokeniser::FindEndWhiteCodel(BlockInfo& rBlockInfo)
+{
+	Location currLocation = rBlockInfo.m_startingCodel;
+	Direction currDirectionPointer = rBlockInfo.m_startingDirectionPointer;
+	Direction currCodelChoser = rBlockInfo.m_startingCodelChooser;
+
+	std::map<Location, bool[4]> pathTrace;
+	while (true)
+	{
+		const Location nextLocation = SlideAlongWhite(currLocation, currDirectionPointer);
+		const Location nextBlockLoc = MoveInDirection(nextLocation, currDirectionPointer);
+		if (GetPietColourFromLocation(nextBlockLoc).m_hue == Hue::Black)
+		{
+			currCodelChoser = currCodelChoser == Direction::Left ? Direction::Right : Direction::Left;
+			currDirectionPointer = i_clockwiseDirectionLookup[(int)currDirectionPointer];
+			currLocation = nextLocation;
+		}
+		else
+		{
+			currLocation = nextBlockLoc;
+			break;
+		}
+
+		if (pathTrace.find(nextLocation) != pathTrace.end())
+		{
+			if (pathTrace[nextLocation][(int)currDirectionPointer])
+			{
+				rBlockInfo.m_endingCodel = rBlockInfo.m_startingCodel;
+				return;
+			}
+			else
+			{
+				pathTrace[nextLocation][(int)currDirectionPointer] = true;
+			}
+		}	
+		else
+		{
+			pathTrace[nextLocation][0] = false;
+			pathTrace[nextLocation][1] = false;
+			pathTrace[nextLocation][2] = false;
+			pathTrace[nextLocation][3] = false;
+			pathTrace[nextLocation][(int)currDirectionPointer] = true;
+		}
+	}
+
+	rBlockInfo.m_endingCodel = currLocation;
+	rBlockInfo.m_endingDirectionPointer = currDirectionPointer;
+	rBlockInfo.m_endingCodelChooser = currCodelChoser;
+
 }
 
 PietImageTokeniser::BlockInfo PietImageTokeniser::GetBlockInfo(const Location startLocation, const Direction startDirectionPointer, const Direction StartCodelChooser)
@@ -369,12 +475,18 @@ PietImageTokeniser::BlockInfo PietImageTokeniser::GetBlockInfo(const Location st
 	retInfo.m_rgbColour = GetRGBFromLoation(retInfo.m_startingCodel);
 	retInfo.m_pietColour = RGBToPietColour(retInfo.m_rgbColour);
 
+	if (retInfo.m_pietColour.m_hue == Hue::White)
+	{
+		FindEndWhiteCodel(retInfo);
+		return retInfo;
+	}
+
 	std::vector<std::vector<bool>> visited(m_imageWidth, std::vector<bool>(m_imageHeight, false));
 	visited[retInfo.m_startingCodel.x][retInfo.m_startingCodel.y] = true;
 	std::deque<PietImageTokeniser::Location> ToVisit = { retInfo.m_startingCodel };
 
 	// Run through all the pixels of the shape using floodfill
-	// count the pxiels to find the size, find the highest/lowest/leftmost/rightmost locations in the block
+	// count the pixles to find the size, find the highest/lowest/leftmost/rightmost locations in the block
 	// we stop flooding when we detect a change in colour
 	while (!ToVisit.empty())
 	{
@@ -384,24 +496,92 @@ PietImageTokeniser::BlockInfo PietImageTokeniser::GetBlockInfo(const Location st
 		{
 			retInfo.m_size++;
 
-			if (focus.y < retInfo.m_topEdge.y)
+			// if the current pixel is on the top edge check if it's our new left or right corner of said edge
+			if (focus.y == retInfo.m_edgePositions[static_cast<int>(Direction::Up)][0].y)
 			{
-				retInfo.m_topEdge = focus;
-			}
+				// dir up cc left (the objective top left corner)
+				if (focus.x < retInfo.m_edgePositions[static_cast<int>(Direction::Up)][0].x)
+				{
+					retInfo.m_edgePositions[static_cast<int>(Direction::Up)][0] = focus;
+				}
 
-			if (focus.y > retInfo.m_bottomEdge.y)
-			{
-				retInfo.m_bottomEdge = focus;
+				// dir up cc right (the objective top right corner)
+				if (focus.x > retInfo.m_edgePositions[static_cast<int>(Direction::Up)][1].x)
+				{
+					retInfo.m_edgePositions[static_cast<int>(Direction::Up)][1] = focus;
+				}
 			}
-
-			if (focus.x < retInfo.m_leftEdge.x)
+			// otherwise if the current pixel is higher than the top edge then it is our new top edge (both corners)
+			else if (focus.y < retInfo.m_edgePositions[static_cast<int>(Direction::Up)][0].y)
 			{
-				retInfo.m_leftEdge = focus;
+				retInfo.m_edgePositions[static_cast<int>(Direction::Up)][0] = focus;
+				retInfo.m_edgePositions[static_cast<int>(Direction::Up)][1] = focus;
 			}
-
-			if (focus.x > retInfo.m_rightEdge.x)
+			
+			// if the current pixel is on the bottom edge check if it's our new left or right corner of said edge
+			if (focus.y == retInfo.m_edgePositions[static_cast<int>(Direction::Down)][0].y)
 			{
-				retInfo.m_rightEdge = focus;
+				// dir down cc left (the objective bottom right corner)
+				if (focus.x > retInfo.m_edgePositions[static_cast<int>(Direction::Down)][0].x)
+				{
+					retInfo.m_edgePositions[static_cast<int>(Direction::Down)][0] = focus;
+				}
+
+				// dir down cc right (the objective bottom left corner)
+				if (focus.x < retInfo.m_edgePositions[static_cast<int>(Direction::Down)][1].x)
+				{
+					retInfo.m_edgePositions[static_cast<int>(Direction::Down)][1] = focus;
+				}
+			}
+			// otherwise if the current pixel is lower than the bottom edge then it is our new bottom edge (both corners)
+			else if (focus.y > retInfo.m_edgePositions[static_cast<int>(Direction::Down)][0].y)
+			{
+				retInfo.m_edgePositions[static_cast<int>(Direction::Down)][0] = focus;
+				retInfo.m_edgePositions[static_cast<int>(Direction::Down)][1] = focus;
+			}
+			
+			// if the current pixel is on the left edge check if it's our new left or right corner of said edge
+			if (focus.x == retInfo.m_edgePositions[static_cast<int>(Direction::Left)][0].x)
+			{
+				// dir left cc left (the objective bottom left corner)
+				if (focus.y > retInfo.m_edgePositions[static_cast<int>(Direction::Left)][0].y)
+				{
+					retInfo.m_edgePositions[static_cast<int>(Direction::Left)][0] = focus;
+				}
+
+				// dir down cc right (the objective top left corner)
+				if (focus.y < retInfo.m_edgePositions[static_cast<int>(Direction::Left)][1].y)
+				{
+					retInfo.m_edgePositions[static_cast<int>(Direction::Left)][1] = focus;
+				}
+			}
+			// otherwise if the current pixel is lower than the bottom edge then it is our new left edge (both corners)
+			else if (focus.x < retInfo.m_edgePositions[static_cast<int>(Direction::Left)][0].x)
+			{
+				retInfo.m_edgePositions[static_cast<int>(Direction::Left)][0] = focus;
+				retInfo.m_edgePositions[static_cast<int>(Direction::Left)][1] = focus;
+			}
+			
+			// if the current pixel is on the right edge check if it's our new left or right corner of said edge
+			if (focus.x == retInfo.m_edgePositions[static_cast<int>(Direction::Right)][0].x)
+			{
+				// dir right cc left (the objective top right corner)
+				if (focus.y < retInfo.m_edgePositions[static_cast<int>(Direction::Right)][0].y)
+				{
+					retInfo.m_edgePositions[static_cast<int>(Direction::Right)][0] = focus;
+				}
+
+				// dir right cc right (the objective bottom right corner)
+				if (focus.y > retInfo.m_edgePositions[static_cast<int>(Direction::Right)][1].y)
+				{
+					retInfo.m_edgePositions[static_cast<int>(Direction::Right)][1] = focus;
+				}
+			}
+			// otherwise if the current pixel is lower than the bottom edge then it is our new right edge (both corners)
+			else if (focus.x > retInfo.m_edgePositions[static_cast<int>(Direction::Right)][0].x)
+			{
+				retInfo.m_edgePositions[static_cast<int>(Direction::Right)][0] = focus;
+				retInfo.m_edgePositions[static_cast<int>(Direction::Right)][1] = focus;
 			}
 
 			for (int dir = 0; dir < (int)Direction::Count; dir++)
@@ -419,6 +599,7 @@ PietImageTokeniser::BlockInfo PietImageTokeniser::GetBlockInfo(const Location st
 	// as such we only need to re-adjust the block size using the codel size (1 codel has a size of nxn pixels).
 	retInfo.m_size /= m_codelSize * m_codelSize;
 
+	
 	// We now have all the information we need to find the end codel for this block
 	FindEndCodel(retInfo);
 

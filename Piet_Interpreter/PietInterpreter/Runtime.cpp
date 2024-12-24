@@ -160,7 +160,7 @@ void Runtime::StepExecution(PietToken& token)
 	}
 	case (PietToken::TokenType::End):
 	{
-		m_bFinished = true;
+		m_bIsRunning = false;
 		break;
 	}
 	default:
@@ -180,6 +180,11 @@ void Runtime::InputVal(int val)
 	m_waitingForValInput = false;
 }
 
+bool Runtime::IsRunning() const
+{
+	return m_bIsRunning;
+}
+
 bool Runtime::IsWaitingForValInput() const
 {
 	return m_waitingForValInput;
@@ -188,6 +193,41 @@ bool Runtime::IsWaitingForValInput() const
 bool Runtime::IsWaitingForCharInput() const
 {
 	return m_waitingForCharInput;
+}
+
+PietImageTokeniser::Location Runtime::GetCurrentBlockStartLocation() const
+{
+	return m_imageTokeniser.GetCurrentBlockStartLocation();
+}
+
+PietImageTokeniser::Location Runtime::GetCurrentBlockEndLocation() const
+{
+	return m_imageTokeniser.GetCurrentBlockEndLocation();
+}
+
+PietImageTokeniser::Direction Runtime::GetCurrentBlockStartDirectionPointer() const
+{
+	return m_imageTokeniser.GetCurrentBlockStartDirectionPointer();
+}
+
+PietImageTokeniser::Direction Runtime::GetCurrentBlockEndDirectionPointer() const
+{
+	return m_imageTokeniser.GetCurrentBlockEndDirectionPointer();
+}
+
+PietImageTokeniser::Direction Runtime::GetCurrentBlockStartCodelChoser() const
+{
+	return m_imageTokeniser.GetCurrentBlockStartCodelChoser();
+}
+
+PietImageTokeniser::Direction Runtime::GetCurrentBlockEndCodelChoser() const
+{
+	return m_imageTokeniser.GetCurrentBlockEndCodelChoser();
+}
+
+void Runtime::StepExecution()
+{
+	StepExecution(m_currentSourceType);
 }
 
 void Runtime::StepExecution(SourceType sourceType)
@@ -244,8 +284,9 @@ int Runtime::RunFromStart(SourceType sourceType)
 	ResetTokenisers();
 
 	m_currentSourceType = sourceType;
-
-	return Run();
+	m_bIsRunning = true;
+	return 0;
+	//return Run();
 }
 
 int Runtime::Run()
@@ -253,7 +294,7 @@ int Runtime::Run()
 	PietToken token = m_tDefaultToken;
 	PietToken value = m_tDefaultToken;
 
-	while (!m_bFinished)
+	while (m_bIsRunning)
 	{
 		switch (m_currentSourceType)
 		{

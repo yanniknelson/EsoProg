@@ -19,10 +19,9 @@ public:
 
 	static const PietToken m_tDefaultToken;
 
-	bool IsFinished() { return m_bFinished; }
-
 	Runtime(std::ostringstream& rOutputStream, std::ostringstream& rExecutionhistoryStream) : m_rOutputStream(rOutputStream), m_rExecutionHistoryStream(rExecutionhistoryStream) {}
 
+	void StepExecution();
 	void StepExecution(SourceType sourceType);
 
 	void SetTextStream(std::string str)
@@ -32,7 +31,6 @@ public:
 		m_textTokeniser.SetTextStream(m_code);
 		m_rOutputStream.str(std::string());
 		m_rExecutionHistoryStream.str(std::string());
-		m_bFinished = false;
 	}
 
 	void SetImage(const unsigned char* imageData, const int imageWidth, const int imageHeight)
@@ -58,8 +56,16 @@ public:
 	void InputChar(int val);
 	void InputVal(int val);
 
+	bool IsRunning() const;
 	bool IsWaitingForValInput() const;
 	bool IsWaitingForCharInput() const;
+
+	PietImageTokeniser::Location GetCurrentBlockStartLocation() const;
+	PietImageTokeniser::Location GetCurrentBlockEndLocation() const;
+	PietImageTokeniser::Direction GetCurrentBlockStartDirectionPointer() const;
+	PietImageTokeniser::Direction GetCurrentBlockEndDirectionPointer() const;
+	PietImageTokeniser::Direction GetCurrentBlockStartCodelChoser() const;
+	PietImageTokeniser::Direction GetCurrentBlockEndCodelChoser() const;
 
 	const std::deque<int>& GetStack() { return m_stack.GetStack(); }
 
@@ -67,13 +73,12 @@ private:
 	PietTextTokeniser m_textTokeniser;
 	PietImageTokeniser m_imageTokeniser;
 
-	bool m_bFinished = false;
-
 	PietStack m_stack;
 	std::string m_codeStr = "";
 	std::stringstream m_code;
 	bool m_waitingForCharInput = false;
 	bool m_waitingForValInput = false;
+	bool m_bIsRunning = false;
 
 	SourceType m_currentSourceType{ SourceType::Text };
 
@@ -89,6 +94,8 @@ private:
 		m_imageTokeniser.Reset();
 		m_rOutputStream.str(std::string());
 		m_rExecutionHistoryStream.str(std::string());
-		m_bFinished = false;
+		m_bIsRunning = false;
+		m_waitingForCharInput = false;
+		m_waitingForValInput = false;
 	}
 };

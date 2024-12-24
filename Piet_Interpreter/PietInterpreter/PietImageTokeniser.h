@@ -2,6 +2,7 @@
 #include <iostream>
 #include <iomanip>
 #include <vector>
+#include <string>
 
 #include "PietTokeniser.h"
 
@@ -27,12 +28,12 @@ public:
 	void ToggleCodelChooser();
 	void RotateDirectionPointer(const int times);
 
-private:
-
 	enum class Direction : uint8_t
 	{
 		Up, Down, Left, Right, Count
 	};
+
+	static char* i_directionStrings[static_cast<int>(Direction::Count) + 1];
 
 	struct Location
 	{
@@ -49,10 +50,20 @@ private:
 			return !(loc1 == loc2);
 		}
 
+		friend bool operator<(const Location& loc1, const Location& loc2)
+		{
+			return loc1.x < loc2.x || loc1.y < loc2.y;
+		}
+
 		friend std::ostream& operator<<(std::ostream& os, const Location& loc)
 		{
 			os << loc.x << ", " << loc.y;
 			return os;
+		}
+
+		std::string toString() const 
+		{
+			return std::to_string(x) + "," + std::to_string(y);
 		}
 	};
 
@@ -157,10 +168,7 @@ private:
 		Location m_startingCodel{ -1, -1 };
 		Location m_leavingCodel{ -1, -1 };
 		Location m_endingCodel{ -1, -1 };
-		Location m_topEdge = { -1,-1 };
-		Location m_bottomEdge = { -1,-1 };
-		Location m_leftEdge = { -1,-1 };
-		Location m_rightEdge = { -1,-1 };
+		Location m_edgePositions[4][2] = {-1, -1};
 		RGB m_rgbColour;
 		PietColour m_pietColour;
 
@@ -177,19 +185,31 @@ private:
 			, m_startingCodel(loc)
 			, m_leavingCodel(loc)
 			, m_endingCodel(loc)
-			, m_topEdge(loc)
-			, m_bottomEdge(loc)
-			, m_leftEdge(loc)
-			, m_rightEdge(loc)
 		{
+			for (int dir = 0; dir < (int)Direction::Count; dir++)
+			{
+				m_edgePositions[dir][0] = loc;
+				m_edgePositions[dir][1] = loc;
+			}
 		}
 
 		friend std::ostream& operator<<(std::ostream& os, const BlockInfo& block)
 		{
-			os << "Block Start: " << block.m_startingCodel << " Block Leave: " << block.m_leavingCodel << " Block End: " << block.m_endingCodel << " Block Size: " << block.m_size << " Block Colour: " << block.m_rgbColour << " (" << block.m_pietColour << ") Top Edge : " << block.m_topEdge << " Bottom Edge : " << block.m_bottomEdge << " Left Edge : " << block.m_leftEdge << " Right Edge : " << block.m_rightEdge;
+			os << "Block Start: " << block.m_startingCodel << " Block Leave: " << block.m_leavingCodel << " Block End: " << block.m_endingCodel << " Block Size: " << block.m_size << " Block Colour: " << block.m_rgbColour << " (" << block.m_pietColour << ")";// Top Edge : " << block.m_topEdge << " Bottom Edge : " << block.m_bottomEdge << " Left Edge : " << block.m_leftEdge << " Right Edge : " << block.m_rightEdge;
 			return os;
 		}
 	};
+
+	Location GetCurrentBlockStartLocation() const;
+	Location GetCurrentBlockEndLocation() const;
+	Direction GetCurrentBlockStartDirectionPointer() const;
+	Direction GetCurrentBlockEndDirectionPointer() const;
+	Direction GetCurrentBlockStartCodelChoser() const;
+	Direction GetCurrentBlockEndCodelChoser() const;
+
+private:
+
+	static Direction i_clockwiseDirectionLookup[(int)Direction::Count];
 
 	PietToken tLastPopped{ PietToken::TokenType::End };
 	const unsigned char* m_imageData{ nullptr };
@@ -224,7 +244,7 @@ private:
 	/// <param name="block - ">The block whose edge we desire</param>
 	/// <param name="edge - ">The edge we desire (Up -> Top etc...)</param>
 	/// <returns>A location on the desired edge</returns>
-	static inline Location GetEdge(const BlockInfo & block, const Direction edge);
+	//static inline Location GetEdge(const BlockInfo & block, const Direction edge);
 
 	static void ToggleCodelChooser(BlockInfo& blockinfo);
 
@@ -238,6 +258,15 @@ private:
 	/// <param name="loc - ">The pixel coordinates whose data we desire</param>
 	/// <returns>The RGB data of the desired pixel</returns>
 	RGB GetRGBFromLoation(const Location& loc) const;
+
+	/// <summary>
+	/// Query the image data
+	/// </summary>
+	/// <param name="loc - ">The pixel coordinates whose data we desire</param>
+	/// <returns>The Piet Colour of the desired pixel</returns>
+	PietColour GetPietColourFromLocation(const Location& loc) const;
+
+	Location SlideAlongWhite(const Location loc, const Direction dir);
 
 	/// <summary>
 	/// Check the location is within the image
@@ -269,6 +298,15 @@ private:
 	/// </summary>
 	/// <param name="block - ">The block we with to find the end codel of</param>
 	void FindEndCodel(BlockInfo& block);
+
+	/// <summary>
+	/// Will find the end point of a white block's edge
+	/// </summary>
+	/// <param name="EdgeLoc - ">Any location on the edge</param>
+	/// <param name="directionPointer - ">Direction facing outwards from the edge</param>
+	/// <param name="chooser - ">Direction, relative to the outward direction, we wish to search for the edge</param>
+	/// <returns>The location marking the end of the edge</returns>
+	void FindEndWhiteCodel(BlockInfo& block);
 
 	/// <summary>
 	/// Finds the size, colour, edges, leaving location, end location, end direction pointer, end codel cooder of the block in whcih startLocation resides

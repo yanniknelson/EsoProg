@@ -51,7 +51,8 @@ void PietStack::Roll(int depth, int rotations)
 
 	for (int i = 0; i < depth; i++)
 	{
-		int indx = (depth - 1 - rotations - i);
+		//int indx = (depth - 1 - rotations - i);
+		int indx = (rotations - 1 - i);
 		indx = (depth + (indx % depth)) % depth;
 		m_stack.push_front(values[indx]);
 	}

@@ -118,7 +118,7 @@ A Piet interpreter maintains a current pixel, a direction pointer and a codel ch
 
 The interpreter starts at the top left codel of the image with the direction pointer pointing left and the codel chooser pointing pointing left also. 
    * The interpreter find the edge of the current block furthest in the direction of the direction pointer and moves the current pixel to that codel.
-   * Then the interpreter find the codel along the current edge of the current block furthest in the direction of the codel chooser and moves teh current pixel to that codel.
+   * Then the interpreter finds the codel along the current edge of the current block furthest in the direction of the codel chooser and moves the current pixel to that codel.
    * Finally the interpreter moves from that codel into the codel immediately in the direction of the direction pointer.
       * If the colour is white then the interpreter continues in that direction until it find a different colour (slides across the white).
       * If the colour is black then the interpreter cannot move into that codel, the codel choser is toggled, and the interpreter tries again, if still unable then the direction pointer is rotated clockwise one step. If the interpreter runs full circle then the program terminates.

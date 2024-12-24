@@ -317,7 +317,7 @@ void EsoProg::Render()
 					m_runtime.StepExecution(Runtime::SourceType::Text);
 				}
 
-				if (m_runtime.IsFinished())
+				if (!m_runtime.IsRunning())
 				{
 					ImGui::SameLine();
 					if (ImGui::Button("Reset"))
@@ -340,10 +340,6 @@ void EsoProg::Render()
 			{
 				m_runtime.InputVal(std::stoi(m_programInput));
 				m_programInput = "";
-				if (!m_isStepping)
-				{
-					m_runtime.Run();
-				}
 			}
 			ImGui::End();
 		}
@@ -354,15 +350,16 @@ void EsoProg::Render()
 	{
 		if (ImGui::Begin("Input Char"))
 		{
-			ImGui::InputText("##charInput", &m_programInput, ImGuiInputTextFlags_CharsDecimal | ImGuiInputTextFlags_CallbackEdit);
+			ImGui::InputText("##charInput", &m_programInput, ImGuiInputTextFlags_CallbackEdit);
 			if (ImGui::Button("Submit (will only submit first character)"))
 			{
 				m_runtime.InputChar((char)m_programInput[0]);
 				m_programInput = "";
-				if (!m_isStepping)
-				{
-					m_runtime.Run();
-				}
+			}
+			if (ImGui::Button("Submit Enter Char"))
+			{
+				m_runtime.InputChar(10);
+				m_programInput = "";
 			}
 			ImGui::End();
 		}
@@ -406,6 +403,10 @@ void EsoProg::Render()
 			}
 		}
 
+		ImGui::Text("Current Block Start Location: %s - End Location: %s", m_runtime.GetCurrentBlockStartLocation().toString().c_str(), m_runtime.GetCurrentBlockEndLocation().toString().c_str());
+		ImGui::Text("Current Block Start Dir: %s - End Dir: %s", PietImageTokeniser::i_directionStrings[static_cast<int>(m_runtime.GetCurrentBlockStartDirectionPointer())], PietImageTokeniser::i_directionStrings[static_cast<int>(m_runtime.GetCurrentBlockEndDirectionPointer())]);
+		ImGui::Text("Current Block Start CC: %s - End CC: %s", PietImageTokeniser::i_directionStrings[static_cast<int>(m_runtime.GetCurrentBlockStartCodelChoser())], PietImageTokeniser::i_directionStrings[static_cast<int>(m_runtime.GetCurrentBlockEndCodelChoser())]);
+
 		ImGui::End();
 	}
 
@@ -446,5 +447,10 @@ void EsoProg::Render()
 		const std::string tmpOuput = m_outputStream.str();
 		ImGui::TextWrapped(tmpOuput.c_str());
 		ImGui::End();
+	}
+
+	if (m_runtime.IsRunning() && !(m_runtime.IsWaitingForCharInput() || m_runtime.IsWaitingForValInput()))
+	{
+		m_runtime.StepExecution();
 	}
 }
