@@ -47,8 +47,10 @@ public:
 	/// <param name="os - "> The output stream </param>
 	/// <param name="pt - "> The piet stack </param>
 	/// <returns></returns>
-	friend std::ostream& operator<<(std::ostream& os, const PietStack& pt) {
-		for (auto it = pt.m_stack.begin(); it != pt.m_stack.end(); it++) {
+	friend std::ostream& operator<<(std::ostream& os, const PietStack& pt)
+	{
+		for (auto it = pt.m_stack.rbegin(); it != pt.m_stack.rend(); it++) 
+		{
 			os << *it << " ";
 		}
 		return os;

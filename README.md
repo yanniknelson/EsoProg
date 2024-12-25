@@ -26,7 +26,7 @@ Piet uses a palette of 20 colours. A pixel in Piet is also called a codel and a 
 
 <table align="center" font color="#000000">
     <tr>
-		<td bgcolor="#FFC0C0" align="center" ><font color="#000000">#FFC0C0<br>light red</font></td>
+		<td bgcolor="#FFC0C0" align="center"><font color="#000000">#FFC0C0<br>light red</font></td>
 		<td bgcolor="#FFFFC0" align="center"><font color="#000000">#FFFFC0<br>light yellow</font></td>
 		<td bgcolor="#C0FFC0" align="center"><font color="#000000">#C0FFC0<br>light green</font></td>
 		<td bgcolor="#C0FFFF" align="center"><font color="#000000">#C0FFFF<br>light cyan</font></td>
@@ -120,7 +120,7 @@ The interpreter starts at the top left codel of the image with the direction poi
    * The interpreter find the edge of the current block furthest in the direction of the direction pointer and moves the current pixel to that codel.
    * Then the interpreter finds the codel along the current edge of the current block furthest in the direction of the codel chooser and moves the current pixel to that codel.
    * Finally the interpreter moves from that codel into the codel immediately in the direction of the direction pointer.
-      * If the colour is white then the interpreter continues in that direction until it find a different colour (slides across the white).
+      * If the colour is white then the interpreter continues in that direction until it find a different colour (slides across the white). If it encounters black, it swaps the codel chooser and rotates the direction poitner clockwise and slides 'forwards'. If the path the program takes in the white repeats then the program ends.
       * If the colour is black then the interpreter cannot move into that codel, the codel choser is toggled, and the interpreter tries again, if still unable then the direction pointer is rotated clockwise one step. If the interpreter runs full circle then the program terminates.
 
 ## Piet Commands
@@ -156,3 +156,4 @@ The piet programs in this repository where found online at https://www.dangermou
    * fizzbuzz.png by Sergei Lewis
    * pietquest.png by Sergei Lewis
    * 99bottles.png by Eddy Ferreira
+   * GameOfLife.png by Geerten Vink
