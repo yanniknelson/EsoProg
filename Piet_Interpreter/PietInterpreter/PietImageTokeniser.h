@@ -6,7 +6,7 @@
 
 #include "PietTokeniser.h"
 
-class PietImageTokeniser : PietTokeniser
+class PietImageTokeniser : public PietTokeniser
 {
 public:
 
@@ -16,7 +16,9 @@ public:
 	/// <returns> The next token </returns>
 	virtual const PietToken& Pop() override;
 
-	PietImageTokeniser() {}
+	PietImageTokeniser() {
+		m_codels.push_back({ { 0,0 } });
+	}
 
 	void SetImage(const unsigned char* imageData, const int width, const int height);
 	void UnsetImage();
@@ -34,6 +36,7 @@ public:
 	};
 
 	static char* i_directionStrings[static_cast<int>(Direction::Count) + 1];
+	static char* i_directionIcons[static_cast<int>(Direction::Count) + 1];
 
 	struct Location
 	{
@@ -67,12 +70,21 @@ public:
 		}
 	};
 
-	class RGB
+	union RGB
 	{
-	public:
-		unsigned char r = 0;
-		unsigned char g = 0;
-		unsigned char b = 0;
+		uint32_t val = 0;
+		struct
+		{
+			uint8_t r;
+			uint8_t g;
+			uint8_t b;
+		};
+
+		RGB(): val(0) {}
+
+		RGB(const int init): val(init) {}
+		
+		RGB(const int initR, const int initG, const int initB): r(initR), g(initG), b(initB) {}
 
 		friend std::ostream& operator<<(std::ostream& os, const RGB& col)
 		{
@@ -83,30 +95,33 @@ public:
 
 		friend bool operator==(const RGB& col1, const RGB& col2)
 		{
-			return col1.r == col2.r && col1.g == col2.g && col1.b == col2.b;
-		}
-
-		friend bool operator==(const RGB& col1, const int& col2)
-		{
-			const int tester = (((col1.r << 8) | col1.g) << 8) | col1.b;
-			return tester == col2;
+			return col1.val == col2.val;
 		}
 
 		friend bool operator==(const int& col1, const RGB& col2)
 		{
-			return col2 == col1;
+			return col1 == col2.val;
+		}
+		
+		friend bool operator==(const RGB& col1, const int& col2)
+		{
+			return col1.val == col2;
 		}
 
-		friend bool operator!=(const RGB& col1, const int& col2)
+		friend bool operator!=(const RGB& col1, const RGB& col2)
 		{
-			return !(col1 == col2);
+			return col1.val != col2.val;
 		}
 
 		friend bool operator!=(const int& col1, const RGB& col2)
 		{
-			return !(col1 == col2);
+			return col1 != col2.val;
 		}
 
+		friend bool operator!=(const RGB& col1, const int& col2)
+		{
+			return col1.val != col2;
+		}
 	};
 
 	/*
@@ -162,29 +177,14 @@ public:
 		}
 	};
 
-	struct BlockInfo
+	struct CodelInfo
 	{
 		int m_size{ 0 };
-		Location m_startingCodel{ -1, -1 };
-		Location m_leavingCodel{ -1, -1 };
-		Location m_endingCodel{ -1, -1 };
-		Location m_edgePositions[4][2] = {-1, -1};
+		Location m_edgePositions[4][2] = { -1, -1 };
 		RGB m_rgbColour;
 		PietColour m_pietColour;
 
-		Direction m_startingDirectionPointer = Direction::Count;
-		Direction m_endingDirectionPointer = Direction::Count;
-		Direction m_startingCodelChooser = Direction::Count;
-		Direction m_endingCodelChooser = Direction::Count;
-
-		BlockInfo(Location loc = { 0,0 }, Direction directionPointer = Direction::Right, Direction codelChooser = Direction::Left)
-			: m_startingDirectionPointer(directionPointer)
-			, m_endingDirectionPointer(directionPointer)
-			, m_startingCodelChooser(codelChooser)
-			, m_endingCodelChooser(codelChooser)
-			, m_startingCodel(loc)
-			, m_leavingCodel(loc)
-			, m_endingCodel(loc)
+		CodelInfo(Location loc = { 0,0 })
 		{
 			for (int dir = 0; dir < (int)Direction::Count; dir++)
 			{
@@ -192,10 +192,58 @@ public:
 				m_edgePositions[dir][1] = loc;
 			}
 		}
+	};
+
+	struct BlockInfo
+	{
+		CodelInfo* m_pCodelInfo = nullptr;
+		Location m_startingCodel{ -1, -1 };
+		Location m_leavingCodel{ -1, -1 };
+		Location m_endingCodel{ -1, -1 };
+
+		Direction m_startingDirectionPointer = Direction::Count;
+		Direction m_endingDirectionPointer = Direction::Count;
+		Direction m_startingCodelChooser = Direction::Count;
+		Direction m_endingCodelChooser = Direction::Count;
+
+		BlockInfo(CodelInfo* codelInfo = nullptr, Location loc = { 0,0 }, Direction directionPointer = Direction::Right, Direction codelChooser = Direction::Left)
+			: m_pCodelInfo(codelInfo)
+			, m_startingDirectionPointer(directionPointer)
+			, m_endingDirectionPointer(directionPointer)
+			, m_startingCodelChooser(codelChooser)
+			, m_endingCodelChooser(codelChooser)
+			, m_startingCodel(loc)
+			, m_leavingCodel(loc)
+			, m_endingCodel(loc)
+		{}
+
+		BlockInfo(const BlockInfo& rOther)
+			: m_pCodelInfo(rOther.m_pCodelInfo)
+			, m_startingDirectionPointer(rOther.m_startingDirectionPointer)
+			, m_endingDirectionPointer(rOther.m_endingDirectionPointer)
+			, m_startingCodelChooser(rOther.m_startingCodelChooser)
+			, m_endingCodelChooser(rOther.m_endingCodelChooser)
+			, m_startingCodel(rOther.m_startingCodel)
+			, m_leavingCodel(rOther.m_leavingCodel)
+			, m_endingCodel(rOther.m_endingCodel)
+		{}
 
 		friend std::ostream& operator<<(std::ostream& os, const BlockInfo& block)
 		{
-			os << "Block Start: " << block.m_startingCodel << " Block Leave: " << block.m_leavingCodel << " Block End: " << block.m_endingCodel << " Block Size: " << block.m_size << " Block Colour: " << block.m_rgbColour << " (" << block.m_pietColour << ")";// Top Edge : " << block.m_topEdge << " Bottom Edge : " << block.m_bottomEdge << " Left Edge : " << block.m_leftEdge << " Right Edge : " << block.m_rightEdge;
+			os << "Block Start: " << block.m_startingCodel << " Block Leave: " << block.m_leavingCodel << " Block End: " << block.m_endingCodel << std::endl;
+			if (block.m_pCodelInfo)
+			{
+				os	<< "\tCodel Size: " << block.m_pCodelInfo->m_size << std::endl 
+					<< "\tCodel Colour: " << block.m_pCodelInfo->m_rgbColour << " (" << block.m_pCodelInfo->m_pietColour << ")" << std::endl
+					<< "\tTop Edge: Left - " << block.m_pCodelInfo->m_edgePositions[static_cast<int>(Direction::Up)][0] << " Right -" << block.m_pCodelInfo->m_edgePositions[static_cast<int>(Direction::Up)][1] << std::endl
+					<< "\tBottom Edge:  Left - " << block.m_pCodelInfo->m_edgePositions[static_cast<int>(Direction::Down)][0] << " Right -" << block.m_pCodelInfo->m_edgePositions[static_cast<int>(Direction::Down)][1] << std::endl
+					<< "\tLeft Edge: Left - " << block.m_pCodelInfo->m_edgePositions[static_cast<int>(Direction::Left)][0] << " Right -" << block.m_pCodelInfo->m_edgePositions[static_cast<int>(Direction::Left)][1] << std::endl
+					<< "\tRight Edge: Left - " << block.m_pCodelInfo->m_edgePositions[static_cast<int>(Direction::Right)][0] << " Right -" << block.m_pCodelInfo->m_edgePositions[static_cast<int>(Direction::Right)][1];
+			}
+			else
+			{
+				os << "\tBlock has no Codel Info";
+			}
 			return os;
 		}
 	};
@@ -218,11 +266,12 @@ private:
 	int m_instructionNumber = 1;
 	int m_codelSize = 1;
 
+	std::vector<CodelInfo> m_codels;
 	Direction m_globalStartDirectionPointer{ Direction::Right };
 	Direction m_globalStartCodelChooser{ Direction::Left };
 	Location m_globalStartCodel{ 0, 0 };
 
-	BlockInfo m_currentBlock{};
+	BlockInfo m_currentBlock;
 
 	/// <summary>
 	/// Convert from RGB value to Hue Brightness pair (using struct for readability)
@@ -258,6 +307,8 @@ private:
 	/// <param name="loc - ">The pixel coordinates whose data we desire</param>
 	/// <returns>The RGB data of the desired pixel</returns>
 	RGB GetRGBFromLoation(const Location& loc) const;
+
+	bool LocationIsSameColour(const Location& loc, const RGB col) const;
 
 	/// <summary>
 	/// Query the image data

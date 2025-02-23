@@ -7,6 +7,9 @@
 
 #include <string>
 
+#include "glad/glad.h"
+#include "GLFW/glfw3.h"
+
 class Runtime
 {
 public:
@@ -14,7 +17,8 @@ public:
 	enum class SourceType
 	{
 		Text,
-		Image
+		Image,
+		Invalid
 	};
 
 	static const PietToken m_tDefaultToken;
@@ -22,7 +26,6 @@ public:
 	Runtime(std::ostringstream& rOutputStream, std::ostringstream& rExecutionhistoryStream) : m_rOutputStream(rOutputStream), m_rExecutionHistoryStream(rExecutionhistoryStream) {}
 
 	void StepExecution();
-	void StepExecution(SourceType sourceType);
 
 	void SetTextStream(std::string str)
 	{
@@ -31,15 +34,29 @@ public:
 		m_textTokeniser.SetTextStream(m_code);
 		m_rOutputStream.str(std::string());
 		m_rExecutionHistoryStream.str(std::string());
+		if (!str.empty())
+		{
+			m_currentSourceType = SourceType::Text;
+			m_activeTokeniser = (m_currentSourceType == SourceType::Text) ? (PietTokeniser*)&m_textTokeniser : (PietTokeniser*)&m_imageTokeniser;
+		}
+		ResetTokenisers();
 	}
 
-	void SetImage(const unsigned char* imageData, const int imageWidth, const int imageHeight)
+	void SetImage(GLuint* pTexture, const unsigned char* imageData, const int imageWidth, const int imageHeight)
 	{
+		m_pTexture = pTexture;
+		m_aspectRatio = (float)imageHeight / (float)imageWidth;
 		m_imageTokeniser.SetImage(imageData, imageWidth, imageHeight);
+		m_currentSourceType = SourceType::Image;
+		m_activeTokeniser = (m_currentSourceType == SourceType::Text) ? (PietTokeniser*)&m_textTokeniser : (PietTokeniser*)&m_imageTokeniser;
 	}
 	
 	void UnsetImage()
 	{
+		m_currentSourceType = SourceType::Invalid;
+		m_activeTokeniser = (m_currentSourceType == SourceType::Image) ? (PietTokeniser*)&m_imageTokeniser : (PietTokeniser*)&m_textTokeniser;
+		m_pTexture = nullptr;
+		m_aspectRatio = 1.f;
 		m_imageTokeniser.UnsetImage();
 	}
 
@@ -51,8 +68,8 @@ public:
 		m_stack.Clear();
 	}
 
-	int RunFromStart(SourceType sourceType);
-	int Run();
+	void RunFromStart();
+	void Run();
 	void InputChar(int val);
 	void InputVal(int val);
 
@@ -60,16 +77,12 @@ public:
 	bool IsWaitingForValInput() const;
 	bool IsWaitingForCharInput() const;
 
-	PietImageTokeniser::Location GetCurrentBlockStartLocation() const;
-	PietImageTokeniser::Location GetCurrentBlockEndLocation() const;
-	PietImageTokeniser::Direction GetCurrentBlockStartDirectionPointer() const;
-	PietImageTokeniser::Direction GetCurrentBlockEndDirectionPointer() const;
-	PietImageTokeniser::Direction GetCurrentBlockStartCodelChoser() const;
-	PietImageTokeniser::Direction GetCurrentBlockEndCodelChoser() const;
-
 	const std::deque<int>& GetStack() { return m_stack.GetStack(); }
 
+	void RenderWindows();
+
 private:
+
 	PietTextTokeniser m_textTokeniser;
 	PietImageTokeniser m_imageTokeniser;
 
@@ -80,12 +93,18 @@ private:
 	bool m_waitingForValInput = false;
 	bool m_bIsRunning = false;
 
+	GLuint* m_pTexture = nullptr;
+	float m_aspectRatio = 1.f;
+	std::string m_codelSizeStr{ "1" };
+	int m_codelSize{ 1 };
+
 	SourceType m_currentSourceType{ SourceType::Text };
+	PietTokeniser* m_activeTokeniser = nullptr;
 
 	std::ostringstream& m_rOutputStream;
 	std::ostringstream& m_rExecutionHistoryStream;
 
-	void StepExecution(PietToken& token);
+	void StepExecution_Internal();
 
 	void ResetTokenisers()
 	{

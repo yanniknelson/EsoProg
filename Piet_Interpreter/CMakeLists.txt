@@ -20,11 +20,13 @@ add_executable (EsoProg
 	"PietInterpreter/PietTextTokeniser.cpp"
 	"PietInterpreter/PietStack.h" 
 	"PietInterpreter/PietStack.cpp"
-	"PietInterpreter/Runtime.h" 
-	"PietInterpreter/Runtime.cpp"
+	"PietInterpreter/PietRuntime.h" 
+	"PietInterpreter/PietRuntime.cpp"
 	"PietInterpreter/PietImageTokeniser.cpp"
 	"PietInterpreter/PietImageTokeniser.h"
-	"PietInterpreter/PietTokeniser.h")
+	"PietInterpreter/PietTokeniser.h"
+	"SmartEnum.h"
+	"ImGuiHelpers.h" "ImGuiHelpers.cpp")
 
 add_custom_command(TARGET EsoProg POST_BUILD        # Adds a post-build event to MyTest
     COMMAND ${CMAKE_COMMAND} -E copy_if_different  # which executes "cmake - E copy_if_different..."

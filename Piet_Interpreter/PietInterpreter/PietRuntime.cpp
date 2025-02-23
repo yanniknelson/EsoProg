@@ -1,14 +1,33 @@
-#include "Runtime.h"
+#pragma once
+
+#include "PietRuntime.h"
+
+//ImGui imports
+#include <imgui.h>
+#include <imgui_stdlib.h>
+
+//OpenGL imports
+#include "glad/glad.h"
+#include "GLFW/glfw3.h"
+
+//Other imports
+#include <stdio.h>
+#include <iostream>
+#include <fstream>
+
+#include "../Resources/IconsFontAwesome6.h"
+
+#include "../ImGuiHelpers.h"
 
 const PietToken Runtime::m_tDefaultToken = { PietToken::TokenType::Start };
 
-void Runtime::StepExecution(PietToken& token)
+void Runtime::StepExecution_Internal()
 {
+	const PietToken token = m_activeTokeniser->Pop();
+
 	int top = 0;
 	int second = 0;
 	int val = 0;
-
-	m_rExecutionHistoryStream << token << std::endl;
 
 	switch (token.m_type)
 	{
@@ -156,7 +175,7 @@ void Runtime::StepExecution(PietToken& token)
 	}
 	case(PietToken::TokenType::NOP):
 	{
-		break;
+		return;
 	}
 	case (PietToken::TokenType::End):
 	{
@@ -166,6 +185,8 @@ void Runtime::StepExecution(PietToken& token)
 	default:
 		break;
 	}
+
+	m_rExecutionHistoryStream << token << std::endl;
 }
 
 void Runtime::InputChar(int val)
@@ -195,83 +216,67 @@ bool Runtime::IsWaitingForCharInput() const
 	return m_waitingForCharInput;
 }
 
-PietImageTokeniser::Location Runtime::GetCurrentBlockStartLocation() const
+void Runtime::RenderWindows()
 {
-	return m_imageTokeniser.GetCurrentBlockStartLocation();
-}
+	// IMAGE PROGRAM DISPLAY --------------------------------------------------------------------------------------------
+	if (ImGui::Begin("Piet Image"))
+	{
+		if (m_currentSourceType == SourceType::Image)
+		{
+			const ImVec2 area = ImGui::GetContentRegionAvail();
+			ImVec2 desired = ImVec2(area.x, (int)area.x * m_aspectRatio);
+			if (desired.y > area.y)
+			{
+				desired = ImVec2((int)area.y * (1 / m_aspectRatio), area.y);
+			}
+			ImGui::Image((void*)(intptr_t)(*m_pTexture), desired);
+		}
 
-PietImageTokeniser::Location Runtime::GetCurrentBlockEndLocation() const
-{
-	return m_imageTokeniser.GetCurrentBlockEndLocation();
-}
+		if (ImGui::Button("Run"))
+		{
+			RunFromStart();
+		}
 
-PietImageTokeniser::Direction Runtime::GetCurrentBlockStartDirectionPointer() const
-{
-	return m_imageTokeniser.GetCurrentBlockStartDirectionPointer();
-}
+		ImGui::SameLine();
+		if (ImGui::Button("Step"))
+		{
+			StepExecution();
+		}
 
-PietImageTokeniser::Direction Runtime::GetCurrentBlockEndDirectionPointer() const
-{
-	return m_imageTokeniser.GetCurrentBlockEndDirectionPointer();
-}
+		ImGui::SameLine();
+		{
+			int newCodelSize = m_codelSize;
+			ImGui::InputText("##codelSize", &m_codelSizeStr, ImGuiInputTextFlags_CharsDecimal | ImGuiInputTextFlags_CallbackEdit, ValueInputChanged, &newCodelSize);
+			if (newCodelSize != m_codelSize)
+			{
+				m_codelSize = newCodelSize;
+				SetCodelSize(m_codelSize);
+			}
+		}
 
-PietImageTokeniser::Direction Runtime::GetCurrentBlockStartCodelChoser() const
-{
-	return m_imageTokeniser.GetCurrentBlockStartCodelChoser();
-}
+		ImGui::Text("Current Block Start Location: %s - End Location: %s",
+			m_imageTokeniser.GetCurrentBlockStartLocation().toString().c_str(), 
+			m_imageTokeniser.GetCurrentBlockEndLocation().toString().c_str());
+		ImGui::Text("Current Block Start Dir: %s - End Dir: %s",
+			PietImageTokeniser::i_directionIcons[static_cast<int>(m_imageTokeniser.GetCurrentBlockStartDirectionPointer())], 
+			PietImageTokeniser::i_directionIcons[static_cast<int>(m_imageTokeniser.GetCurrentBlockEndDirectionPointer())]);
+		ImGui::Text("Current Block Start CC: %s - End CC: %s",
+			PietImageTokeniser::i_directionIcons[static_cast<int>(m_imageTokeniser.GetCurrentBlockStartCodelChoser())], 
+			PietImageTokeniser::i_directionIcons[static_cast<int>(m_imageTokeniser.GetCurrentBlockEndCodelChoser())]);
 
-PietImageTokeniser::Direction Runtime::GetCurrentBlockEndCodelChoser() const
-{
-	return m_imageTokeniser.GetCurrentBlockEndCodelChoser();
+		ImGui::End();
+	}
 }
 
 void Runtime::StepExecution()
-{
-	StepExecution(m_currentSourceType);
-}
-
-void Runtime::StepExecution(SourceType sourceType)
 {
 	if (m_waitingForCharInput || m_waitingForValInput)
 	{
 		return;
 	}
 
-	PietToken token = m_tDefaultToken;
-	PietToken value = m_tDefaultToken;
+	StepExecution_Internal();
 
-	switch (sourceType)
-	{
-	case(SourceType::Text):
-	{
-		token = m_textTokeniser.Pop();
-		value = m_tDefaultToken;
-		if (token.m_type == PietToken::TokenType::Push)
-		{
-			value = m_textTokeniser.Pop();
-			if (value.m_type != PietToken::TokenType::Value)
-			{
-				return;
-			}
-			token.m_value = value.m_value;
-		}
-		break;
-	}
-	case(SourceType::Image):
-	{
-		token = m_imageTokeniser.Pop();
-		// To make stepping a little faster could make optional as may confuse flow?
-		while (token.m_type == PietToken::TokenType::NOP)
-		{
-			token = m_imageTokeniser.Pop();
-		}
-		break;
-	}
-	}
-
-	StepExecution(token);
-
-	return;
 }
 
 void Runtime::SetCodelSize(const int size)
@@ -279,53 +284,23 @@ void Runtime::SetCodelSize(const int size)
 	m_imageTokeniser.SetCodelSize(size);
 }
 
-int Runtime::RunFromStart(SourceType sourceType)
+void Runtime::RunFromStart()
 {
 	ResetTokenisers();
-
-	m_currentSourceType = sourceType;
 	m_bIsRunning = true;
-	return 0;
-	//return Run();
+	//return 0;
+	Run();
 }
 
-int Runtime::Run()
+void Runtime::Run()
 {
-	PietToken token = m_tDefaultToken;
-	PietToken value = m_tDefaultToken;
-
 	while (m_bIsRunning)
 	{
-		switch (m_currentSourceType)
-		{
-		case(SourceType::Text):
-		{
-			token = m_textTokeniser.Pop();
-			if (token.m_type == PietToken::TokenType::Push)
-			{
-				value = m_textTokeniser.Pop();
-				if (value.m_type != PietToken::TokenType::Value)
-				{
-					return -1;
-				}
-			}
-			token.m_value = value.m_value;
-			break;
-		}
-		case(SourceType::Image):
-		{
-			token = m_imageTokeniser.Pop();
-			break;
-		}
-		}
-
-		StepExecution(token);
-
 		if (m_waitingForCharInput || m_waitingForValInput)
 		{
-			return 0;
+			return;
 		}
-	}
 
-	return 0;
+		StepExecution_Internal();
+	}
 }

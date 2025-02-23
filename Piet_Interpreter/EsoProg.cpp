@@ -1,23 +1,13 @@
+#pragma once
+
 #include "EsoProg.h"
 #define STB_IMAGE_IMPLEMENTATION
 #include "Resources/stb_image.h"
 
+#include "ImGuiHelpers.h"
+
 char* EsoProg::i_ProgramName = "EsoProg";
-
-int EsoProg::TextInputCallback(ImGuiInputTextCallbackData* data)
-{
-	*((bool*)data->UserData) = false;
-
-	//don't change the input key
-	return 0;
-}
-
-int EsoProg::ValueInputChanged(ImGuiInputTextCallbackData* data)
-{
-	*((int*)data->UserData) = std::stoi(data->Buf);
-
-	return 0;
-}
+GLFWwindow* EsoProg::i_pWindow = nullptr;
 
 void EsoProg::HandleNew()
 {
@@ -124,19 +114,31 @@ void EsoProg::CreateMenuBar()
 			{
 				HandelSaveAs();
 			}
-
 			ImGui::EndMenu();
 		}
 
-		ImGui::EndMainMenuBar();
+		//Language Selecation
+		if (ImGui::BeginMenu("Language"))
+		{
+			for (int language = 0; language < static_cast<int>(ELanguages::COUNT); language++)
+			{
+				const ELanguages::Enum eLanguage = static_cast<ELanguages::Enum>(language);
+				if (ImGui::MenuItem(ELanguages::ToString(eLanguage)))
+				{
+					SetCurrentLanugage(eLanguage);
+				}
+			}
+			ImGui::EndMenu();
+		}
 	}
+	ImGui::EndMainMenuBar();
 }
 
 void EsoProg::PreFileLoad(const std::filesystem::path path)
 {
 	switch (m_currentFileType)
 	{
-	case FileType::Image:
+	case EFileType::Image:
 	{
 		m_runtime.UnsetImage();
 		if (m_bImageLoaded)
@@ -146,7 +148,7 @@ void EsoProg::PreFileLoad(const std::filesystem::path path)
 		}
 		break;
 	}
-	case FileType::Text:
+	case EFileType::Text:
 	{
 		m_code = "";
 		m_bVerificationAttempted = false;
@@ -157,13 +159,13 @@ void EsoProg::PreFileLoad(const std::filesystem::path path)
 	m_runtime.Reset();
 }
 
-EsoProg::FileType EsoProg::LoadFile(const std::filesystem::path path)
+EsoProg::EFileType::Enum EsoProg::LoadFile(const std::filesystem::path path)
 {
-	const FileType fileType = path.extension() == ".txt" ? FileType::Text : FileType::Image;
+	const EFileType::Enum fileType = path.extension() == ".txt" ? EFileType::Text : EFileType::Image;
 	PreFileLoad(path);
 	switch (fileType)
 	{
-	case FileType::Text:
+	case EFileType::Text:
 	{
 		m_fileStream.open(path.string(), m_fileStream.in);
 		m_code = "";
@@ -173,7 +175,7 @@ EsoProg::FileType EsoProg::LoadFile(const std::filesystem::path path)
 		m_fileStream.close();
 		break;
 	}
-	case FileType::Image:
+	case EFileType::Image:
 	{
 		if (m_bImageLoaded)
 		{
@@ -183,7 +185,6 @@ EsoProg::FileType EsoProg::LoadFile(const std::filesystem::path path)
 		m_imageData = stbi_load(path.string().c_str(), &m_imageWidth, &m_imageHeight, &m_NumComponents, 4);
 		if (m_imageData)
 		{
-			m_aspectRatio = (float)m_imageHeight / (float)m_imageWidth;
 			glBindTexture(GL_TEXTURE_2D, m_texture);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
@@ -197,7 +198,7 @@ EsoProg::FileType EsoProg::LoadFile(const std::filesystem::path path)
 			glGenerateMipmap(GL_TEXTURE_2D);
 			m_bImageLoaded = true;
 		}
-		m_runtime.SetImage(m_imageData, m_imageWidth, m_imageHeight);
+		m_runtime.SetImage(&m_texture, m_imageData, m_imageWidth, m_imageHeight);
 		break;
 	}
 	}
@@ -205,13 +206,32 @@ EsoProg::FileType EsoProg::LoadFile(const std::filesystem::path path)
 	return fileType;
 }
 
-void EsoProg::PostFileLoad(const EsoProg::FileType fileType, const std::filesystem::path path)
+void EsoProg::PostFileLoad(const EsoProg::EFileType::Enum fileType, const std::filesystem::path path)
 {
 	m_currentFileType = fileType;
 }
 
+void EsoProg::SetCurrentLanugage(ELanguages::Enum language)
+{
+	std::string newName = i_ProgramName;
+	m_currentLanguage = language;
+	switch (m_currentLanguage)
+	{
+	case(ELanguages::Piet):
+	{
+		FileDialogBox::Set_Allowed_Type({ ".txt", ".jpg", ".png", ".gif", ".ppm" });
+		newName += " - Piet";
+		break;
+	}
+	default:
+	{
+		FileDialogBox::Set_Allowed_Type({ ".txt" });
+	}
+	}
+	glfwSetWindowTitle(i_pWindow, newName.c_str());
+}
 
-void EsoProg::Render()
+void EsoProg::Update()
 {
 	m_fileDialogOnTop = ImGuiWindowFlags_None;
 	//check if any shortcut is active and handle it
@@ -232,7 +252,7 @@ void EsoProg::Render()
 			{
 			case FileDialogBox::Open:
 			{
-				const FileType fileType = LoadFile(ret.path);
+				const EFileType::Enum fileType = LoadFile(ret.path);
 				break;
 			}
 			case FileDialogBox::Save_As:
@@ -249,6 +269,46 @@ void EsoProg::Render()
 			}
 		}
 	}
+
+	// Input Value Box --------------------------------------------------------------------------------------------
+	if (m_runtime.IsWaitingForValInput())
+	{
+		if (ImGui::Begin("Input Val"))
+		{
+			ImGui::InputText("##valInput", &m_programInput, ImGuiInputTextFlags_CharsDecimal | ImGuiInputTextFlags_CallbackEdit);
+			if (ImGui::Button("Submit"))
+			{
+				m_runtime.InputVal(std::stoi(m_programInput));
+				m_programInput = "";
+				m_runtime.Run();
+			}
+		}
+		ImGui::End();
+	}
+
+	// Input Char Box --------------------------------------------------------------------------------------------
+	if (m_runtime.IsWaitingForCharInput())
+	{
+		if (ImGui::Begin("Input Char"))
+		{
+			ImGui::InputText("##charInput", &m_programInput, ImGuiInputTextFlags_CallbackEdit);
+			if (ImGui::Button("Submit (will only submit first character)"))
+			{
+				m_runtime.InputChar((char)m_programInput[0]);
+				m_programInput = "";
+				m_runtime.Run();
+			}
+			if (ImGui::Button("Submit Enter Char"))
+			{
+				m_programInput = "";
+				m_runtime.InputChar(10);
+				m_runtime.Run();
+			}
+		}
+		ImGui::End();
+	}
+
+	m_runtime.RenderWindows();
 
 	// CODE EDITOR --------------------------------------------------------------------------------------------------
 	bool code_editor_open = true;
@@ -300,8 +360,7 @@ void EsoProg::Render()
 				ImGui::SameLine();
 				if (ImGui::Button("Run"))
 				{
-					m_isStepping = false;
-					m_runtime.RunFromStart(Runtime::SourceType::Text); // add a run speed
+					m_runtime.RunFromStart(); // add a run speed
 				}
 
 				ImGui::SameLine();
@@ -313,8 +372,7 @@ void EsoProg::Render()
 				ImGui::SameLine();
 				if (ImGui::Button("Step"))
 				{
-					m_isStepping = true;
-					m_runtime.StepExecution(Runtime::SourceType::Text);
+					m_runtime.StepExecution();
 				}
 
 				if (!m_runtime.IsRunning())
@@ -327,89 +385,10 @@ void EsoProg::Render()
 				}
 			}
 		}
-		ImGui::End();
 	}
+	ImGui::End();
 
-	// Input Value Box --------------------------------------------------------------------------------------------
-	if (m_runtime.IsWaitingForValInput())
-	{
-		if (ImGui::Begin("Input Val"))
-		{
-			ImGui::InputText("##valInput", &m_programInput, ImGuiInputTextFlags_CharsDecimal | ImGuiInputTextFlags_CallbackEdit);
-			if (ImGui::Button("Submit"))
-			{
-				m_runtime.InputVal(std::stoi(m_programInput));
-				m_programInput = "";
-			}
-			ImGui::End();
-		}
-	}
-
-	// Input Char Box --------------------------------------------------------------------------------------------
-	if (m_runtime.IsWaitingForCharInput())
-	{
-		if (ImGui::Begin("Input Char"))
-		{
-			ImGui::InputText("##charInput", &m_programInput, ImGuiInputTextFlags_CallbackEdit);
-			if (ImGui::Button("Submit (will only submit first character)"))
-			{
-				m_runtime.InputChar((char)m_programInput[0]);
-				m_programInput = "";
-			}
-			if (ImGui::Button("Submit Enter Char"))
-			{
-				m_runtime.InputChar(10);
-				m_programInput = "";
-			}
-			ImGui::End();
-		}
-	}
-
-	// IMAGE PROGRAM DISPLAY --------------------------------------------------------------------------------------------
-	if (ImGui::Begin("Piet Image"))
-	{
-		if (m_bImageLoaded)
-		{
-			const ImVec2 area = ImGui::GetContentRegionAvail();
-			ImVec2 desired = ImVec2(area.x, (int)area.x * m_aspectRatio);
-			if (desired.y > area.y)
-			{
-				desired = ImVec2((int)area.y * (1 / m_aspectRatio), area.y);
-			}
-			ImGui::Image((void*)(intptr_t)m_texture, desired);
-		}
-
-		if (ImGui::Button("Run"))
-		{
-			m_isStepping = false;
-			m_runtime.RunFromStart(Runtime::SourceType::Image);
-		}
-
-		ImGui::SameLine();
-		if (ImGui::Button("Step"))
-		{
-			m_isStepping = true;
-			m_runtime.StepExecution(Runtime::SourceType::Image);
-		}
-
-		ImGui::SameLine();
-		{
-			int newCodelSize = m_codelSize;
-			ImGui::InputText("##codelSize", &m_codelSizeStr, ImGuiInputTextFlags_CharsDecimal | ImGuiInputTextFlags_CallbackEdit, ValueInputChanged, &newCodelSize);
-			if (newCodelSize != m_codelSize)
-			{
-				m_codelSize = newCodelSize;
-				m_runtime.SetCodelSize(m_codelSize);
-			}
-		}
-
-		ImGui::Text("Current Block Start Location: %s - End Location: %s", m_runtime.GetCurrentBlockStartLocation().toString().c_str(), m_runtime.GetCurrentBlockEndLocation().toString().c_str());
-		ImGui::Text("Current Block Start Dir: %s - End Dir: %s", PietImageTokeniser::i_directionStrings[static_cast<int>(m_runtime.GetCurrentBlockStartDirectionPointer())], PietImageTokeniser::i_directionStrings[static_cast<int>(m_runtime.GetCurrentBlockEndDirectionPointer())]);
-		ImGui::Text("Current Block Start CC: %s - End CC: %s", PietImageTokeniser::i_directionStrings[static_cast<int>(m_runtime.GetCurrentBlockStartCodelChoser())], PietImageTokeniser::i_directionStrings[static_cast<int>(m_runtime.GetCurrentBlockEndCodelChoser())]);
-
-		ImGui::End();
-	}
-
+	
 	// STACK DISPLAY ----------------------------------------------------------------------------------------------------
 	bool stackDisplayOpen = true;
 	if (ImGui::Begin("Stack", &stackDisplayOpen, m_fileDialogOnTop))
@@ -417,17 +396,18 @@ void EsoProg::Render()
 		ImGui::Text("The rStack is displayed with the deepest value at the top");
 		if (ImGui::BeginListBox("##Stack", ImGui::GetContentRegionAvail()))
 		{
+			const bool invertStack = false;
 			const std::deque<int>& rStack = m_runtime.GetStack();
 			const size_t stackSize = rStack.size();
 			for (size_t i = 1; i <= stackSize; i++)
 			{
-				std::string lbl = std::to_string(rStack[stackSize - i]) + "##" + std::to_string(i);
+				std::string lbl = std::to_string(rStack[invertStack ? stackSize - i : i - 1]) + "##" + std::to_string(i);
 				ImGui::Selectable(lbl.c_str(), false, ImGuiSelectableFlags_Disabled);
 			}
 			ImGui::EndListBox();
 		}
-		ImGui::End();
 	}
+	ImGui::End();
 
 	// INSTRUCTION HISTORY -----------------------------------------------------------------------------------------------
 	bool displayInstructionHistory = true;
@@ -446,11 +426,6 @@ void EsoProg::Render()
 	{
 		const std::string tmpOuput = m_outputStream.str();
 		ImGui::TextWrapped(tmpOuput.c_str());
-		ImGui::End();
 	}
-
-	if (m_runtime.IsRunning() && !(m_runtime.IsWaitingForCharInput() || m_runtime.IsWaitingForValInput()))
-	{
-		m_runtime.StepExecution();
-	}
+	ImGui::End();
 }

@@ -48,6 +48,12 @@ int main()
     if (window == NULL)
         return 1;
 
+    //GLFWimage images[2];
+    //images[0] = load_icon("my_icon.png");
+    //images[1] = load_icon("my_icon_small.png");
+
+    //glfwSetWindowIcon(window, 2, images);
+
     glfwMakeContextCurrent(window);
     glfwSwapInterval(1); // Enable vsync
 
@@ -100,7 +106,7 @@ int main()
     //static char text[1024 * 16] = "testing";
     ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
-    EsoProg programInstance = EsoProg();
+    EsoProg* pProgramInstance = new EsoProg(window);
 
     // Main loop
     while (!glfwWindowShouldClose(window))
@@ -117,7 +123,7 @@ int main()
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
 
-        programInstance.Render();
+        pProgramInstance->Update();
 
         // Rendering
         ImGui::Render();
@@ -141,6 +147,8 @@ int main()
 
         glfwSwapBuffers(window);
     }
+
+    delete pProgramInstance;
 
     // Cleanup
     ImGui_ImplOpenGL3_Shutdown();

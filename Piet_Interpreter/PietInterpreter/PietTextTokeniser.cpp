@@ -6,6 +6,21 @@
 
 const PietToken& PietTextTokeniser::Pop()
 {
+	PietToken token = Pop_Internal();
+	if (token.m_type == PietToken::TokenType::Push)
+	{
+		PietToken value = Pop_Internal();
+		if (value.m_type != PietToken::TokenType::Value)
+		{
+			__debugbreak();
+		}
+		token.m_value = value.m_value;
+	}
+	return token;
+}
+
+PietToken PietTextTokeniser::Pop_Internal()
+{
 	if (!m_pStrStream->rdbuf()->in_avail())
 	{
 		m_tLastPopped.m_type = PietToken::TokenType::End;
@@ -76,7 +91,7 @@ const PietToken& PietTextTokeniser::Pop()
 				m_tLastPopped.m_type = PietToken::TokenType::Unrecognised_Token;
 			}
 		}
-		
+
 	}
 
 	return m_tLastPopped;

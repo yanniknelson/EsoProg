@@ -6,7 +6,7 @@
 #include <iostream>
 
 
-class PietTextTokeniser : PietTokeniser
+class PietTextTokeniser : public PietTokeniser
 {
 public:
 
@@ -37,6 +37,8 @@ private:
 	/// <param name="rString - "> string to be converted </param>
 	/// <returns> TokenType enum corresponding to input string </returns>
 	PietToken::TokenType StringToTokenType(std::string& rString) const;
+
+	PietToken Pop_Internal();
 
 	std::stringstream* m_pStrStream{ nullptr };
 	PietToken m_tLastPopped{ PietToken::TokenType::End };

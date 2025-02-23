@@ -13,23 +13,30 @@
 #include <iostream>
 #include <fstream>
 
-
 //Custom classes
 #include "File_Dialog_Box/FileDialogBox.h"
 #include "Resources/IconsFontAwesome6.h"
-#include "PietInterpreter/Runtime.h"
+#include "PietInterpreter/PietRuntime.h"
+#include "SmartEnum.h"
 
 
 class EsoProg {
 
-	enum FileType {
-		None,
-		Text,
-		Image
-	};
+#define EFILETYPES(x)\
+    x(Text)\
+    x(Image)
 
-	static int TextInputCallback(ImGuiInputTextCallbackData* data);
-	static int ValueInputChanged(ImGuiInputTextCallbackData* data);
+	CreateSmartEnum(EFileType, EFILETYPES);
+
+#undef EFILETYPES
+
+#define ELANGUAGES(x)\
+    x(Piet)
+
+	CreateSmartEnum(ELanguages, ELANGUAGES);
+
+#undef ELANGUAGES
+
 	void CheckShortCuts();
 
 	void HandleNew();
@@ -49,11 +56,15 @@ class EsoProg {
 	ImGuiWindowFlags_ m_fileDialogOnTop = ImGuiWindowFlags_None;
 	std::fstream m_fileStream;
 
+	EFileType::Enum m_currentFileType = EFileType::COUNT;
+
 	void PreFileLoad(const std::filesystem::path path);
-	FileType LoadFile(const std::filesystem::path path);
-	void PostFileLoad(const FileType fileType, const std::filesystem::path path);
+	EFileType::Enum LoadFile(const std::filesystem::path path);
+	void PostFileLoad(const EFileType::Enum fileType, const std::filesystem::path path);
 	
-	FileType m_currentFileType = None;
+	ELanguages::Enum m_currentLanguage = ELanguages::COUNT;
+
+	void SetCurrentLanugage(ELanguages::Enum languag);
 
 	//file management
 	bool m_bFileIsNew = true;
@@ -66,8 +77,6 @@ class EsoProg {
 	int m_NumComponents = 0;
 	bool m_bImageLoaded = false;
 	float m_aspectRatio = 1.f;
-
-	bool m_isStepping = false;
 
 	GLuint m_texture;
 
@@ -83,17 +92,17 @@ class EsoProg {
 	ImGuiInputTextFlags m_codeEditorFlags = ImGuiInputTextFlags_CallbackCharFilter | ImGuiInputTextFlags_EnterReturnsTrue;
 	std::string m_code{ "" };
 	std::string m_programInput{ "" };
-	std::string m_codelSizeStr{ "1" };
-	int m_codelSize{ 1 };
 
 public:
 	static char* i_ProgramName;
+	static GLFWwindow* i_pWindow;
 
-	EsoProg()
+	EsoProg(GLFWwindow* pWindow)
 	{
+		i_pWindow = pWindow;
 		//setup the current directory as the initial path in the file dialog box
 		FileDialogBox::Init_Path(fs::current_path());
-		FileDialogBox::Set_Allowed_Type({".txt", ".jpg", ".png", ".gif", ".ppm"});
+		//SetCurrentLanugage(ELanguages::Piet);
 
 		glGenTextures(1, &m_texture);
 
@@ -105,5 +114,5 @@ public:
 		io.Fonts->AddFontFromFileTTF("fa-solid-900.ttf", 16.0f, &icons_config, icons_ranges);
 	}
 
-	void Render();
+	void Update();
 };
