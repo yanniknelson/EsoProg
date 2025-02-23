@@ -6,7 +6,7 @@
 
 #include "ImGuiHelpers.h"
 
-char* EsoProg::i_ProgramName = "EsoProg";
+char* EsoProg::i_ProgramName = "EsoProg2";
 GLFWwindow* EsoProg::i_pWindow = nullptr;
 
 void EsoProg::HandleNew()
