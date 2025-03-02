@@ -276,7 +276,6 @@ void Runtime::StepExecution()
 	}
 
 	StepExecution_Internal();
-
 }
 
 void Runtime::SetCodelSize(const int size)
