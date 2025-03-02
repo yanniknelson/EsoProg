@@ -8,14 +8,14 @@ The inteneded functionality (not in order) of this interpreter is as such:
  - :white_check_mark: Execute piet command programs (Note pointer and switch commands will not change order of execution) 
  - :white_check_mark: Execute piet image programs
  - Provide debugging functionality to:
-   - :white_check_mark:command history
-   - :white_check_mark: through the program
-   - :white_check_mark: the stack as the program executes
-   - :white_check_mark: direction pointer and codel chooser directions
-   - :white_large_square::view current position in program on image
-   - :white_check_mark:view previous and next positions and next command in program
- - :white_large_square: interpreting options e.g. define custom behviour for undefined behaviour in language spec
- - :white_large_square: compiler from commands to image
+   - :white_check_mark: View command history
+   - :white_check_mark: Step through the program
+   - :white_check_mark: View the stack as the program executes
+   - :white_check_mark: View direction pointer and codel chooser directions
+   - :white_large_square: View current position in program on image
+   - :white_check_mark: View previous and next positions and next command in program
+ - :white_large_square: Provide interpreting options e.g. define custom behviour for undefined behaviour in language spec
+ - :white_large_square: Implement compiler from commands to image
  - :white_large_square: Implement assembler to image (potentially to commands as intermediate step, depending on branch ability due to pointer and switch command incompatability)
 
 # The Piet Language
