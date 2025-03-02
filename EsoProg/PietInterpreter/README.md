@@ -5,18 +5,18 @@ This is intended to be an interpreter for [the Piet programming language](https:
 
 The inteneded functionality (not in order) of this interpreter is as such:
 
-    1. Execute piet command programs (Note pointer and switch commands will not change order of execution) [x]
-    2. Execute piet image programs [x]
-    3. Provide debugging functionality to:
-       a) command history [x]
-       b) step through the program [x]
-       c) view the stack as the program executes [x]
-       d) view direction pointer and codel chooser directions [x]
-       e) view current position in program on image []
-       f) view previous and next positions and next command in program [x]
-    4. Provide interpreting options e.g. define custom behviour for undefined behaviour in language spec []
-    5. Implement compiler from commands to image []
-    6. Implement assembler to image (potentially to commands as intermediate step, depending on branch ability due to pointer and switch command incompatability) []
+ - :white_check_mark: Execute piet command programs (Note pointer and switch commands will not change order of execution) 
+ - :white_check_mark: Execute piet image programs
+ - Provide debugging functionality to:
+   - :white_check_mark:command history
+   - :white_check_mark: through the program
+   - :white_check_mark: the stack as the program executes
+   - :white_check_mark: direction pointer and codel chooser directions
+   - :white_large_square::view current position in program on image
+   - :white_check_mark:view previous and next positions and next command in program
+ - :white_large_square: interpreting options e.g. define custom behviour for undefined behaviour in language spec
+ - :white_large_square: compiler from commands to image
+ - :white_large_square: Implement assembler to image (potentially to commands as intermediate step, depending on branch ability due to pointer and switch command incompatability)
 
 # The Piet Language
 
