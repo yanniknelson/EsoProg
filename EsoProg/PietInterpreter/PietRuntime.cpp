@@ -23,7 +23,8 @@ const PietToken Runtime::m_tDefaultToken = { PietToken::TokenType::Start };
 
 void Runtime::StepExecution_Internal()
 {
-	const PietToken token = m_activeTokeniser->Pop();
+	std::unique_lock<std::shared_mutex> w_lock(m_lOutputLock);
+	PietToken token = m_activeTokeniser->Pop();
 
 	int top = 0;
 	int second = 0;
@@ -152,11 +153,17 @@ void Runtime::StepExecution_Internal()
 		break;
 	}
 	case(PietToken::TokenType::Input_Char):
+	{
+		std::unique_lock<std::shared_mutex> w_lock(m_lWaitingForInputLock);
 		m_waitingForCharInput = true;
 		break;
+	}
 	case(PietToken::TokenType::Input_Val):
+	{
+		std::unique_lock<std::shared_mutex> w_lock(m_lWaitingForInputLock);
 		m_waitingForValInput = true;
 		break;
+	}
 	case(PietToken::TokenType::Output_Char):
 	{
 		if (m_stack.GetSize() > 0)
@@ -179,6 +186,7 @@ void Runtime::StepExecution_Internal()
 	}
 	case (PietToken::TokenType::End):
 	{
+		std::unique_lock<std::shared_mutex> w_lock(m_lRunningLock);
 		m_bIsRunning = false;
 		break;
 	}
@@ -189,14 +197,31 @@ void Runtime::StepExecution_Internal()
 	m_rExecutionHistoryStream << token << std::endl;
 }
 
+void Runtime::ResetTokenisers()
+{
+	std::unique_lock<std::shared_mutex> w_outputLock(m_lOutputLock);
+	std::unique_lock<std::shared_mutex> w_runningLock(m_lRunningLock);
+	std::unique_lock<std::shared_mutex> w_waitingLock(m_lWaitingForInputLock);
+	m_code = std::stringstream(m_codeStr);
+	m_textTokeniser.SetTextStream(m_code);
+	m_imageTokeniser.Reset();
+	m_rOutputStream.str(std::string());
+	m_rExecutionHistoryStream.str(std::string());
+	m_bIsRunning = false;
+	m_waitingForCharInput = false;
+	m_waitingForValInput = false;
+}
+
 void Runtime::InputChar(int val)
 {
+	std::unique_lock<std::shared_mutex> w_lock(m_lWaitingForInputLock);
 	m_stack.Push(val);
 	m_waitingForCharInput = false;
 }
 
 void Runtime::InputVal(int val)
 {
+	std::unique_lock<std::shared_mutex> w_lock(m_lWaitingForInputLock);
 	m_stack.Push(val);
 	m_waitingForValInput = false;
 }
@@ -206,13 +231,15 @@ bool Runtime::IsRunning() const
 	return m_bIsRunning;
 }
 
-bool Runtime::IsWaitingForValInput() const
+bool Runtime::IsWaitingForValInput()
 {
+	std::shared_lock<std::shared_mutex> r_lock(m_lWaitingForInputLock);
 	return m_waitingForValInput;
 }
 
-bool Runtime::IsWaitingForCharInput() const
+bool Runtime::IsWaitingForCharInput()
 {
+	std::shared_lock<std::shared_mutex> r_lock(m_lWaitingForInputLock);
 	return m_waitingForCharInput;
 }
 
@@ -254,15 +281,18 @@ void Runtime::RenderWindows()
 			}
 		}
 
-		ImGui::Text("Current Block Start Location: %s - End Location: %s",
-			m_imageTokeniser.GetCurrentBlockStartLocation().toString().c_str(), 
-			m_imageTokeniser.GetCurrentBlockEndLocation().toString().c_str());
-		ImGui::Text("Current Block Start Dir: %s - End Dir: %s",
-			PietImageTokeniser::i_directionIcons[static_cast<int>(m_imageTokeniser.GetCurrentBlockStartDirectionPointer())], 
-			PietImageTokeniser::i_directionIcons[static_cast<int>(m_imageTokeniser.GetCurrentBlockEndDirectionPointer())]);
-		ImGui::Text("Current Block Start CC: %s - End CC: %s",
-			PietImageTokeniser::i_directionIcons[static_cast<int>(m_imageTokeniser.GetCurrentBlockStartCodelChoser())], 
-			PietImageTokeniser::i_directionIcons[static_cast<int>(m_imageTokeniser.GetCurrentBlockEndCodelChoser())]);
+		{
+			std::shared_lock<std::shared_mutex> w_lock(m_lOutputLock);
+			ImGui::Text("Current Block Start Location: %s - End Location: %s",
+				m_imageTokeniser.GetCurrentBlockStartLocation().toString().c_str(),
+				m_imageTokeniser.GetCurrentBlockEndLocation().toString().c_str());
+			ImGui::Text("Current Block Start Dir: %s - End Dir: %s",
+				PietImageTokeniser::i_directionIcons[static_cast<int>(m_imageTokeniser.GetCurrentBlockStartDirectionPointer())],
+				PietImageTokeniser::i_directionIcons[static_cast<int>(m_imageTokeniser.GetCurrentBlockEndDirectionPointer())]);
+			ImGui::Text("Current Block Start CC: %s - End CC: %s",
+				PietImageTokeniser::i_directionIcons[static_cast<int>(m_imageTokeniser.GetCurrentBlockStartCodelChoser())],
+				PietImageTokeniser::i_directionIcons[static_cast<int>(m_imageTokeniser.GetCurrentBlockEndCodelChoser())]);
+		}
 
 		ImGui::End();
 	}
@@ -270,9 +300,12 @@ void Runtime::RenderWindows()
 
 void Runtime::StepExecution()
 {
-	if (m_waitingForCharInput || m_waitingForValInput)
 	{
-		return;
+		std::shared_lock<std::shared_mutex> r_lock(m_lWaitingForInputLock);
+		if (m_waitingForCharInput || m_waitingForValInput)
+		{
+			return;
+		}
 	}
 
 	StepExecution_Internal();
@@ -287,19 +320,32 @@ void Runtime::RunFromStart()
 {
 	ResetTokenisers();
 	m_bIsRunning = true;
-	//return 0;
 	Run();
 }
 
 void Runtime::Run()
 {
-	while (m_bIsRunning)
+	bool bRunning = false;
 	{
-		if (m_waitingForCharInput || m_waitingForValInput)
+		std::shared_lock<std::shared_mutex> r_lock(m_lRunningLock);
+		bRunning = m_bIsRunning;
+	}
+
+	while (bRunning)
+	{
 		{
-			return;
+			std::shared_lock<std::shared_mutex> r_lock(m_lWaitingForInputLock);
+			if (m_waitingForCharInput || m_waitingForValInput)
+			{
+				return;
+			}
 		}
 
 		StepExecution_Internal();
+
+		{
+			std::shared_lock<std::shared_mutex> r_lock(m_lRunningLock);
+			bRunning = m_bIsRunning;
+		}
 	}
 }

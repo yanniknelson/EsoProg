@@ -5,11 +5,11 @@
 #include <iostream>
 #include <sstream>
 
+#include <shared_mutex>
 #include <string>
 
 #include "glad/glad.h"
 #include "GLFW/glfw3.h"
-
 class Runtime
 {
 public:
@@ -74,8 +74,8 @@ public:
 	void InputVal(int val);
 
 	bool IsRunning() const;
-	bool IsWaitingForValInput() const;
-	bool IsWaitingForCharInput() const;
+	bool IsWaitingForValInput();
+	bool IsWaitingForCharInput();
 
 	const std::deque<int>& GetStack() { return m_stack.GetStack(); }
 
@@ -89,8 +89,10 @@ private:
 	PietStack m_stack;
 	std::string m_codeStr = "";
 	std::stringstream m_code;
+	std::shared_mutex m_lWaitingForInputLock;
 	bool m_waitingForCharInput = false;
 	bool m_waitingForValInput = false;
+	std::shared_mutex m_lRunningLock;
 	bool m_bIsRunning = false;
 
 	GLuint* m_pTexture = nullptr;
@@ -101,20 +103,11 @@ private:
 	SourceType m_currentSourceType{ SourceType::Text };
 	PietTokeniser* m_activeTokeniser = nullptr;
 
+	std::shared_mutex m_lOutputLock;
 	std::ostringstream& m_rOutputStream;
 	std::ostringstream& m_rExecutionHistoryStream;
 
 	void StepExecution_Internal();
 
-	void ResetTokenisers()
-	{
-		m_code = std::stringstream(m_codeStr);
-		m_textTokeniser.SetTextStream(m_code);
-		m_imageTokeniser.Reset();
-		m_rOutputStream.str(std::string());
-		m_rExecutionHistoryStream.str(std::string());
-		m_bIsRunning = false;
-		m_waitingForCharInput = false;
-		m_waitingForValInput = false;
-	}
+	void ResetTokenisers();
 };
