@@ -229,7 +229,7 @@ void Runtime::RenderWindows()
 			{
 				desired = ImVec2((int)area.y * (1 / m_aspectRatio), area.y);
 			}
-			ImGui::Image((void*)(intptr_t)(*m_pTexture), desired);
+			ImGui::Image((ImTextureID)(intptr_t)(*m_pTexture), desired);
 		}
 
 		if (ImGui::Button("Run"))

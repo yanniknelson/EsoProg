@@ -46,7 +46,7 @@ void EsoProg::CheckShortCuts()
 {
 	const ImGuiIO& io = ImGui::GetIO();
 	//if a shortcut has just been used and either ctrl or the alpha key is up then enable the triggering of a new shortcut
-	if (m_bShortcutUsed && (!io.KeyCtrl || !io.KeysDown[m_lastShortcutUsed]))
+	if (m_bShortcutUsed && (!io.KeyCtrl || !io.KeysData[m_lastShortcutUsed].Down))
 	{
 		m_bShortcutUsed = false;
 	}
@@ -60,25 +60,25 @@ void EsoProg::CheckShortCuts()
 	//check the combo for a shortcut, disable new shortcuts, store the used alpha key and handle the shortcut
 	if (io.KeyCtrl)
 	{
-		if (io.KeysDown[ImGuiKey_N])
+		if (io.KeysData[ImGuiKey_N].Down)
 		{
 			m_bShortcutUsed = true;
 			m_lastShortcutUsed = ImGuiKey_N;
 			HandleNew();
 		}
-		else if (io.KeysDown[ImGuiKey_O])
+		else if (io.KeysData[ImGuiKey_O].Down)
 		{
 			m_bShortcutUsed = true;
 			m_lastShortcutUsed = ImGuiKey_O;
 			HandleOpen();
 		}
-		else if (io.KeyShift && io.KeysDown[ImGuiKey_S])
+		else if (io.KeyShift && io.KeysData[ImGuiKey_S].Down)
 		{
 			m_bShortcutUsed = true;
 			m_lastShortcutUsed = ImGuiKey_S;
 			HandelSaveAs();
 		}
-		else if (io.KeysDown[ImGuiKey_S])
+		else if (io.KeysData[ImGuiKey_S].Down)
 		{
 			m_bShortcutUsed = true;
 			m_lastShortcutUsed = ImGuiKey_S;

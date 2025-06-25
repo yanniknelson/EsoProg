@@ -48,7 +48,7 @@ class EsoProg {
 	
 	//shortcut flags
 	bool m_bShortcutUsed = false;
-	ImGuiKey_ m_lastShortcutUsed = ImGuiKey_None;
+	ImGuiKey m_lastShortcutUsed = ImGuiKey_None;
 
 	//file dialog box flags
 	bool m_bEnableFileDialog = false;
