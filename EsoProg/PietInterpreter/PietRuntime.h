@@ -1,3 +1,5 @@
+#pragma once
+
 #include "PietTextTokeniser.h"
 #include "PietImageTokeniser.h"
 #include "PietStack.h"
@@ -6,6 +8,11 @@
 #include <sstream>
 
 #include <string>
+#include <thread>
+#include <mutex>
+#include <atomic>
+#include <chrono>
+#include <condition_variable>
 
 #include "glad/glad.h"
 #include "GLFW/glfw3.h"
@@ -77,9 +84,26 @@ public:
 	bool IsWaitingForValInput() const;
 	bool IsWaitingForCharInput() const;
 
-	const std::deque<int>& GetStack() { return m_stack.GetStack(); }
+	const std::deque<int>& GetStack() { return m_cachedStack.GetStack(); }
 
-	void RenderWindows();
+	struct SyncronisationStruct
+	{
+		std::atomic<int> iterations = 0;
+		std::atomic<int> instructionWaitTime = 0;
+		std::atomic<bool> exit = false;
+		std::atomic<bool> renderWantsState = false;
+		std::condition_variable finishedStateWithCv;
+		std::mutex finishedWithStateMtx;
+		std::mutex runtimeStateMtx;
+
+		std::condition_variable waitingOnInputCV;
+		std::mutex waitingOnInputMtx;
+
+		std::string m_instructionWaitTimeStr{ "0" };
+	};
+
+	void RenderWindows(SyncronisationStruct& rSync);
+	void CopyState();
 
 private:
 
@@ -87,6 +111,7 @@ private:
 	PietImageTokeniser m_imageTokeniser;
 
 	PietStack m_stack;
+	PietStack m_cachedStack;
 	std::string m_codeStr = "";
 	std::stringstream m_code;
 	bool m_waitingForCharInput = false;

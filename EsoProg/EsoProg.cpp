@@ -198,7 +198,12 @@ EsoProg::EFileType::Enum EsoProg::LoadFile(const std::filesystem::path path)
 			glGenerateMipmap(GL_TEXTURE_2D);
 			m_bImageLoaded = true;
 		}
+		sync.renderWantsState = true;
+		sync.runtimeStateMtx.lock();
 		m_runtime.SetImage(&m_texture, m_imageData, m_imageWidth, m_imageHeight);
+		sync.renderWantsState = false;
+		sync.runtimeStateMtx.unlock();
+		sync.finishedStateWithCv.notify_one();
 		break;
 	}
 	}
@@ -231,7 +236,12 @@ void EsoProg::SetCurrentLanugage(ELanguages::Enum language)
 	glfwSetWindowTitle(i_pWindow, newName.c_str());
 }
 
-void EsoProg::Update()
+void EsoProg::UpdateRuntime()
+{
+	m_runtime.StepExecution();
+}
+
+void EsoProg::Render()
 {
 	m_fileDialogOnTop = ImGuiWindowFlags_None;
 	//check if any shortcut is active and handle it
@@ -280,7 +290,11 @@ void EsoProg::Update()
 			{
 				m_runtime.InputVal(std::stoi(m_programInput));
 				m_programInput = "";
-				m_runtime.Run();
+				if (sync.iterations != -1)
+				{
+					sync.iterations = 0;
+				}
+				sync.waitingOnInputCV.notify_one();
 			}
 		}
 		ImGui::End();
@@ -296,19 +310,27 @@ void EsoProg::Update()
 			{
 				m_runtime.InputChar((char)m_programInput[0]);
 				m_programInput = "";
-				m_runtime.Run();
+				if (sync.iterations != -1)
+				{
+					sync.iterations = 0;
+				}
+				sync.waitingOnInputCV.notify_one();
 			}
 			if (ImGui::Button("Submit Enter Char"))
 			{
 				m_programInput = "";
 				m_runtime.InputChar(10);
-				m_runtime.Run();
+				if (sync.iterations != -1)
+				{
+					sync.iterations = 0;
+				}
+				sync.waitingOnInputCV.notify_one();
 			}
 		}
 		ImGui::End();
 	}
 
-	m_runtime.RenderWindows();
+	m_runtime.RenderWindows(sync);
 
 	// CODE EDITOR --------------------------------------------------------------------------------------------------
 	bool code_editor_open = true;
@@ -360,22 +382,33 @@ void EsoProg::Update()
 				ImGui::SameLine();
 				if (ImGui::Button("Run"))
 				{
-					m_runtime.RunFromStart(); // add a run speed
+					sync.iterations = -1; // add a run speed
 				}
 
 				ImGui::SameLine();
-				if (ImGui::Button("Pause"))
 				{
+					int currentinstructionWaitTime = sync.instructionWaitTime.load();
+					int newInstructionWaitTime = currentinstructionWaitTime;
+					ImGui::InputText("##instructionWaitTime", &sync.m_instructionWaitTimeStr, ImGuiInputTextFlags_CharsDecimal | ImGuiInputTextFlags_CallbackEdit, ValueInputChanged, &newInstructionWaitTime);
+					sync.instructionWaitTime.compare_exchange_strong(currentinstructionWaitTime, newInstructionWaitTime);
+				}
 
+				if (sync.iterations == -1)
+				{
+					ImGui::SameLine();
+					if (ImGui::Button("Pause"))
+					{
+						sync.iterations = 0;
+					}
 				}
 
 				ImGui::SameLine();
 				if (ImGui::Button("Step"))
 				{
-					m_runtime.StepExecution();
+					++sync.iterations;
 				}
 
-				if (!m_runtime.IsRunning())
+				if (sync.iterations < 0)
 				{
 					ImGui::SameLine();
 					if (ImGui::Button("Reset"))
@@ -388,7 +421,6 @@ void EsoProg::Update()
 	}
 	ImGui::End();
 
-	
 	// STACK DISPLAY ----------------------------------------------------------------------------------------------------
 	bool stackDisplayOpen = true;
 	if (ImGui::Begin("Stack", &stackDisplayOpen, m_fileDialogOnTop))
@@ -414,8 +446,7 @@ void EsoProg::Update()
 	{
 		if (ImGui::Begin("Execution History", &displayInstructionHistory, m_fileDialogOnTop))
 		{
-			const std::string tmpExecHist = m_executionHistoryStream.str();
-			ImGui::TextWrapped(tmpExecHist.c_str());
+			ImGui::TextWrapped(m_cachedExecutionHistory.c_str());
 			ImGui::End();
 		}
 	}
@@ -424,8 +455,26 @@ void EsoProg::Update()
 	bool outputDisplayOpen = true;
 	if (ImGui::Begin("Program Output:", &outputDisplayOpen, m_fileDialogOnTop))
 	{
-		const std::string tmpOuput = m_outputStream.str();
-		ImGui::TextWrapped(tmpOuput.c_str());
+		ImGui::TextWrapped(m_cachedOutput.c_str());
 	}
 	ImGui::End();
+}
+
+bool EsoProg::IsRuntimeWaitingOnInput()
+{
+	return m_runtime.IsWaitingForCharInput() || m_runtime.IsWaitingForValInput();
+}
+
+void EsoProg::CopyState()
+{
+	sync.renderWantsState = true;
+	sync.runtimeStateMtx.lock();
+
+	m_cachedExecutionHistory = m_executionHistoryStream.str();
+	m_cachedOutput = m_outputStream.str();
+	m_runtime.CopyState();
+
+	sync.renderWantsState = false;
+	sync.runtimeStateMtx.unlock();
+	sync.finishedStateWithCv.notify_one();
 }

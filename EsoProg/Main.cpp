@@ -108,9 +108,59 @@ int main()
 
     EsoProg* pProgramInstance = new EsoProg(window);
 
+    std::thread runtimeWorker([&]()
+        {
+            Runtime::SyncronisationStruct& rSync = pProgramInstance->sync;
+            rSync.runtimeStateMtx.lock(); // lock the state for the first iterations
+            while (!rSync.exit)
+            {
+                while (rSync.iterations != 0) // run while we have iterations to run
+                {
+                    if (rSync.iterations > 0)
+                    {
+                        --rSync.iterations;
+                    }
+
+                    pProgramInstance->UpdateRuntime();
+                    if (rSync.renderWantsState) // if the rendering thread has flagged it wants to copy the current state then unlock the current state
+                    {
+                        rSync.runtimeStateMtx.unlock();
+                        std::unique_lock<std::mutex> lck(rSync.finishedWithStateMtx); // once we've unlocked the current state we want to wait until the copyingStateCV is notified (indication copying is complete)
+                        rSync.finishedStateWithCv.wait(lck, [&rSync]() { return !rSync.renderWantsState.load(); });
+                        rSync.runtimeStateMtx.lock(); // now that copying is complete we can re-gain the lock to continue executing as many iterations as we can while the render thread is rendering
+                    }
+
+                    if (pProgramInstance->IsRuntimeWaitingOnInput())
+                    {
+                        rSync.runtimeStateMtx.unlock();
+                        std::unique_lock<std::mutex> lck(rSync.waitingOnInputMtx);
+                        rSync.waitingOnInputCV.wait(lck, [&]() { return !pProgramInstance->IsRuntimeWaitingOnInput(); });
+                        rSync.runtimeStateMtx.lock();
+                    }
+
+                    if (rSync.instructionWaitTime > 0) // sleep for speed milliseconds to creation running speed
+                    {
+                        rSync.runtimeStateMtx.unlock();
+                        std::this_thread::sleep_for(std::chrono::milliseconds(rSync.instructionWaitTime));
+                        rSync.runtimeStateMtx.lock();
+                    }
+                }
+
+                if (rSync.renderWantsState) // if the rendering thread has flagged it wants to copy the current state then unlock the current state
+                {
+                    rSync.runtimeStateMtx.unlock();
+                    std::unique_lock<std::mutex> lck(rSync.finishedWithStateMtx); // once we've unlocked the current state we want to wait until the copyingStateCV is notified (indication copying is complete)
+                    rSync.finishedStateWithCv.wait(lck, [&rSync]() { return !rSync.renderWantsState.load(); });
+                    rSync.runtimeStateMtx.lock(); // now that copying is complete we can re-gain the lock to continue executing as many iterations as we can while the render thread is rendering
+                }
+            }
+            rSync.runtimeStateMtx.unlock(); // make sure we unlock the state when we're being told to shut down.
+        });
+
     // Main loop
     while (!glfwWindowShouldClose(window))
     {
+        pProgramInstance->CopyState();
         // Poll and handle events (inputs, window resize, etc.)
         // You can read the io.WantCaptureMouse, io.WantCaptureKeyboard flags to tell if dear imgui wants to use your inputs.
         // - When io.WantCaptureMouse is true, do not dispatch mouse input data to your main application, or clear/overwrite your copy of the mouse data.
@@ -123,7 +173,7 @@ int main()
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
 
-        pProgramInstance->Update();
+        pProgramInstance->Render();
 
         // Rendering
         ImGui::Render();
@@ -147,7 +197,8 @@ int main()
 
         glfwSwapBuffers(window);
     }
-
+    pProgramInstance->sync.exit = true;
+    runtimeWorker.join();
     delete pProgramInstance;
 
     // Cleanup

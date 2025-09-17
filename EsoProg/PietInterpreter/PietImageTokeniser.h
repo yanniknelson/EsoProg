@@ -1,3 +1,5 @@
+#pragma once
+
 #include <strstream>
 #include <iostream>
 #include <iomanip>
@@ -248,12 +250,13 @@ public:
 		}
 	};
 
-	Location GetCurrentBlockStartLocation() const;
-	Location GetCurrentBlockEndLocation() const;
-	Direction GetCurrentBlockStartDirectionPointer() const;
-	Direction GetCurrentBlockEndDirectionPointer() const;
-	Direction GetCurrentBlockStartCodelChoser() const;
-	Direction GetCurrentBlockEndCodelChoser() const;
+	void CopyState();
+	Location GetCachedBlockStartLocation() const;
+	Location GetCachedBlockEndLocation() const;
+	Direction GetCachedBlockStartDirectionPointer() const;
+	Direction GetCachedBlockEndDirectionPointer() const;
+	Direction GetCachedBlockStartCodelChoser() const;
+	Direction GetCachedBlockEndCodelChoser() const;
 
 private:
 
@@ -272,6 +275,7 @@ private:
 	Location m_globalStartCodel{ 0, 0 };
 
 	BlockInfo m_currentBlock;
+	BlockInfo m_cachedBlock;
 
 	/// <summary>
 	/// Convert from RGB value to Hue Brightness pair (using struct for readability)

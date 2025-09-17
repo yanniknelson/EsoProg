@@ -1,6 +1,7 @@
 #pragma once
 
 #include "PietRuntime.h"
+#include "../EsoProg.h"
 
 //ImGui imports
 #include <imgui.h>
@@ -216,7 +217,7 @@ bool Runtime::IsWaitingForCharInput() const
 	return m_waitingForCharInput;
 }
 
-void Runtime::RenderWindows()
+void Runtime::RenderWindows(SyncronisationStruct& rSync)
 {
 	// IMAGE PROGRAM DISPLAY --------------------------------------------------------------------------------------------
 	if (ImGui::Begin("Piet Image"))
@@ -234,13 +235,30 @@ void Runtime::RenderWindows()
 
 		if (ImGui::Button("Run"))
 		{
-			RunFromStart();
+			rSync.iterations = -1;
+		}
+
+		ImGui::SameLine();
+		{
+			int currentinstructionWaitTime = rSync.instructionWaitTime.load();
+			int newInstructionWaitTime = currentinstructionWaitTime;
+			ImGui::InputText("##instructionWaitTime", &rSync.m_instructionWaitTimeStr, ImGuiInputTextFlags_CharsDecimal | ImGuiInputTextFlags_CallbackEdit, ValueInputChanged, &newInstructionWaitTime);
+			rSync.instructionWaitTime.compare_exchange_strong(currentinstructionWaitTime, newInstructionWaitTime);
+		}
+
+		if (rSync.iterations == -1)
+		{
+			ImGui::SameLine();
+			if (ImGui::Button("Pause"))
+			{
+				rSync.iterations = 0;
+			}
 		}
 
 		ImGui::SameLine();
 		if (ImGui::Button("Step"))
 		{
-			StepExecution();
+			++rSync.iterations;
 		}
 
 		ImGui::SameLine();
@@ -255,17 +273,23 @@ void Runtime::RenderWindows()
 		}
 
 		ImGui::Text("Current Block Start Location: %s - End Location: %s",
-			m_imageTokeniser.GetCurrentBlockStartLocation().toString().c_str(), 
-			m_imageTokeniser.GetCurrentBlockEndLocation().toString().c_str());
+			m_imageTokeniser.GetCachedBlockStartLocation().toString().c_str(),
+			m_imageTokeniser.GetCachedBlockEndLocation().toString().c_str());
 		ImGui::Text("Current Block Start Dir: %s - End Dir: %s",
-			PietImageTokeniser::i_directionIcons[static_cast<int>(m_imageTokeniser.GetCurrentBlockStartDirectionPointer())], 
-			PietImageTokeniser::i_directionIcons[static_cast<int>(m_imageTokeniser.GetCurrentBlockEndDirectionPointer())]);
+			PietImageTokeniser::i_directionIcons[static_cast<int>(m_imageTokeniser.GetCachedBlockStartDirectionPointer())],
+			PietImageTokeniser::i_directionIcons[static_cast<int>(m_imageTokeniser.GetCachedBlockEndDirectionPointer())]);
 		ImGui::Text("Current Block Start CC: %s - End CC: %s",
-			PietImageTokeniser::i_directionIcons[static_cast<int>(m_imageTokeniser.GetCurrentBlockStartCodelChoser())], 
-			PietImageTokeniser::i_directionIcons[static_cast<int>(m_imageTokeniser.GetCurrentBlockEndCodelChoser())]);
+			PietImageTokeniser::i_directionIcons[static_cast<int>(m_imageTokeniser.GetCachedBlockStartCodelChoser())],
+			PietImageTokeniser::i_directionIcons[static_cast<int>(m_imageTokeniser.GetCachedBlockEndCodelChoser())]);
 
 		ImGui::End();
 	}
+}
+
+void Runtime::CopyState()
+{
+	m_cachedStack = m_stack;
+	m_imageTokeniser.CopyState();
 }
 
 void Runtime::StepExecution()

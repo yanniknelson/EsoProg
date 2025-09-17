@@ -87,6 +87,8 @@ class EsoProg {
 	int m_tokenErrorLine = 0;
 	std::ostringstream m_outputStream{ "" };
 	std::ostringstream m_executionHistoryStream{ "" };
+	std::string m_cachedExecutionHistory{ "" };
+	std::string m_cachedOutput{ "" };
 	Runtime m_runtime{ m_outputStream, m_executionHistoryStream };
 
 	ImGuiInputTextFlags m_codeEditorFlags = ImGuiInputTextFlags_CallbackCharFilter | ImGuiInputTextFlags_EnterReturnsTrue;
@@ -96,6 +98,8 @@ class EsoProg {
 public:
 	static char* i_ProgramName;
 	static GLFWwindow* i_pWindow;
+
+	Runtime::SyncronisationStruct sync;
 
 	EsoProg(GLFWwindow* pWindow)
 	{
@@ -114,5 +118,8 @@ public:
 		io.Fonts->AddFontFromFileTTF("fa-solid-900.ttf", 16.0f, &icons_config, icons_ranges);
 	}
 
-	void Update();
+	void UpdateRuntime();
+	void Render();
+	bool IsRuntimeWaitingOnInput();
+	void CopyState();
 };

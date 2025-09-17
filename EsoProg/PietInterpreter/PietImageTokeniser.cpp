@@ -72,34 +72,39 @@ void PietImageTokeniser::RotateDirectionPointer(const int times)
 	PietImageTokeniser::RotateDirectionPointer(m_currentBlock, times);
 }
 
-PietImageTokeniser::Location PietImageTokeniser::GetCurrentBlockStartLocation() const
+void PietImageTokeniser::CopyState()
 {
-	return m_currentBlock.m_startingCodel;
+	m_cachedBlock = m_currentBlock;
 }
 
-PietImageTokeniser::Location PietImageTokeniser::GetCurrentBlockEndLocation() const
+PietImageTokeniser::Location PietImageTokeniser::GetCachedBlockStartLocation() const
 {
-	return m_currentBlock.m_endingCodel;
+	return m_cachedBlock.m_startingCodel;
 }
 
-PietImageTokeniser::Direction PietImageTokeniser::GetCurrentBlockStartDirectionPointer() const
+PietImageTokeniser::Location PietImageTokeniser::GetCachedBlockEndLocation() const
 {
-	return m_currentBlock.m_startingDirectionPointer;
+	return m_cachedBlock.m_endingCodel;
 }
 
-PietImageTokeniser::Direction PietImageTokeniser::GetCurrentBlockEndDirectionPointer() const
+PietImageTokeniser::Direction PietImageTokeniser::GetCachedBlockStartDirectionPointer() const
 {
-	return m_currentBlock.m_endingDirectionPointer;
+	return m_cachedBlock.m_startingDirectionPointer;
 }
 
-PietImageTokeniser::Direction PietImageTokeniser::GetCurrentBlockStartCodelChoser() const
+PietImageTokeniser::Direction PietImageTokeniser::GetCachedBlockEndDirectionPointer() const
 {
-	return m_currentBlock.m_startingCodelChooser;
+	return m_cachedBlock.m_endingDirectionPointer;
 }
 
-PietImageTokeniser::Direction PietImageTokeniser::GetCurrentBlockEndCodelChoser() const
+PietImageTokeniser::Direction PietImageTokeniser::GetCachedBlockStartCodelChoser() const
 {
-	return m_currentBlock.m_endingCodelChooser;
+	return m_cachedBlock.m_startingCodelChooser;
+}
+
+PietImageTokeniser::Direction PietImageTokeniser::GetCachedBlockEndCodelChoser() const
+{
+	return m_cachedBlock.m_endingCodelChooser;
 }
 
 PietImageTokeniser::PietColour PietImageTokeniser::RGBToPietColour(const PietImageTokeniser::RGB colour)
