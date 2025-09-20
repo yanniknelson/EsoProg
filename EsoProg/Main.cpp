@@ -197,6 +197,7 @@ int main()
 
         glfwSwapBuffers(window);
     }
+    pProgramInstance->sync.iterations = 0;
     pProgramInstance->sync.exit = true;
     runtimeWorker.join();
     delete pProgramInstance;

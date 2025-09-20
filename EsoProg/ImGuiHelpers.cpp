@@ -10,7 +10,9 @@ int TextInputCallback(ImGuiInputTextCallbackData* data)
 
 int ValueInputChanged(ImGuiInputTextCallbackData* data)
 {
-	*((int*)data->UserData) = std::stoi(data->Buf);
-
+	if (std::string str = data->Buf; !str.empty())
+	{
+		*((int*)data->UserData) = std::stoi(str);
+	}
 	return 0;
 }
