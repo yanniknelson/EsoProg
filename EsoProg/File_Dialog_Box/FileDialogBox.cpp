@@ -26,7 +26,7 @@ FileDialogBox::FileDialogReturn FileDialogBox::Create_File_Dialog(bool& open, Fi
     }
     for (auto pth = breakdown.rbegin(); pth != breakdown.rend(); pth++) {
         ImGui::SameLine();
-        if (ImGui::Button(pth->filename().string().c_str())) {
+        if (ImGui::Button((pth->filename().string() + "" + pth->string()).c_str())) {
             currentPath = *pth;
         }
     }
