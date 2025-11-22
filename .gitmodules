@@ -1,0 +1,18 @@
+[submodule "Vendor/imgui"]
+	path = Vendor/imgui
+	url = https://github.com/ocornut/imgui
+[submodule "Vendor/Optick"]
+	path = Vendor/Optick
+	url = https://github.com/bombomby/optick
+[submodule "Vendor/spdlog"]
+	path = Vendor/spdlog
+	url = https://github.com/gabime/spdlog
+[submodule "Vendor/Font-Awesome"]
+	path = Vendor/Font-Awesome
+	url = https://github.com/FortAwesome/Font-Awesome
+[submodule "Vendor/FontAwesomeHeaders"]
+	path = Vendor/FontAwesomeHeaders
+	url = https://github.com/juliettef/IconFontCppHeaders
+[submodule "Vendor/stb"]
+	path = Vendor/stb
+	url = https://github.com/nothings/stb
