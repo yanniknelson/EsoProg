@@ -1,0 +1,9 @@
+C:\Users\yanni\Documents\GitHub\EsoProg\Vendor\optick\src\optick_capi.cpp;C:\Users\yanni\Documents\GitHub\EsoProg\bin\OptickCore\windows-x86_64\Debug\Intermediates\optick_capi.obj
+C:\Users\yanni\Documents\GitHub\EsoProg\Vendor\optick\src\optick_core.cpp;C:\Users\yanni\Documents\GitHub\EsoProg\bin\OptickCore\windows-x86_64\Debug\Intermediates\optick_core.obj
+C:\Users\yanni\Documents\GitHub\EsoProg\Vendor\optick\src\optick_gpu.cpp;C:\Users\yanni\Documents\GitHub\EsoProg\bin\OptickCore\windows-x86_64\Debug\Intermediates\optick_gpu.obj
+C:\Users\yanni\Documents\GitHub\EsoProg\Vendor\optick\src\optick_gpu.d3d12.cpp;C:\Users\yanni\Documents\GitHub\EsoProg\bin\OptickCore\windows-x86_64\Debug\Intermediates\optick_gpu.d3d12.obj
+C:\Users\yanni\Documents\GitHub\EsoProg\Vendor\optick\src\optick_gpu.vulkan.cpp;C:\Users\yanni\Documents\GitHub\EsoProg\bin\OptickCore\windows-x86_64\Debug\Intermediates\optick_gpu.vulkan.obj
+C:\Users\yanni\Documents\GitHub\EsoProg\Vendor\optick\src\optick_message.cpp;C:\Users\yanni\Documents\GitHub\EsoProg\bin\OptickCore\windows-x86_64\Debug\Intermediates\optick_message.obj
+C:\Users\yanni\Documents\GitHub\EsoProg\Vendor\optick\src\optick_miniz.cpp;C:\Users\yanni\Documents\GitHub\EsoProg\bin\OptickCore\windows-x86_64\Debug\Intermediates\optick_miniz.obj
+C:\Users\yanni\Documents\GitHub\EsoProg\Vendor\optick\src\optick_serialization.cpp;C:\Users\yanni\Documents\GitHub\EsoProg\bin\OptickCore\windows-x86_64\Debug\Intermediates\optick_serialization.obj
+C:\Users\yanni\Documents\GitHub\EsoProg\Vendor\optick\src\optick_server.cpp;C:\Users\yanni\Documents\GitHub\EsoProg\bin\OptickCore\windows-x86_64\Debug\Intermediates\optick_server.obj
