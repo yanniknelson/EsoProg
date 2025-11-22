@@ -9,16 +9,6 @@ template<typename TokenClass>
 class ITextTokeniser : public ITokeniser<TokenClass>
 {
 public:
-
-	/// <summary>
-	/// Get the next token
-	/// </summary>
-	/// <returns> The next token </returns>
-	const TokenClass& Pop()
-	{
-		return Pop_Internal();;
-	}
-
 	ITextTokeniser() {};
 
 	void SetTextStream(std::stringstream& m_code)
@@ -42,11 +32,6 @@ protected:
 	virtual TokenClass::TokenType StringToTokenType(std::string& rString) const
 	{
 		return TokenClass::TokenType::End;
-	}
-
-	virtual TokenClass Pop_Internal()
-	{
-		return ITokeniser<TokenClass>::m_tLastPopped;
 	}
 
 	std::stringstream* m_pStrStream{ nullptr };

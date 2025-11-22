@@ -5,10 +5,13 @@ class ITokeniser
 {
 public:
 	/// <summary>
-	/// Get the next Token
+	/// Get the next token
 	/// </summary>
-	/// <returns> The next Token to be executed </returns>
-	virtual const TokenClass& Pop() = 0;
+	/// <returns> The next token </returns>
+	const TokenClass& Pop()
+	{
+		return Pop_Internal();;
+	}
 
 	/// <summary>
 	/// Get the last Token popped
@@ -17,5 +20,11 @@ public:
 	virtual const TokenClass& LastPopped() const { return m_tLastPopped; };
 
 protected:
+
+	virtual TokenClass Pop_Internal()
+	{
+		return m_tLastPopped;
+	}
+
 	TokenClass m_tLastPopped{ TokenClass::TokenType::End };
 };

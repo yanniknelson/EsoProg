@@ -11,7 +11,8 @@ public:
 		Start, Value, Push, Pop, Add, Subtract, Multiply, Divide, Modulo, Not, Greater,
 		Pointer, Switch, Duplicate, Roll, Input, Output, INT, CHAR, Input_Char, Input_Val, Output_Char, Output_Val, NOP, End, Unrecognised_Token
 	};
-	PietToken(const TokenType type) : m_type(type) {};
+
+	PietToken(const TokenType type) : m_type(type), m_value(NAN) {};
 
 	TokenType m_type = TokenType::Start;
 	int m_value;

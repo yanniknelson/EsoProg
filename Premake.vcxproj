@@ -79,7 +79,7 @@
   <ItemGroup>
     <None Include="App\Build-EsoProg.lua" />
     <None Include="Build.lua" />
-    <None Include="Core\ILanguageParser\Build-ILanguageParser.lua" />
+    <None Include="Core\ITokeniser\Build-ITokeniser.lua" />
     <None Include="Core\ImGuiHelpers\Build-ImGuiHelpers.lua" />
     <None Include="Core\Logger\Build-Logger.lua" />
     <None Include="Core\PietInterpreter\Build-PietInterpreter.lua" />

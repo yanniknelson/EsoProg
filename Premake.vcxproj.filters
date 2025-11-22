@@ -7,8 +7,8 @@
     <Filter Include="Core">
       <UniqueIdentifier>{2EB4837C-1AEB-840D-C3D7-6A10AFED000F}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Core\ILanguageParser">
-      <UniqueIdentifier>{378C8F0B-231B-19D5-CC39-2DD0B8A7297B}</UniqueIdentifier>
+    <Filter Include="Core\ITokeniser">
+      <UniqueIdentifier>{BA84A11A-2610-0FDF-2F21-92D39B2B6BDF}</UniqueIdentifier>
     </Filter>
     <Filter Include="Core\ImGuiHelpers">
       <UniqueIdentifier>{4BEC6D74-B702-6C0A-007A-F72B6CCF3C92}</UniqueIdentifier>
@@ -34,8 +34,8 @@
       <Filter>App</Filter>
     </None>
     <None Include="Build.lua" />
-    <None Include="Core\ILanguageParser\Build-ILanguageParser.lua">
-      <Filter>Core\ILanguageParser</Filter>
+    <None Include="Core\ITokeniser\Build-ITokeniser.lua">
+      <Filter>Core\ITokeniser</Filter>
     </None>
     <None Include="Core\ImGuiHelpers\Build-ImGuiHelpers.lua">
       <Filter>Core\ImGuiHelpers</Filter>

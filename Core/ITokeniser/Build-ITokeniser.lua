@@ -1,4 +1,4 @@
-project "ILanguageParser"
+project "ITokeniser"
    kind "StaticLib"
    language "C++"
    cppdialect "C++20"

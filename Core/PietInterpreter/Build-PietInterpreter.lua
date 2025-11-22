@@ -12,7 +12,7 @@ project "PietInterpreter"
 
 	  -- Include Core
 	  "%{wks.location}/Core/ImGuiHelpers/ImGuiValueChangeCallbacks",
-	  "%{wks.location}/Core/ILanguageParser/Src",
+	  "%{wks.location}/Core/ITokeniser/Src",
 
       -- Include externals
       "%{wks.location}/%{externals.spdlog}/include",
