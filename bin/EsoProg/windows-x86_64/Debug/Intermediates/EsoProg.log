@@ -1,4 +1,10 @@
 ﻿  EsoProg.cpp
   Main.cpp
   Generating Code...
+  LINK : ..\bin\EsoProg\windows-x86_64\Debug\EsoProg.exe not found or not built by the last incremental link; performing full link
+LINK : warning LNK4098: defaultlib 'MSVCRT' conflicts with use of other libs; use /NODEFAULTLIB:library
+LINK : warning LNK4217: symbol 'vsnprintf' defined in 'imgui.lib(imgui_impl_glfw.obj)' is imported by 'glfw3.lib(init.obj)' in function '_glfwInputError'
+LINK : warning LNK4286: symbol 'vsnprintf' defined in 'imgui.lib(imgui_impl_glfw.obj)' is imported by 'MSVCRTD.lib(vsnprintf.obj)'
+LINK : warning LNK4217: symbol 'sscanf' defined in 'imgui.lib(imgui.obj)' is imported by 'glfw3.lib(context.obj)' in function 'parseVersionString'
+LINK : warning LNK4286: symbol '_vsnprintf' defined in 'imgui.lib(imgui.obj)' is imported by 'MSVCRTD.lib(vsnprintf.obj)'
   EsoProg.vcxproj -> C:\Users\yanni\Documents\GitHub\EsoProg\bin\EsoProg\windows-x86_64\Debug\EsoProg.exe

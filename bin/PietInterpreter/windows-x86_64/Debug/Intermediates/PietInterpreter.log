@@ -1,7 +1,4 @@
-﻿  PietRuntime.cpp
-  PietTextTokeniser.cpp
-C:\Users\yanni\Documents\GitHub\EsoProg\Core\PietInterpreter\Src\PietTextTokeniser.cpp(27,27): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
-C:\Users\yanni\Documents\GitHub\EsoProg\Core\PietInterpreter\Src\PietTextTokeniser.cpp(49,27): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
+﻿  PietImageTokeniser.cpp
+  PietRuntime.cpp
   Generating Code...
-C:\Users\yanni\Documents\GitHub\EsoProg\Core\PietInterpreter\Src\PietTextTokeniser.cpp(19,1): warning C4172: returning address of local variable or temporary : token
   PietInterpreter.vcxproj -> C:\Users\yanni\Documents\GitHub\EsoProg\bin\PietInterpreter\windows-x86_64\Debug\PietInterpreter.lib
