@@ -1,2 +1,17 @@
-**/build
-/.vs
+# Directories
+.vs/
+bin/
+*logs/
+obj/
+
+# Files
+*.vcxproj
+*.vcxproj.user
+*.vcxproj.filters
+*.sln
+*.log
+*.ini
+Makefile
+
+# Exclude
+!Vendor/Binaries
