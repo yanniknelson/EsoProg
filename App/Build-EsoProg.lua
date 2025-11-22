@@ -14,6 +14,7 @@ project "EsoProg"
 	  "%{wks.location}/Core/SmartEnums",
 	  "%{wks.location}/Core/ImGuiHelpers/FileDialogBox",
 	  "%{wks.location}/Core/ImGuiHelpers/ImGuiValueChangeCallbacks",
+      "%{wks.location}/Core/ILanguageParser/Src",
 	  "%{wks.location}/Core/PietInterpreter/Src",
 
       -- Include externals

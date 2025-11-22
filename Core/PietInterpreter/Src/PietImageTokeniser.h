@@ -1,14 +1,15 @@
 #pragma once
 
+#include "PietToken.h"
+
 #include <strstream>
 #include <iostream>
 #include <iomanip>
+#include <ITokeniser.h>
 #include <vector>
 #include <string>
 
-#include "PietTokeniser.h"
-
-class PietImageTokeniser : public PietTokeniser
+class PietImageTokeniser : public ITokeniser<PietToken>
 {
 public:
 

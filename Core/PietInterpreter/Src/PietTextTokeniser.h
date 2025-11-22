@@ -1,33 +1,17 @@
 #pragma once
 
-#include "PietTokeniser.h"
+#include "PietToken.h"
 
+#include <ITextTokeniser.h>
 #include <strstream>
 #include <iostream>
 
 
-class PietTextTokeniser : public PietTokeniser
+class PietTextTokeniser : public ITextTokeniser<PietToken>
 {
 public:
 
-	/// <summary>
-	/// Get the next token
-	/// </summary>
-	/// <returns> The next token </returns>
-	virtual const PietToken& Pop() override;
-
 	PietTextTokeniser() {};
-
-	void SetTextStream(std::stringstream& m_code)
-	{
-		m_pStrStream = &m_code;
-		m_lineNumber = 1;
-	}
-
-	int GetLineNumber()
-	{
-		return m_lineNumber;
-	}
 
 private:
 
@@ -36,12 +20,8 @@ private:
 	/// </summary>
 	/// <param name="rString - "> string to be converted </param>
 	/// <returns> TokenType enum corresponding to input string </returns>
-	PietToken::TokenType StringToTokenType(std::string& rString) const;
+	virtual PietToken::TokenType StringToTokenType(std::string& rString) const override;
 
-	PietToken Pop_Internal();
-
-	std::stringstream* m_pStrStream{ nullptr };
-	PietToken m_tLastPopped{ PietToken::TokenType::End };
-	int m_lineNumber = 1;
-
+	PietToken GetNextToken();
+	virtual PietToken Pop_Internal() override;
 };

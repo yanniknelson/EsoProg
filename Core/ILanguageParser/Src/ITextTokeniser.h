@@ -14,7 +14,10 @@ public:
 	/// Get the next token
 	/// </summary>
 	/// <returns> The next token </returns>
-	virtual const TokenClass& Pop() override;
+	const TokenClass& Pop()
+	{
+		return Pop_Internal();;
+	}
 
 	ITextTokeniser() {};
 
@@ -36,11 +39,16 @@ protected:
 	/// </summary>
 	/// <param name="rString - "> string to be converted </param>
 	/// <returns> TokenType enum corresponding to input string </returns>
-	TokenClass::TokenType StringToTokenType(std::string& rString) const;
+	virtual TokenClass::TokenType StringToTokenType(std::string& rString) const
+	{
+		return TokenClass::TokenType::End;
+	}
 
-	TokenClass Pop_Internal();
+	virtual TokenClass Pop_Internal()
+	{
+		return ITokeniser<TokenClass>::m_tLastPopped;
+	}
 
 	std::stringstream* m_pStrStream{ nullptr };
-	TokenClass m_tLastPopped{ TokenClass::TokenType::End };
 	int m_lineNumber = 1;
 };

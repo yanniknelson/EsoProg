@@ -1,16 +1,17 @@
 #pragma once
 
+#include <IToken.h>
 #include <iostream>
 
-class PietToken
+class PietToken : public IToken
 {
-
 public:
 	enum class TokenType
 	{
 		Start, Value, Push, Pop, Add, Subtract, Multiply, Divide, Modulo, Not, Greater,
 		Pointer, Switch, Duplicate, Roll, Input, Output, INT, CHAR, Input_Char, Input_Val, Output_Char, Output_Val, NOP, End, Unrecognised_Token
 	};
+	PietToken(const TokenType type) : m_type(type) {};
 
 	TokenType m_type = TokenType::Start;
 	int m_value;

@@ -3,10 +3,7 @@
 template<typename TokenClass>
 class ITokeniser
 {
-protected:
-	TokenClass m_tLastPopped{ TokenClass::TokenType::End };
 public:
-
 	/// <summary>
 	/// Get the next Token
 	/// </summary>
@@ -18,4 +15,7 @@ public:
 	/// </summary>
 	/// <returns> The last token returned by a call of Pop </returns>
 	virtual const TokenClass& LastPopped() const { return m_tLastPopped; };
+
+protected:
+	TokenClass m_tLastPopped{ TokenClass::TokenType::End };
 };

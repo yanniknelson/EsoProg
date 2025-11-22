@@ -1,5 +1,6 @@
 #pragma once
 
+#include "ITokeniser.h"
 #include "PietTextTokeniser.h"
 #include "PietImageTokeniser.h"
 #include "PietStack.h"
@@ -18,6 +19,7 @@
 
 class Runtime
 {
+	using TPietTokeniser = ITokeniser<PietToken>;
 public:
 
 	enum class SourceType
@@ -44,7 +46,7 @@ public:
 		if (!str.empty())
 		{
 			m_currentSourceType = SourceType::Text;
-			m_activeTokeniser = (m_currentSourceType == SourceType::Text) ? (PietTokeniser*)&m_textTokeniser : (PietTokeniser*)&m_imageTokeniser;
+			m_activeTokeniser = (m_currentSourceType == SourceType::Text) ? (TPietTokeniser*)&m_textTokeniser : (TPietTokeniser*)&m_imageTokeniser;
 		}
 		ResetTokenisers();
 	}
@@ -55,13 +57,13 @@ public:
 		m_aspectRatio = (float)imageHeight / (float)imageWidth;
 		m_imageTokeniser.SetImage(imageData, imageWidth, imageHeight);
 		m_currentSourceType = SourceType::Image;
-		m_activeTokeniser = (m_currentSourceType == SourceType::Text) ? (PietTokeniser*)&m_textTokeniser : (PietTokeniser*)&m_imageTokeniser;
+		m_activeTokeniser = (m_currentSourceType == SourceType::Text) ? (TPietTokeniser*)&m_textTokeniser : (TPietTokeniser*)&m_imageTokeniser;
 	}
 	
 	void UnsetImage()
 	{
 		m_currentSourceType = SourceType::Invalid;
-		m_activeTokeniser = (m_currentSourceType == SourceType::Image) ? (PietTokeniser*)&m_imageTokeniser : (PietTokeniser*)&m_textTokeniser;
+		m_activeTokeniser = (m_currentSourceType == SourceType::Image) ? (TPietTokeniser*)&m_imageTokeniser : (TPietTokeniser*)&m_textTokeniser;
 		m_pTexture = nullptr;
 		m_aspectRatio = 1.f;
 		m_imageTokeniser.UnsetImage();
@@ -124,7 +126,7 @@ private:
 	int m_codelSize{ 1 };
 
 	SourceType m_currentSourceType{ SourceType::Text };
-	PietTokeniser* m_activeTokeniser = nullptr;
+	TPietTokeniser* m_activeTokeniser = nullptr;
 
 	std::ostringstream& m_rOutputStream;
 	std::ostringstream& m_rExecutionHistoryStream;
