@@ -1,9 +1,0 @@
-﻿  async.cpp
-  bundled_fmtlib_format.cpp
-  cfg.cpp
-  color_sinks.cpp
-  file_sinks.cpp
-  spdlog.cpp
-  stdout_sinks.cpp
-  Generating Code...
-  spdlog.vcxproj -> C:\Users\yanni\Documents\GitHub\EsoProg\bin\spdlog\windows-x86_64\Debug\spdlog.lib
