@@ -79,9 +79,11 @@
   <ItemGroup>
     <None Include="App\Build-EsoProg.lua" />
     <None Include="Build.lua" />
+    <None Include="Core\ILanguageParser\Build-ILanguageParser.lua" />
     <None Include="Core\ImGuiHelpers\Build-ImGuiHelpers.lua" />
     <None Include="Core\Logger\Build-Logger.lua" />
     <None Include="Core\PietInterpreter\Build-PietInterpreter.lua" />
+    <None Include="Core\SmartEnums\Build-SmartEnums.lua" />
     <None Include="Vendor\Build-Externals.lua" />
     <None Include="Vendor\Optick\premake5.lua" />
   </ItemGroup>

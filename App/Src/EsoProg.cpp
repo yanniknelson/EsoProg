@@ -390,7 +390,7 @@ void EsoProg::Render()
 				{
 					int currentinstructionWaitTime = sync.instructionWaitTime.load();
 					int newInstructionWaitTime = currentinstructionWaitTime;
-					ImGui::InputText("##instructionWaitTime", &sync.m_instructionWaitTimeStr, ImGuiInputTextFlags_CharsDecimal | ImGuiInputTextFlags_CallbackEdit, ValueInputChanged, &newInstructionWaitTime);
+					ImGui::SliderInt("Execution Speed", &newInstructionWaitTime, 0, 1000);
 					sync.instructionWaitTime.compare_exchange_strong(currentinstructionWaitTime, newInstructionWaitTime);
 				}
 

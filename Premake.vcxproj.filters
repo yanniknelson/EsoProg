@@ -7,6 +7,9 @@
     <Filter Include="Core">
       <UniqueIdentifier>{2EB4837C-1AEB-840D-C3D7-6A10AFED000F}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Core\ILanguageParser">
+      <UniqueIdentifier>{378C8F0B-231B-19D5-CC39-2DD0B8A7297B}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Core\ImGuiHelpers">
       <UniqueIdentifier>{4BEC6D74-B702-6C0A-007A-F72B6CCF3C92}</UniqueIdentifier>
     </Filter>
@@ -15,6 +18,9 @@
     </Filter>
     <Filter Include="Core\PietInterpreter">
       <UniqueIdentifier>{A39B12E0-8F2A-9CA9-3849-B0A424B7AC4F}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core\SmartEnums">
+      <UniqueIdentifier>{4C7A8AF2-B805-F8B6-C116-7BAB2D2154B7}</UniqueIdentifier>
     </Filter>
     <Filter Include="Vendor">
       <UniqueIdentifier>{935FDCD7-7F01-07AE-68BC-1A0254FD8DFE}</UniqueIdentifier>
@@ -28,6 +34,9 @@
       <Filter>App</Filter>
     </None>
     <None Include="Build.lua" />
+    <None Include="Core\ILanguageParser\Build-ILanguageParser.lua">
+      <Filter>Core\ILanguageParser</Filter>
+    </None>
     <None Include="Core\ImGuiHelpers\Build-ImGuiHelpers.lua">
       <Filter>Core\ImGuiHelpers</Filter>
     </None>
@@ -36,6 +45,9 @@
     </None>
     <None Include="Core\PietInterpreter\Build-PietInterpreter.lua">
       <Filter>Core\PietInterpreter</Filter>
+    </None>
+    <None Include="Core\SmartEnums\Build-SmartEnums.lua">
+      <Filter>Core\SmartEnums</Filter>
     </None>
     <None Include="Vendor\Build-Externals.lua">
       <Filter>Vendor</Filter>

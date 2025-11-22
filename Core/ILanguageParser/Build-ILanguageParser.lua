@@ -1,5 +1,5 @@
-project "EsoProg"
-   kind "ConsoleApp"
+project "ILanguageParser"
+   kind "StaticLib"
    language "C++"
    cppdialect "C++20"
    targetdir "bin/%{cfg.buildcfg}"
@@ -11,12 +11,10 @@ project "EsoProg"
       "Src",
 
 	  -- Include Core
-	  "%{wks.location}/Core/SmartEnums",
-	  "%{wks.location}/Core/ImGuiHelpers/FileDialogBox",
 	  "%{wks.location}/Core/ImGuiHelpers/ImGuiValueChangeCallbacks",
-	  "%{wks.location}/Core/PietInterpreter/Src",
 
       -- Include externals
+      "%{wks.location}/%{externals.spdlog}/include",
       "%{wks.location}/%{externals.stb}",
       "%{wks.location}/%{externals.imgui}",
       "%{wks.location}/%{externals.imgui}/misc/cpp",
@@ -25,31 +23,12 @@ project "EsoProg"
       "%{wks.location}/%{externals.FontAwesomeHeader}"
    }
 
-   libdirs
-   {
-       "%{wks.location}/%{externals.imgui}/examples/libs/glfw/lib-vc2010-64"
-   }
-
-   links
-   {
-      "spdlog",
-      "glfw3",
-      "gdi32",
-      "opengl32",
-      "imm32",
-      "imgui",
-      "Logger",
-      "ImGuiFileDialogBox",
-      "ImGuiValueChangeCallbacks",
-      "PietInterpreter"
-   }
-
    targetdir ("%{wks.location}/bin/%{prj.name}/" .. OutputDir)
    objdir ("%{wks.location}/bin/%{prj.name}/" .. OutputDir .. "/Intermediates")
 
    filter "system:windows"
        systemversion "latest"
-       defines { "WINDOWS" }
+       defines { }
 
    filter "configurations:Debug"
        defines { "DEBUG" }
@@ -67,4 +46,3 @@ project "EsoProg"
        runtime "Release"
        optimize "On"
        symbols "Off"
-       kind "WindowedApp"
