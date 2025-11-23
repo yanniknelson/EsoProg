@@ -1,13 +1,15 @@
 #pragma once
 
 #include "ITokeniser.h"
+#include "PietToken.h"
 #include "PietTextTokeniser.h"
 #include "PietImageTokeniser.h"
-#include "PietStack.h"
 
 #include <iostream>
 #include <sstream>
 
+#include <Stack.h>
+#include <IRuntime.h>
 #include <string>
 #include <thread>
 #include <mutex>
@@ -17,10 +19,11 @@
 
 #include "GLFW/glfw3.h"
 
-class Runtime
+class PietRuntime : public IRuntime<PietToken>
 {
 	using TPietTokeniser = ITokeniser<PietToken>;
 public:
+	PietRuntime(std::ostringstream& rOutputStream, std::ostringstream& rExecutionhistoryStream) : IRuntime(rOutputStream, rExecutionhistoryStream) {};
 
 	enum class SourceType
 	{
@@ -28,12 +31,6 @@ public:
 		Image,
 		Invalid
 	};
-
-	static const PietToken m_tDefaultToken;
-
-	Runtime(std::ostringstream& rOutputStream, std::ostringstream& rExecutionhistoryStream) : m_rOutputStream(rOutputStream), m_rExecutionHistoryStream(rExecutionhistoryStream) {}
-
-	void StepExecution();
 
 	void SetTextStream(std::string str)
 	{
@@ -59,7 +56,7 @@ public:
 		m_currentSourceType = SourceType::Image;
 		m_activeTokeniser = (m_currentSourceType == SourceType::Text) ? (TPietTokeniser*)&m_textTokeniser : (TPietTokeniser*)&m_imageTokeniser;
 	}
-	
+
 	void UnsetImage()
 	{
 		m_currentSourceType = SourceType::Invalid;
@@ -77,48 +74,16 @@ public:
 		m_stack.Clear();
 	}
 
-	void RunFromStart();
-	void Run();
-	void InputChar(int val);
-	void InputVal(int val);
-
-	bool IsRunning() const;
-	bool IsWaitingForValInput() const;
-	bool IsWaitingForCharInput() const;
-
-	const std::deque<int>& GetStack() { return m_cachedStack.GetStack(); }
-
-	struct SyncronisationStruct
-	{
-		std::atomic<int> iterations = 0;
-		std::atomic<int> instructionWaitTime = 0;
-		std::atomic<bool> exit = false;
-		std::atomic<bool> renderWantsState = false;
-		std::condition_variable finishedStateWithCv;
-		std::mutex finishedWithStateMtx;
-		std::mutex runtimeStateMtx;
-
-		std::condition_variable waitingOnInputCV;
-		std::mutex waitingOnInputMtx;
-
-		std::string m_instructionWaitTimeStr{ "0" };
-	};
-
-	void RenderWindows(SyncronisationStruct& rSync);
-	void CopyState();
+	virtual void RenderWindows(RuntimeSyncronisationStruct& rSync) override;
+	virtual void CacheState() override;
 
 private:
 
 	PietTextTokeniser m_textTokeniser;
 	PietImageTokeniser m_imageTokeniser;
 
-	PietStack m_stack;
-	PietStack m_cachedStack;
-	std::string m_codeStr = "";
-	std::stringstream m_code;
-	bool m_waitingForCharInput = false;
-	bool m_waitingForValInput = false;
-	bool m_bIsRunning = false;
+	Stack m_stack;
+	Stack m_cachedStack;
 
 	GLuint* m_pTexture = nullptr;
 	float m_aspectRatio = 1.f;
@@ -126,22 +91,15 @@ private:
 	int m_codelSize{ 1 };
 
 	SourceType m_currentSourceType{ SourceType::Text };
-	TPietTokeniser* m_activeTokeniser = nullptr;
 
-	std::ostringstream& m_rOutputStream;
-	std::ostringstream& m_rExecutionHistoryStream;
+	void RenderImageDisplay(RuntimeSyncronisationStruct& rSync);
 
-	void StepExecution_Internal();
+	virtual void OnInput(int val) override;
 
-	void ResetTokenisers()
+	virtual PietToken StepExecution_Internal() override;
+	virtual void ResetTokenisers() override
 	{
-		m_code = std::stringstream(m_codeStr);
 		m_textTokeniser.SetTextStream(m_code);
 		m_imageTokeniser.Reset();
-		m_rOutputStream.str(std::string());
-		m_rExecutionHistoryStream.str(std::string());
-		m_bIsRunning = false;
-		m_waitingForCharInput = false;
-		m_waitingForValInput = false;
 	}
 };

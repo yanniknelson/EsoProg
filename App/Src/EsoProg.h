@@ -15,7 +15,7 @@
 //Custom classes
 #include <FileDialogBox.h>
 #include <IconsFontAwesome7.h>
-#include <PietRuntime.h>
+#include <RuntimeWrapper.h>
 #include "SmartEnum.h"
 
 class EsoProg {
@@ -27,14 +27,6 @@ class EsoProg {
 	CreateSmartEnum(EFileType, EFILETYPES);
 
 #undef EFILETYPES
-
-#define ELANGUAGES(x)\
-    x(Piet)
-
-	CreateSmartEnum(ELanguages, ELANGUAGES);
-
-#undef ELANGUAGES
-
 	void CheckShortCuts();
 
 	void HandleNew();
@@ -87,7 +79,7 @@ class EsoProg {
 	std::ostringstream m_executionHistoryStream{ "" };
 	std::string m_cachedExecutionHistory{ "" };
 	std::string m_cachedOutput{ "" };
-	Runtime m_runtime{ m_outputStream, m_executionHistoryStream };
+	RuntimeWrapper m_runtime{ m_outputStream, m_executionHistoryStream };
 
 	ImGuiInputTextFlags m_codeEditorFlags = ImGuiInputTextFlags_CallbackCharFilter | ImGuiInputTextFlags_EnterReturnsTrue;
 	std::string m_code{ "" };
@@ -97,7 +89,7 @@ public:
 	static const char* i_ProgramName;
 	static GLFWwindow* i_pWindow;
 
-	Runtime::SyncronisationStruct sync;
+	RuntimeSyncronisationStruct sync;
 
 	EsoProg(GLFWwindow* pWindow)
 	{

@@ -101,7 +101,7 @@ int main(int, char**)
 
     std::thread runtimeWorker([&]()
         {
-            Runtime::SyncronisationStruct& rSync = pProgramInstance->sync;
+            RuntimeSyncronisationStruct& rSync = pProgramInstance->sync;
             rSync.runtimeStateMtx.lock(); // lock the state for the first iterations
             while (!rSync.exit)
             {

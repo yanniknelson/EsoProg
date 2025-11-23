@@ -1,6 +1,7 @@
 #pragma once
 
 #include "PietRuntime.h"
+#include "PietToken.h"
 
 //ImGui imports
 #include <imgui.h>
@@ -16,9 +17,7 @@
 
 #include <ImGuiValueChangeCallbacks.h>
 
-const PietToken Runtime::m_tDefaultToken = { PietToken::TokenType::Start };
-
-void Runtime::StepExecution_Internal()
+PietToken PietRuntime::StepExecution_Internal()
 {
 	const PietToken token = m_activeTokeniser->Pop();
 
@@ -172,7 +171,7 @@ void Runtime::StepExecution_Internal()
 	}
 	case(PietToken::TokenType::NOP):
 	{
-		return;
+		return PietToken::TokenType::NOP;
 	}
 	case (PietToken::TokenType::End):
 	{
@@ -183,39 +182,16 @@ void Runtime::StepExecution_Internal()
 		break;
 	}
 
-	m_rExecutionHistoryStream << token << std::endl;
+	return token;
 }
 
-void Runtime::InputChar(int val)
+void PietRuntime::OnInput(int val)
 {
 	m_stack.Push(val);
-	m_waitingForCharInput = false;
 }
 
-void Runtime::InputVal(int val)
+void PietRuntime::RenderImageDisplay(RuntimeSyncronisationStruct& rSync)
 {
-	m_stack.Push(val);
-	m_waitingForValInput = false;
-}
-
-bool Runtime::IsRunning() const
-{
-	return m_bIsRunning;
-}
-
-bool Runtime::IsWaitingForValInput() const
-{
-	return m_waitingForValInput;
-}
-
-bool Runtime::IsWaitingForCharInput() const
-{
-	return m_waitingForCharInput;
-}
-
-void Runtime::RenderWindows(SyncronisationStruct& rSync)
-{
-	// IMAGE PROGRAM DISPLAY --------------------------------------------------------------------------------------------
 	if (ImGui::Begin("Piet Image"))
 	{
 		if (m_currentSourceType == SourceType::Image)
@@ -282,44 +258,19 @@ void Runtime::RenderWindows(SyncronisationStruct& rSync)
 	}
 }
 
-void Runtime::CopyState()
+void PietRuntime::RenderWindows(RuntimeSyncronisationStruct& rSync)
+{
+	m_cachedStack.DisplayStack();
+	RenderImageDisplay(rSync);
+}
+
+void PietRuntime::CacheState()
 {
 	m_cachedStack = m_stack;
 	m_imageTokeniser.CopyState();
 }
 
-void Runtime::StepExecution()
-{
-	if (m_waitingForCharInput || m_waitingForValInput)
-	{
-		return;
-	}
-
-	StepExecution_Internal();
-}
-
-void Runtime::SetCodelSize(const int size)
+void PietRuntime::SetCodelSize(const int size)
 {
 	m_imageTokeniser.SetCodelSize(size);
-}
-
-void Runtime::RunFromStart()
-{
-	ResetTokenisers();
-	m_bIsRunning = true;
-	//return 0;
-	Run();
-}
-
-void Runtime::Run()
-{
-	while (m_bIsRunning)
-	{
-		if (m_waitingForCharInput || m_waitingForValInput)
-		{
-			return;
-		}
-
-		StepExecution_Internal();
-	}
 }

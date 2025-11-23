@@ -76,7 +76,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>PLATFORM_WINDOWS;DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>Src;..\ImGuiHelpers\ImGuiValueChangeCallbacks;..\ITokeniser\Src;..\..\Vendor\spdlog\include;..\..\Vendor\stb;..\..\Vendor\imgui;..\..\Vendor\imgui\misc\cpp;..\..\Vendor\imgui\backends;..\..\Vendor\imgui\examples\libs\glfw\include;..\..\Vendor\FontAwesomeHeaders;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>Src;..\ImGuiHelpers\ImGuiValueChangeCallbacks;..\ITokeniser\Src;..\IStack\Src;..\IRuntime\Src;..\..\Vendor\spdlog\include;..\..\Vendor\stb;..\..\Vendor\imgui;..\..\Vendor\imgui\misc\cpp;..\..\Vendor\imgui\backends;..\..\Vendor\imgui\examples\libs\glfw\include;..\..\Vendor\FontAwesomeHeaders;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
@@ -94,7 +94,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>PLATFORM_WINDOWS;RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>Src;..\ImGuiHelpers\ImGuiValueChangeCallbacks;..\ITokeniser\Src;..\..\Vendor\spdlog\include;..\..\Vendor\stb;..\..\Vendor\imgui;..\..\Vendor\imgui\misc\cpp;..\..\Vendor\imgui\backends;..\..\Vendor\imgui\examples\libs\glfw\include;..\..\Vendor\FontAwesomeHeaders;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>Src;..\ImGuiHelpers\ImGuiValueChangeCallbacks;..\ITokeniser\Src;..\IStack\Src;..\IRuntime\Src;..\..\Vendor\spdlog\include;..\..\Vendor\stb;..\..\Vendor\imgui;..\..\Vendor\imgui\misc\cpp;..\..\Vendor\imgui\backends;..\..\Vendor\imgui\examples\libs\glfw\include;..\..\Vendor\FontAwesomeHeaders;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -118,7 +118,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>PLATFORM_WINDOWS;DIST;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>Src;..\ImGuiHelpers\ImGuiValueChangeCallbacks;..\ITokeniser\Src;..\..\Vendor\spdlog\include;..\..\Vendor\stb;..\..\Vendor\imgui;..\..\Vendor\imgui\misc\cpp;..\..\Vendor\imgui\backends;..\..\Vendor\imgui\examples\libs\glfw\include;..\..\Vendor\FontAwesomeHeaders;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>Src;..\ImGuiHelpers\ImGuiValueChangeCallbacks;..\ITokeniser\Src;..\IStack\Src;..\IRuntime\Src;..\..\Vendor\spdlog\include;..\..\Vendor\stb;..\..\Vendor\imgui;..\..\Vendor\imgui\misc\cpp;..\..\Vendor\imgui\backends;..\..\Vendor\imgui\examples\libs\glfw\include;..\..\Vendor\FontAwesomeHeaders;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>None</DebugInformationFormat>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -140,14 +140,12 @@
   <ItemGroup>
     <ClInclude Include="Src\PietImageTokeniser.h" />
     <ClInclude Include="Src\PietRuntime.h" />
-    <ClInclude Include="Src\PietStack.h" />
     <ClInclude Include="Src\PietTextTokeniser.h" />
     <ClInclude Include="Src\PietToken.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Src\PietImageTokeniser.cpp" />
     <ClCompile Include="Src\PietRuntime.cpp" />
-    <ClCompile Include="Src\PietStack.cpp" />
     <ClCompile Include="Src\PietTextTokeniser.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -6,6 +6,7 @@
 #include "ImGuiValueChangeCallbacks.h"
 
 #include <stb_image.h>
+#include <PietRuntime.h>
 
 const char* EsoProg::i_ProgramName = "EsoProg";
 GLFWwindow* EsoProg::i_pWindow = nullptr;
@@ -141,13 +142,16 @@ void EsoProg::PreFileLoad(const std::filesystem::path path)
 	{
 	case EFileType::Image:
 	{
-		m_runtime.UnsetImage();
-		if (m_bImageLoaded)
+		if (m_runtime.GetRuntimeLanguage() == ELanguages::Piet)
 		{
-			stbi_image_free(m_imageData);
-			m_bImageLoaded = false;
+			static_cast<PietRuntime*>(m_runtime.GetRuntimePtr())->UnsetImage();
+			if (m_bImageLoaded)
+			{
+				stbi_image_free(m_imageData);
+				m_bImageLoaded = false;
+			}
+			break;
 		}
-		break;
 	}
 	case EFileType::Text:
 	{
@@ -178,33 +182,38 @@ EsoProg::EFileType::Enum EsoProg::LoadFile(const std::filesystem::path path)
 	}
 	case EFileType::Image:
 	{
-		if (m_bImageLoaded)
+		if (m_runtime.GetRuntimeLanguage() == ELanguages::Piet)
 		{
-			stbi_image_free(m_imageData);
-		}
 
-		m_imageData = stbi_load(path.string().c_str(), &m_imageWidth, &m_imageHeight, &m_NumComponents, 4);
-		if (m_imageData)
-		{
-			glBindTexture(GL_TEXTURE_2D, m_texture);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-			//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE); // This is required on WebGL for non power-of-two textures
-			//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE); // Same
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+			if (m_bImageLoaded)
+			{
+				stbi_image_free(m_imageData);
+			}
+
+			m_imageData = stbi_load(path.string().c_str(), &m_imageWidth, &m_imageHeight, &m_NumComponents, 4);
+			if (m_imageData)
+			{
+				glBindTexture(GL_TEXTURE_2D, m_texture);
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+				//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE); // This is required on WebGL for non power-of-two textures
+				//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE); // Same
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 #if defined(GL_UNPACK_ROW_LENGTH) && !defined(__EMSCRIPTEN__)
-			glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);
+				glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);
 #endif
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, m_imageWidth, m_imageHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, m_imageData);
-			//glGenerateMipmap(GL_TEXTURE_2D);
-			m_bImageLoaded = true;
+				glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, m_imageWidth, m_imageHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, m_imageData);
+				//glGenerateMipmap(GL_TEXTURE_2D);
+				m_bImageLoaded = true;
+			}
+			sync.renderWantsState = true;
+			sync.runtimeStateMtx.lock();
+
+			static_cast<PietRuntime*>(m_runtime.GetRuntimePtr())->SetImage(&m_texture, m_imageData, m_imageWidth, m_imageHeight);
+			sync.renderWantsState = false;
+			sync.runtimeStateMtx.unlock();
+			sync.finishedStateWithCv.notify_one();
 		}
-		sync.renderWantsState = true;
-		sync.runtimeStateMtx.lock();
-		m_runtime.SetImage(&m_texture, m_imageData, m_imageWidth, m_imageHeight);
-		sync.renderWantsState = false;
-		sync.runtimeStateMtx.unlock();
-		sync.finishedStateWithCv.notify_one();
 		break;
 	}
 	}
@@ -345,31 +354,31 @@ void EsoProg::Render()
 			m_bVerificationAttempted = false;
 		}
 
-		if (ImGui::Button("Verify"))
-		{
-			m_bVerificationAttempted = true;
-			m_bIsTokenError = false;
-			std::stringstream input(m_code.c_str());
-			m_textValidationTokeniser.SetTextStream(input);
-			PietToken token = Runtime::m_tDefaultToken;
+		//if (ImGui::Button("Verify"))
+		//{
+		//	m_bVerificationAttempted = true;
+		//	m_bIsTokenError = false;
+		//	std::stringstream input(m_code.c_str());
+		//	m_textValidationTokeniser.SetTextStream(input);
+		//	PietToken token(PietToken::TokenType::Start);
 
-			while (token.m_type != PietToken::TokenType::End)
-			{
-				//std::cout << m_textValidationTokeniser.get_line_number() << " " << token << std::endl;
-				token = m_textValidationTokeniser.Pop();
-				if (token.m_type == PietToken::TokenType::Unrecognised_Token)
-				{
-					m_bIsTokenError = true;
-					m_tokenErrorLine = m_textValidationTokeniser.GetLineNumber();
-					break;
-				}
-			}
+		//	do 
+		//	{
+		//		//std::cout << m_textValidationTokeniser.get_line_number() << " " << token << std::endl;
+		//		token = m_textValidationTokeniser.Pop();
+		//		if (token.m_type == PietToken::TokenType::Unrecognised_Token)
+		//		{
+		//			m_bIsTokenError = true;
+		//			m_tokenErrorLine = m_textValidationTokeniser.GetLineNumber();
+		//			break;
+		//		}
+		//	} while (token.m_type != PietToken::TokenType::End)
 
-			if (!m_bIsTokenError)
-			{
-				m_runtime.SetTextStream(m_code);
-			}
-		}
+		//	if (!m_bIsTokenError)
+		//	{
+		//		m_runtime.SetTextStream(m_code);
+		//	}
+		//}
 
 		if (m_bVerificationAttempted)
 		{
@@ -422,26 +431,6 @@ void EsoProg::Render()
 	}
 	ImGui::End();
 
-	// STACK DISPLAY ----------------------------------------------------------------------------------------------------
-	bool stackDisplayOpen = true;
-	if (ImGui::Begin("Stack", &stackDisplayOpen, m_fileDialogOnTop))
-	{
-		ImGui::Text("The rStack is displayed with the deepest value at the top");
-		if (ImGui::BeginListBox("##Stack", ImGui::GetContentRegionAvail()))
-		{
-			const bool invertStack = false;
-			const std::deque<int>& rStack = m_runtime.GetStack();
-			const size_t stackSize = rStack.size();
-			for (size_t i = 1; i <= stackSize; i++)
-			{
-				std::string lbl = std::to_string(rStack[invertStack ? stackSize - i : i - 1]) + "##" + std::to_string(i);
-				ImGui::Selectable(lbl.c_str(), false, ImGuiSelectableFlags_Disabled);
-			}
-			ImGui::EndListBox();
-		}
-	}
-	ImGui::End();
-
 	// INSTRUCTION HISTORY -----------------------------------------------------------------------------------------------
 	bool displayInstructionHistory = true;
 	{
@@ -473,7 +462,7 @@ void EsoProg::CopyState()
 
 	m_cachedExecutionHistory = m_executionHistoryStream.str();
 	m_cachedOutput = m_outputStream.str();
-	m_runtime.CopyState();
+	m_runtime.CacheState();
 
 	sync.renderWantsState = false;
 	sync.runtimeStateMtx.unlock();

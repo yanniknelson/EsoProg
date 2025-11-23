@@ -15,7 +15,10 @@ project "EsoProg"
 	  "%{wks.location}/Core/ImGuiHelpers/FileDialogBox",
 	  "%{wks.location}/Core/ImGuiHelpers/ImGuiValueChangeCallbacks",
       "%{wks.location}/Core/ITokeniser/Src",
+      "%{wks.location}/Core/IStack/Src",
+	  "%{wks.location}/Core/IRuntime/Src",
 	  "%{wks.location}/Core/PietInterpreter/Src",
+	  "%{wks.location}/Core/RuntimeWrapper/Src",
 
       -- Include externals
       "%{wks.location}/%{externals.stb}",
@@ -42,6 +45,7 @@ project "EsoProg"
       "Logger",
       "ImGuiFileDialogBox",
       "ImGuiValueChangeCallbacks",
+      "IStack",
       "PietInterpreter"
    }
 

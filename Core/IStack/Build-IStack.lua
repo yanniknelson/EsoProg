@@ -1,4 +1,4 @@
-project "ITokeniser"
+project "IStack"
    kind "StaticLib"
    language "C++"
    cppdialect "C++20"
@@ -11,10 +11,13 @@ project "ITokeniser"
       "Src",
 
 	  -- Include Core
-	  "%{wks.location}/Core/ImGuiHelpers/ImGuiValueChangeCallbacks",
 
       -- Include externals
-      "%{wks.location}/%{externals.spdlog}/include"
+      "%{wks.location}/%{externals.spdlog}/include",
+      "%{wks.location}/%{externals.imgui}",
+      "%{wks.location}/%{externals.imgui}/misc/cpp",
+      "%{wks.location}/%{externals.imgui}/backends",
+      "%{wks.location}/%{externals.imgui}/examples/libs/glfw/include"
    }
 
    targetdir ("%{wks.location}/bin/%{prj.name}/" .. OutputDir)

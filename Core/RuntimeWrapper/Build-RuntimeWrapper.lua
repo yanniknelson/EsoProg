@@ -1,4 +1,4 @@
-project "ITokeniser"
+project "RuntimeWrapper"
    kind "StaticLib"
    language "C++"
    cppdialect "C++20"
@@ -11,10 +11,12 @@ project "ITokeniser"
       "Src",
 
 	  -- Include Core
-	  "%{wks.location}/Core/ImGuiHelpers/ImGuiValueChangeCallbacks",
+	  "%{wks.location}/Core/ITokeniser/Src",
+	  "%{wks.location}/Core/IRuntime/Src",
+	  "%{wks.location}/Core/PietInterpreter/Src",
+	  "%{wks.location}/Core/SmartEnums"
 
       -- Include externals
-      "%{wks.location}/%{externals.spdlog}/include"
    }
 
    targetdir ("%{wks.location}/bin/%{prj.name}/" .. OutputDir)
