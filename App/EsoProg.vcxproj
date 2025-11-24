@@ -79,7 +79,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>PLATFORM_WINDOWS;WINDOWS;DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>Src;..\Core\SmartEnums\Src;..\Core\ELanguages\Src;..\Core\ImGuiHelpers\FileDialogBox;..\Core\ImGuiHelpers\ImGuiValueChangeCallbacks;..\Core\ITokeniser\Src;..\Core\IStack\Src;..\Core\IRuntime\Src;..\Core\NullInterpreter\Src;..\Core\PietInterpreter\Src;..\Vendor\stb;..\Vendor\imgui;..\Vendor\imgui\misc\cpp;..\Vendor\imgui\backends;..\Vendor\imgui\examples\libs\glfw\include;..\Vendor\FontAwesomeHeaders;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>Src;..\Core\SmartEnums\Src;..\Core\ELanguages\Src;..\Core\ImGuiHelpers\FileDialogBox;..\Core\ImGuiHelpers\ImGuiSetStyles;..\Core\ImGuiHelpers\ImGuiValueChangeCallbacks;..\Core\ITokeniser\Src;..\Core\IStack\Src;..\Core\IRuntime\Src;..\Core\NullInterpreter\Src;..\Core\PietInterpreter\Src;..\Vendor\stb;..\Vendor\imgui;..\Vendor\imgui\misc\cpp;..\Vendor\imgui\backends;..\Vendor\imgui\examples\libs\glfw\include;..\Vendor\FontAwesomeHeaders;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
@@ -99,7 +99,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>PLATFORM_WINDOWS;WINDOWS;RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>Src;..\Core\SmartEnums\Src;..\Core\ELanguages\Src;..\Core\ImGuiHelpers\FileDialogBox;..\Core\ImGuiHelpers\ImGuiValueChangeCallbacks;..\Core\ITokeniser\Src;..\Core\IStack\Src;..\Core\IRuntime\Src;..\Core\NullInterpreter\Src;..\Core\PietInterpreter\Src;..\Vendor\stb;..\Vendor\imgui;..\Vendor\imgui\misc\cpp;..\Vendor\imgui\backends;..\Vendor\imgui\examples\libs\glfw\include;..\Vendor\FontAwesomeHeaders;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>Src;..\Core\SmartEnums\Src;..\Core\ELanguages\Src;..\Core\ImGuiHelpers\FileDialogBox;..\Core\ImGuiHelpers\ImGuiSetStyles;..\Core\ImGuiHelpers\ImGuiValueChangeCallbacks;..\Core\ITokeniser\Src;..\Core\IStack\Src;..\Core\IRuntime\Src;..\Core\NullInterpreter\Src;..\Core\PietInterpreter\Src;..\Vendor\stb;..\Vendor\imgui;..\Vendor\imgui\misc\cpp;..\Vendor\imgui\backends;..\Vendor\imgui\examples\libs\glfw\include;..\Vendor\FontAwesomeHeaders;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -125,7 +125,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>PLATFORM_WINDOWS;WINDOWS;DIST;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>Src;..\Core\SmartEnums\Src;..\Core\ELanguages\Src;..\Core\ImGuiHelpers\FileDialogBox;..\Core\ImGuiHelpers\ImGuiValueChangeCallbacks;..\Core\ITokeniser\Src;..\Core\IStack\Src;..\Core\IRuntime\Src;..\Core\NullInterpreter\Src;..\Core\PietInterpreter\Src;..\Vendor\stb;..\Vendor\imgui;..\Vendor\imgui\misc\cpp;..\Vendor\imgui\backends;..\Vendor\imgui\examples\libs\glfw\include;..\Vendor\FontAwesomeHeaders;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>Src;..\Core\SmartEnums\Src;..\Core\ELanguages\Src;..\Core\ImGuiHelpers\FileDialogBox;..\Core\ImGuiHelpers\ImGuiSetStyles;..\Core\ImGuiHelpers\ImGuiValueChangeCallbacks;..\Core\ITokeniser\Src;..\Core\IStack\Src;..\Core\IRuntime\Src;..\Core\NullInterpreter\Src;..\Core\PietInterpreter\Src;..\Vendor\stb;..\Vendor\imgui;..\Vendor\imgui\misc\cpp;..\Vendor\imgui\backends;..\Vendor\imgui\examples\libs\glfw\include;..\Vendor\FontAwesomeHeaders;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>None</DebugInformationFormat>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -166,6 +166,9 @@
     </ProjectReference>
     <ProjectReference Include="..\Core\ImGuiHelpers\ImGuiFileDialogBox.vcxproj">
       <Project>{59F76AC3-45DB-2B19-AE3B-266C9A3E169B}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\Core\ImGuiHelpers\ImGuiSetStyles.vcxproj">
+      <Project>{B0582992-9C26-1D98-85BA-8DBE7127F9FC}</Project>
     </ProjectReference>
     <ProjectReference Include="..\Core\ImGuiHelpers\ImGuiValueChangeCallbacks.vcxproj">
       <Project>{23A86FBE-8F6A-A348-D81A-32D5441C7C26}</Project>

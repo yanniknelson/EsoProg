@@ -3,7 +3,8 @@
 #include "EsoProg.h"
 #define STB_IMAGE_IMPLEMENTATION
 
-#include "ImGuiValueChangeCallbacks.h"
+#include <ImGuiValueChangeCallbacks.h>
+#include <ImGuiSetStyles.h>
 
 #include <stb_image.h>
 #include <PietRuntime.h>
@@ -129,6 +130,20 @@ void EsoProg::CreateMenuBar()
 				{
 					SetCurrentLanugage(eLanguage);
 				}
+			}
+			ImGui::EndMenu();
+		}
+
+		//Sytle
+		if (ImGui::BeginMenu("Sytle"))
+		{
+			if (ImGui::MenuItem("Dark Mode"))
+			{
+				SetImGuiDarkStyle();
+			}
+			if (ImGui::MenuItem("Light Mode"))
+			{
+				SetImGuiLightStyle();
 			}
 			ImGui::EndMenu();
 		}

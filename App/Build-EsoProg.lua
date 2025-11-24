@@ -14,6 +14,7 @@ project "EsoProg"
 	  "%{wks.location}/Core/SmartEnums/Src",
 	  "%{wks.location}/Core/ELanguages/Src",
 	  "%{wks.location}/Core/ImGuiHelpers/FileDialogBox",
+	  "%{wks.location}/Core/ImGuiHelpers/ImGuiSetStyles",
 	  "%{wks.location}/Core/ImGuiHelpers/ImGuiValueChangeCallbacks",
       "%{wks.location}/Core/ITokeniser/Src",
       "%{wks.location}/Core/IStack/Src",
@@ -45,6 +46,7 @@ project "EsoProg"
       "imgui",
       "Logger",
       "ImGuiFileDialogBox",
+      "ImGuiSetStyles",
       "ImGuiValueChangeCallbacks",
       "IStack",
       "PietInterpreter"
