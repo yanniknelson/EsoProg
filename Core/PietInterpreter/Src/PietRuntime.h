@@ -42,10 +42,10 @@ public:
 
 	void SetImage(GLuint* pTexture, const unsigned char* imageData, const int imageWidth, const int imageHeight)
 	{
+		m_currentSourceType = SourceType::Image;
 		m_pTexture = pTexture;
 		m_aspectRatio = (float)imageHeight / (float)imageWidth;
 		m_imageTokeniser.SetImage(imageData, imageWidth, imageHeight);
-		OnSourceSet();
 	}
 
 	void UnsetImage()
