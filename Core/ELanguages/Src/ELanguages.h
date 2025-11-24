@@ -4,7 +4,8 @@
 #include <SmartEnums.h>
 
 #define ELANGUAGES(x)\
-    x(Piet)
+    x(Piet)\
+    x(Brainfck)\
 
 CreateSmartEnum(ELanguages, ELANGUAGES);
 
