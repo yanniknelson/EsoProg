@@ -32,26 +32,15 @@ public:
 
 	virtual ELanguages::Enum GetRuntimeLanguage() const = 0;
 
-	virtual void StepExecution() = 0;
+	virtual void SetSourceCode(std::string str) = 0;
+
+	virtual bool StepExecution() = 0;
 
 	void Reset()
 	{
+		m_rOutputStream.str(std::string());
+		m_rExecutionHistoryStream.str(std::string());
 		ResetTokenisers();
-	}
-
-	void RunFromStart()
-	{
-		ResetTokenisers();
-		m_bIsRunning = true;
-		Run();
-	}
-
-	void Run()
-	{
-		while (m_bIsRunning)
-		{
-			StepExecution();
-		}
 	}
 
 	void InputChar(int val)

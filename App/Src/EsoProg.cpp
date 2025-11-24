@@ -178,6 +178,7 @@ EsoProg::EFileType::Enum EsoProg::LoadFile(const std::filesystem::path path)
 		m_bFileIsNew = false;
 		m_currentFilePath = path;
 		m_fileStream.close();
+		m_pRuntime->SetSourceCode(m_code);
 		break;
 	}
 	case EFileType::Image:
@@ -246,9 +247,9 @@ void EsoProg::SetCurrentLanugage(ELanguages::Enum language)
 	glfwSetWindowTitle(i_pWindow, newName.c_str());
 }
 
-void EsoProg::UpdateRuntime()
+bool EsoProg::UpdateRuntime()
 {
-	m_pRuntime->StepExecution();
+	return m_pRuntime->StepExecution();
 }
 
 void EsoProg::Render()
@@ -354,78 +355,41 @@ void EsoProg::Render()
 			m_bVerificationAttempted = false;
 		}
 
-		//if (ImGui::Button("Verify"))
-		//{
-		//	m_bVerificationAttempted = true;
-		//	m_bIsTokenError = false;
-		//	std::stringstream input(m_code.c_str());
-		//	m_textValidationTokeniser.SetTextStream(input);
-		//	PietToken token(PietToken::TokenType::Start);
-
-		//	do 
-		//	{
-		//		//std::cout << m_textValidationTokeniser.get_line_number() << " " << token << std::endl;
-		//		token = m_textValidationTokeniser.Pop();
-		//		if (token.m_type == PietToken::TokenType::Unrecognised_Token)
-		//		{
-		//			m_bIsTokenError = true;
-		//			m_tokenErrorLine = m_textValidationTokeniser.GetLineNumber();
-		//			break;
-		//		}
-		//	} while (token.m_type != PietToken::TokenType::End)
-
-		//	if (!m_bIsTokenError)
-		//	{
-		//		m_runtime.SetTextStream(m_code);
-		//	}
-		//}
-
-		if (m_bVerificationAttempted)
+		if (ImGui::Button("Run"))
 		{
-			if (m_bIsTokenError)
+			m_pRuntime->SetSourceCode(m_code);
+			sync.iterations = -1; // add a run speed
+		}
+
+		ImGui::SameLine();
+		{
+			int currentinstructionWaitTime = sync.instructionWaitTime.load();
+			int newInstructionWaitTime = currentinstructionWaitTime;
+			ImGui::SliderInt("Execution Speed", &newInstructionWaitTime, 0, 1000);
+			sync.instructionWaitTime.compare_exchange_strong(currentinstructionWaitTime, newInstructionWaitTime);
+		}
+
+		if (sync.iterations == -1)
+		{
+			ImGui::SameLine();
+			if (ImGui::Button("Pause"))
 			{
-				ImGui::SameLine();
-				ImGui::Text("There's an error on line %d, lower lines have not been checked", m_tokenErrorLine);
+				sync.iterations = 0;
 			}
-			else
+		}
+
+		ImGui::SameLine();
+		if (ImGui::Button("Step"))
+		{
+			++sync.iterations;
+		}
+
+		if (sync.iterations < 0)
+		{
+			ImGui::SameLine();
+			if (ImGui::Button("Reset"))
 			{
-				ImGui::SameLine();
-				if (ImGui::Button("Run"))
-				{
-					sync.iterations = -1; // add a run speed
-				}
-
-				ImGui::SameLine();
-				{
-					int currentinstructionWaitTime = sync.instructionWaitTime.load();
-					int newInstructionWaitTime = currentinstructionWaitTime;
-					ImGui::SliderInt("Execution Speed", &newInstructionWaitTime, 0, 1000);
-					sync.instructionWaitTime.compare_exchange_strong(currentinstructionWaitTime, newInstructionWaitTime);
-				}
-
-				if (sync.iterations == -1)
-				{
-					ImGui::SameLine();
-					if (ImGui::Button("Pause"))
-					{
-						sync.iterations = 0;
-					}
-				}
-
-				ImGui::SameLine();
-				if (ImGui::Button("Step"))
-				{
-					++sync.iterations;
-				}
-
-				if (sync.iterations < 0)
-				{
-					ImGui::SameLine();
-					if (ImGui::Button("Reset"))
-					{
-						m_pRuntime->Reset();
-					}
-				}
+				m_pRuntime->Reset();
 			}
 		}
 	}

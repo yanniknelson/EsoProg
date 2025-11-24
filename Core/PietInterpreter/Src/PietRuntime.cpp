@@ -185,6 +185,20 @@ PietToken PietRuntime::StepExecution_Internal()
 	return token;
 }
 
+void PietRuntime::OnSourceSet()
+{
+	if (!m_codeStr.empty())
+	{
+		m_currentSourceType = SourceType::Text;
+		m_activeTokeniser = (TPietTokeniser*)&m_textTokeniser;
+	}
+	else
+	{
+		m_currentSourceType = SourceType::Image;
+		m_activeTokeniser = (TPietTokeniser*)&m_imageTokeniser;
+	}
+}
+
 void PietRuntime::OnInput(int val)
 {
 	m_stack.Push(val);

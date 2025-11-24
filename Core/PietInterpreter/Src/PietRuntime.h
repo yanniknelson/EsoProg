@@ -25,7 +25,10 @@ class PietRuntime : public CRuntime<PietToken>
 {
 	using TPietTokeniser = ITokeniser<PietToken>;
 public:
-	PietRuntime(std::ostringstream& rOutputStream, std::ostringstream& rExecutionhistoryStream) : CRuntime(rOutputStream, rExecutionhistoryStream) {};
+	PietRuntime(std::ostringstream& rOutputStream, std::ostringstream& rExecutionhistoryStream) : CRuntime(rOutputStream, rExecutionhistoryStream)
+	{
+		m_activeTokeniser = (TPietTokeniser*)&m_textTokeniser;
+	};
 
 	virtual ELanguages::Enum GetRuntimeLanguage() const override { return ELanguages::Piet; }
 
@@ -36,35 +39,18 @@ public:
 		Invalid
 	};
 
-	void SetTextStream(std::string str)
-	{
-		m_codeStr = str;
-		std::stringstream tmp(m_codeStr.c_str());
-		m_code.swap(tmp);
-		m_textTokeniser.SetTextStream(m_code);
-		m_rOutputStream.str(std::string());
-		m_rExecutionHistoryStream.str(std::string());
-		if (!str.empty())
-		{
-			m_currentSourceType = SourceType::Text;
-			m_activeTokeniser = (m_currentSourceType == SourceType::Text) ? (TPietTokeniser*)&m_textTokeniser : (TPietTokeniser*)&m_imageTokeniser;
-		}
-		ResetTokenisers();
-	}
-
 	void SetImage(GLuint* pTexture, const unsigned char* imageData, const int imageWidth, const int imageHeight)
 	{
 		m_pTexture = pTexture;
 		m_aspectRatio = (float)imageHeight / (float)imageWidth;
 		m_imageTokeniser.SetImage(imageData, imageWidth, imageHeight);
-		m_currentSourceType = SourceType::Image;
-		m_activeTokeniser = (m_currentSourceType == SourceType::Text) ? (TPietTokeniser*)&m_textTokeniser : (TPietTokeniser*)&m_imageTokeniser;
+		OnSourceSet();
 	}
 
 	void UnsetImage()
 	{
 		m_currentSourceType = SourceType::Invalid;
-		m_activeTokeniser = (m_currentSourceType == SourceType::Image) ? (TPietTokeniser*)&m_imageTokeniser : (TPietTokeniser*)&m_textTokeniser;
+		m_activeTokeniser = (TPietTokeniser*)&m_textTokeniser;
 		m_pTexture = nullptr;
 		m_aspectRatio = 1.f;
 		m_imageTokeniser.UnsetImage();
@@ -97,6 +83,8 @@ private:
 	SourceType m_currentSourceType{ SourceType::Text };
 
 	void RenderImageDisplay(RuntimeSyncronisationStruct& rSync);
+
+	virtual void OnSourceSet() override;
 
 	virtual void OnInput(int val) override;
 

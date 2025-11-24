@@ -113,7 +113,7 @@ public:
 		io.Fonts->AddFontFromFileTTF("../Vendor/Font-Awesome/otfs/Font Awesome 7 Free-Solid-900.otf", 16.0f, &icons_config, icons_ranges);
 	}
 
-	void UpdateRuntime();
+	bool UpdateRuntime();
 	void Render();
 	bool IsRuntimeWaitingOnInput();
 	void CopyState();

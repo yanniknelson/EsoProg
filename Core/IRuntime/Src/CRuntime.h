@@ -23,11 +23,20 @@ public:
 
 	virtual ELanguages::Enum GetRuntimeLanguage() const = 0;
 
-	void StepExecution()
+	virtual void SetSourceCode(std::string str) override
+	{
+		m_codeStr = str;
+		std::stringstream tmp(m_codeStr.c_str());
+		m_code.swap(tmp);
+		Reset();
+		OnSourceSet();
+	}
+
+	virtual bool StepExecution() override
 	{
 		if (m_waitingForCharInput || m_waitingForValInput)
 		{
-			return;
+			return false;
 		}
 
 		const TokenClass token = StepExecution_Internal();
@@ -35,6 +44,8 @@ public:
 		{
 			m_rExecutionHistoryStream << token << std::endl;
 		}
+
+		return token.m_type != TokenClass::TokenType::End;
 	}
 
 	virtual void RenderWindows(RuntimeSyncronisationStruct& rSync) = 0;
@@ -46,6 +57,7 @@ protected:
 
 	ITokeniser<TokenClass>* m_activeTokeniser = nullptr;
 
+	virtual void OnSourceSet() = 0;
 	virtual void OnInput(int val) = 0;
 
 	virtual TokenClass StepExecution_Internal() = 0;
