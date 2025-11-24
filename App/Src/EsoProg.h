@@ -15,8 +15,10 @@
 //Custom classes
 #include <FileDialogBox.h>
 #include <IconsFontAwesome7.h>
+#include <IRuntime.h>
+#include <NullRuntime.h>
 #include <PietRuntime.h>
-#include "SmartEnum.h"
+#include <SmartEnums.h>
 
 class EsoProg {
 
@@ -27,13 +29,6 @@ class EsoProg {
 	CreateSmartEnum(EFileType, EFILETYPES);
 
 #undef EFILETYPES
-
-#define ELANGUAGES(x)\
-    x(Piet)
-
-	CreateSmartEnum(ELanguages, ELANGUAGES);
-
-#undef ELANGUAGES
 
 	void CheckShortCuts();
 
@@ -79,15 +74,17 @@ class EsoProg {
 	GLuint m_texture;
 
 	//Interpreting
-	PietTextTokeniser m_textValidationTokeniser;
 	bool m_bIsTokenError = false;
-	bool m_bVerificationAttempted = false;
+	bool m_bCodeChangedSinceLastStep = false;
 	int m_tokenErrorLine = 0;
 	std::ostringstream m_outputStream{ "" };
 	std::ostringstream m_executionHistoryStream{ "" };
 	std::string m_cachedExecutionHistory{ "" };
 	std::string m_cachedOutput{ "" };
-	Runtime m_runtime{ m_outputStream, m_executionHistoryStream };
+
+	IRuntime* m_pRuntime{nullptr};
+	PietRuntime m_pietRuntime{m_outputStream, m_executionHistoryStream};
+	NullRuntime m_nullRuntime{m_outputStream, m_executionHistoryStream};
 
 	ImGuiInputTextFlags m_codeEditorFlags = ImGuiInputTextFlags_CallbackCharFilter | ImGuiInputTextFlags_EnterReturnsTrue;
 	std::string m_code{ "" };
@@ -97,7 +94,7 @@ public:
 	static const char* i_ProgramName;
 	static GLFWwindow* i_pWindow;
 
-	Runtime::SyncronisationStruct sync;
+	RuntimeSyncronisationStruct sync;
 
 	EsoProg(GLFWwindow* pWindow)
 	{
@@ -108,6 +105,8 @@ public:
 
 		glGenTextures(1, &m_texture);
 
+		m_pRuntime = &m_nullRuntime;
+
 		//Merge font awesome into the default font
 		ImGuiIO io = ImGui::GetIO();
 		io.Fonts->AddFontDefault();
@@ -116,7 +115,7 @@ public:
 		io.Fonts->AddFontFromFileTTF("../Vendor/Font-Awesome/otfs/Font Awesome 7 Free-Solid-900.otf", 16.0f, &icons_config, icons_ranges);
 	}
 
-	void UpdateRuntime();
+	bool UpdateRuntime();
 	void Render();
 	bool IsRuntimeWaitingOnInput();
 	void CopyState();

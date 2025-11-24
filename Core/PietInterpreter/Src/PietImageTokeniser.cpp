@@ -9,7 +9,7 @@ PietImageTokeniser::Direction PietImageTokeniser::i_clockwiseDirectionLookup[(in
 const char* PietImageTokeniser::i_directionStrings[static_cast<int>(Direction::Count) + 1] = {"Up", "Down", "Left", "Right", "Invalid"};
 const char* PietImageTokeniser::i_directionIcons[static_cast<int>(Direction::Count) + 1] = { ICON_FA_ARROW_UP, ICON_FA_ARROW_DOWN, ICON_FA_ARROW_LEFT, ICON_FA_ARROW_RIGHT, "Invalid"};
 
-const PietToken& PietImageTokeniser::Pop()
+PietToken PietImageTokeniser::Pop_Internal()
 {
 	m_currentBlock = GetBlockInfo(m_currentBlock.m_endingCodel, m_currentBlock.m_endingDirectionPointer, m_currentBlock.m_endingCodelChooser);
 

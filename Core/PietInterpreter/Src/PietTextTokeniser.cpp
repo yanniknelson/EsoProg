@@ -3,23 +3,7 @@
 #include <iostream>
 #include <sstream>
 
-
-const PietToken& PietTextTokeniser::Pop()
-{
-	PietToken token = Pop_Internal();
-	if (token.m_type == PietToken::TokenType::Push)
-	{
-		PietToken value = Pop_Internal();
-		if (value.m_type != PietToken::TokenType::Value)
-		{
-			__debugbreak();
-		}
-		token.m_value = value.m_value;
-	}
-	return token;
-}
-
-PietToken PietTextTokeniser::Pop_Internal()
+PietToken PietTextTokeniser::GetNextToken()
 {
 	if (!m_pStrStream->rdbuf()->in_avail())
 	{
@@ -95,6 +79,21 @@ PietToken PietTextTokeniser::Pop_Internal()
 	}
 
 	return m_tLastPopped;
+}
+
+PietToken PietTextTokeniser::Pop_Internal()
+{
+	PietToken token = GetNextToken();
+	if (token.m_type == PietToken::TokenType::Push)
+	{
+		PietToken value = Pop_Internal();
+		if (value.m_type != PietToken::TokenType::Value)
+		{
+			__debugbreak();
+		}
+		token.m_value = value.m_value;
+	}
+	return token;
 }
 
 PietToken::TokenType PietTextTokeniser::StringToTokenType(std::string& rString) const

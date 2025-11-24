@@ -3,7 +3,7 @@
 #include <deque>
 #include <iostream>
 
-class PietStack {
+class Stack {
 
 	std::deque<int> m_stack;
 
@@ -47,9 +47,9 @@ public:
 	/// Format and output the context of the stack for and output stream
 	/// </summary>
 	/// <param name="os - "> The output stream </param>
-	/// <param name="pt - "> The piet stack </param>
+	/// <param name="pt - "> The stack </param>
 	/// <returns></returns>
-	friend std::ostream& operator<<(std::ostream& os, const PietStack& pt)
+	friend std::ostream& operator<<(std::ostream& os, const Stack& pt)
 	{
 		for (auto it = pt.m_stack.rbegin(); it != pt.m_stack.rend(); it++) 
 		{
@@ -63,4 +63,6 @@ public:
 	/// </summary>
 	/// <returns> A const reference to the stack data </returns>
 	const std::deque<int>& GetStack() const;
+
+	void DisplayStack() const;
 };

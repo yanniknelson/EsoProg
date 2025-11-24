@@ -1,23 +1,17 @@
 #pragma once
 
+#include "PietToken.h"
+
 #include <strstream>
 #include <iostream>
 #include <iomanip>
+#include <ITokeniser.h>
 #include <vector>
 #include <string>
 
-#include "PietTokeniser.h"
-
-class PietImageTokeniser : public PietTokeniser
+class PietImageTokeniser : public ITokeniser<PietToken>
 {
 public:
-
-	/// <summary>
-	/// Get the next token
-	/// </summary>
-	/// <returns> The next token </returns>
-	virtual const PietToken& Pop() override;
-
 	PietImageTokeniser() {
 		m_codels.push_back({ { 0,0 } });
 	}
@@ -260,9 +254,10 @@ public:
 
 private:
 
+	virtual PietToken Pop_Internal() override;
+
 	static Direction i_clockwiseDirectionLookup[(int)Direction::Count];
 
-	PietToken tLastPopped{ PietToken::TokenType::End };
 	const unsigned char* m_imageData{ nullptr };
 	int m_imageWidth = 0;
 	int m_imageHeight = 0;

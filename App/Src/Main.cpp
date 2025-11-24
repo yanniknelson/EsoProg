@@ -101,7 +101,7 @@ int main(int, char**)
 
     std::thread runtimeWorker([&]()
         {
-            Runtime::SyncronisationStruct& rSync = pProgramInstance->sync;
+            RuntimeSyncronisationStruct& rSync = pProgramInstance->sync;
             rSync.runtimeStateMtx.lock(); // lock the state for the first iterations
             while (!rSync.exit)
             {
@@ -112,7 +112,10 @@ int main(int, char**)
                         --rSync.iterations;
                     }
 
-                    pProgramInstance->UpdateRuntime();
+                    if (!pProgramInstance->UpdateRuntime())
+                    {
+                        rSync.iterations = 0;
+                    }
                     if (rSync.renderWantsState) // if the rendering thread has flagged it wants to copy the current state then unlock the current state
                     {
                         rSync.runtimeStateMtx.unlock();

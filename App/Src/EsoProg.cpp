@@ -6,6 +6,7 @@
 #include "ImGuiValueChangeCallbacks.h"
 
 #include <stb_image.h>
+#include <PietRuntime.h>
 
 const char* EsoProg::i_ProgramName = "EsoProg";
 GLFWwindow* EsoProg::i_pWindow = nullptr;
@@ -141,23 +142,26 @@ void EsoProg::PreFileLoad(const std::filesystem::path path)
 	{
 	case EFileType::Image:
 	{
-		m_runtime.UnsetImage();
-		if (m_bImageLoaded)
+		if (m_pRuntime->GetRuntimeLanguage() == ELanguages::Piet)
 		{
-			stbi_image_free(m_imageData);
-			m_bImageLoaded = false;
+			static_cast<PietRuntime*>(m_pRuntime)->UnsetImage();
+			if (m_bImageLoaded)
+			{
+				stbi_image_free(m_imageData);
+				m_bImageLoaded = false;
+			}
+			break;
 		}
-		break;
 	}
 	case EFileType::Text:
 	{
 		m_code = "";
-		m_bVerificationAttempted = false;
+		m_bCodeChangedSinceLastStep = true;
 	}
 	}
 	m_outputStream.str(std::string());
 	m_executionHistoryStream.str(std::string());
-	m_runtime.Reset();
+	m_pRuntime->Reset();
 }
 
 EsoProg::EFileType::Enum EsoProg::LoadFile(const std::filesystem::path path)
@@ -174,37 +178,43 @@ EsoProg::EFileType::Enum EsoProg::LoadFile(const std::filesystem::path path)
 		m_bFileIsNew = false;
 		m_currentFilePath = path;
 		m_fileStream.close();
+		m_pRuntime->SetSourceCode(m_code);
 		break;
 	}
 	case EFileType::Image:
 	{
-		if (m_bImageLoaded)
+		if (m_pRuntime->GetRuntimeLanguage() == ELanguages::Piet)
 		{
-			stbi_image_free(m_imageData);
-		}
 
-		m_imageData = stbi_load(path.string().c_str(), &m_imageWidth, &m_imageHeight, &m_NumComponents, 4);
-		if (m_imageData)
-		{
-			glBindTexture(GL_TEXTURE_2D, m_texture);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-			//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE); // This is required on WebGL for non power-of-two textures
-			//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE); // Same
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+			if (m_bImageLoaded)
+			{
+				stbi_image_free(m_imageData);
+			}
+
+			m_imageData = stbi_load(path.string().c_str(), &m_imageWidth, &m_imageHeight, &m_NumComponents, 4);
+			if (m_imageData)
+			{
+				glBindTexture(GL_TEXTURE_2D, m_texture);
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+				//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE); // This is required on WebGL for non power-of-two textures
+				//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE); // Same
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 #if defined(GL_UNPACK_ROW_LENGTH) && !defined(__EMSCRIPTEN__)
-			glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);
+				glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);
 #endif
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, m_imageWidth, m_imageHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, m_imageData);
-			//glGenerateMipmap(GL_TEXTURE_2D);
-			m_bImageLoaded = true;
+				glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, m_imageWidth, m_imageHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, m_imageData);
+				//glGenerateMipmap(GL_TEXTURE_2D);
+				m_bImageLoaded = true;
+			}
+			sync.renderWantsState = true;
+			sync.runtimeStateMtx.lock();
+
+			static_cast<PietRuntime*>(m_pRuntime)->SetImage(&m_texture, m_imageData, m_imageWidth, m_imageHeight);
+			sync.renderWantsState = false;
+			sync.runtimeStateMtx.unlock();
+			sync.finishedStateWithCv.notify_one();
 		}
-		sync.renderWantsState = true;
-		sync.runtimeStateMtx.lock();
-		m_runtime.SetImage(&m_texture, m_imageData, m_imageWidth, m_imageHeight);
-		sync.renderWantsState = false;
-		sync.runtimeStateMtx.unlock();
-		sync.finishedStateWithCv.notify_one();
 		break;
 	}
 	}
@@ -225,21 +235,28 @@ void EsoProg::SetCurrentLanugage(ELanguages::Enum language)
 	{
 	case(ELanguages::Piet):
 	{
-		FileDialogBox::Set_Allowed_Type({ ".txt", ".jpg", ".png", ".gif", ".ppm" });
+		m_pRuntime = &m_pietRuntime;
 		newName += " - Piet";
 		break;
 	}
 	default:
 	{
-		FileDialogBox::Set_Allowed_Type({ ".txt" });
+		m_pRuntime = &m_nullRuntime;
 	}
 	}
+	m_pRuntime->Reset();
+	FileDialogBox::Set_Allowed_Type(m_pRuntime->GetSupportedFileTypes());
 	glfwSetWindowTitle(i_pWindow, newName.c_str());
 }
 
-void EsoProg::UpdateRuntime()
+bool EsoProg::UpdateRuntime()
 {
-	m_runtime.StepExecution();
+	if (m_bCodeChangedSinceLastStep)
+	{
+		m_pRuntime->SetSourceCode(m_code);
+		m_bCodeChangedSinceLastStep = false;
+	}
+	return m_pRuntime->StepExecution();
 }
 
 void EsoProg::Render()
@@ -282,14 +299,14 @@ void EsoProg::Render()
 	}
 
 	// Input Value Box --------------------------------------------------------------------------------------------
-	if (m_runtime.IsWaitingForValInput())
+	if (m_pRuntime->IsWaitingForValInput())
 	{
 		if (ImGui::Begin("Input Val"))
 		{
 			ImGui::InputText("##valInput", &m_programInput, ImGuiInputTextFlags_CharsDecimal | ImGuiInputTextFlags_CallbackEdit);
 			if (ImGui::Button("Submit"))
 			{
-				m_runtime.InputVal(std::stoi(m_programInput));
+				m_pRuntime->InputVal(std::stoi(m_programInput));
 				m_programInput = "";
 				if (sync.iterations != -1)
 				{
@@ -302,14 +319,14 @@ void EsoProg::Render()
 	}
 
 	// Input Char Box --------------------------------------------------------------------------------------------
-	if (m_runtime.IsWaitingForCharInput())
+	if (m_pRuntime->IsWaitingForCharInput())
 	{
 		if (ImGui::Begin("Input Char"))
 		{
 			ImGui::InputText("##charInput", &m_programInput, ImGuiInputTextFlags_CallbackEdit);
 			if (ImGui::Button("Submit (will only submit first character)"))
 			{
-				m_runtime.InputChar((char)m_programInput[0]);
+				m_pRuntime->InputChar((char)m_programInput[0]);
 				m_programInput = "";
 				if (sync.iterations != -1)
 				{
@@ -320,7 +337,7 @@ void EsoProg::Render()
 			if (ImGui::Button("Submit Enter Char"))
 			{
 				m_programInput = "";
-				m_runtime.InputChar(10);
+				m_pRuntime->InputChar(10);
 				if (sync.iterations != -1)
 				{
 					sync.iterations = 0;
@@ -331,7 +348,7 @@ void EsoProg::Render()
 		ImGui::End();
 	}
 
-	m_runtime.RenderWindows(sync);
+	m_pRuntime->RenderWindows(sync);
 
 	// CODE EDITOR --------------------------------------------------------------------------------------------------
 	bool code_editor_open = true;
@@ -339,105 +356,48 @@ void EsoProg::Render()
 	{
 		ImGui::Text("Warning: Pressing ESC will delete all non submitted changes");
 
-		if (ImGui::InputTextMultiline("##code", &m_code, ImVec2(-FLT_MIN, ImGui::GetContentRegionAvail().y - (ImGui::GetTextLineHeight() * 1.5f)), ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_CallbackEdit, TextInputCallback, &m_bVerificationAttempted))
+		if (ImGui::InputTextMultiline("##code", &m_code, ImVec2(-FLT_MIN, ImGui::GetContentRegionAvail().y - (ImGui::GetTextLineHeight() * 1.5f)), ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_CallbackEdit, TextInputCallback, &m_bCodeChangedSinceLastStep))
 		{
 			std::cout << "code changed" << std::endl;
-			m_bVerificationAttempted = false;
+			sync.iterations = 0; // stop execution on code change
 		}
 
-		if (ImGui::Button("Verify"))
+		if (ImGui::Button("Run"))
 		{
-			m_bVerificationAttempted = true;
-			m_bIsTokenError = false;
-			std::stringstream input(m_code.c_str());
-			m_textValidationTokeniser.SetTextStream(input);
-			PietToken token = Runtime::m_tDefaultToken;
+			m_pRuntime->SetSourceCode(m_code);
+			sync.iterations = -1; // add a run speed
+		}
 
-			while (token.m_type != PietToken::TokenType::End)
-			{
-				//std::cout << m_textValidationTokeniser.get_line_number() << " " << token << std::endl;
-				token = m_textValidationTokeniser.Pop();
-				if (token.m_type == PietToken::TokenType::Unrecognised_Token)
-				{
-					m_bIsTokenError = true;
-					m_tokenErrorLine = m_textValidationTokeniser.GetLineNumber();
-					break;
-				}
-			}
+		ImGui::SameLine();
+		{
+			int currentinstructionWaitTime = sync.instructionWaitTime.load();
+			int newInstructionWaitTime = currentinstructionWaitTime;
+			ImGui::SliderInt("##ExecutionSpeed", &newInstructionWaitTime, 0, 1000);
+			sync.instructionWaitTime.compare_exchange_strong(currentinstructionWaitTime, newInstructionWaitTime);
+		}
 
-			if (!m_bIsTokenError)
+		if (sync.iterations == -1)
+		{
+			ImGui::SameLine();
+			if (ImGui::Button("Pause"))
 			{
-				m_runtime.SetTextStream(m_code);
+				sync.iterations = 0;
 			}
 		}
 
-		if (m_bVerificationAttempted)
+		ImGui::SameLine();
+		if (ImGui::Button("Step"))
 		{
-			if (m_bIsTokenError)
-			{
-				ImGui::SameLine();
-				ImGui::Text("There's an error on line %d, lower lines have not been checked", m_tokenErrorLine);
-			}
-			else
-			{
-				ImGui::SameLine();
-				if (ImGui::Button("Run"))
-				{
-					sync.iterations = -1; // add a run speed
-				}
-
-				ImGui::SameLine();
-				{
-					int currentinstructionWaitTime = sync.instructionWaitTime.load();
-					int newInstructionWaitTime = currentinstructionWaitTime;
-					ImGui::InputText("##instructionWaitTime", &sync.m_instructionWaitTimeStr, ImGuiInputTextFlags_CharsDecimal | ImGuiInputTextFlags_CallbackEdit, ValueInputChanged, &newInstructionWaitTime);
-					sync.instructionWaitTime.compare_exchange_strong(currentinstructionWaitTime, newInstructionWaitTime);
-				}
-
-				if (sync.iterations == -1)
-				{
-					ImGui::SameLine();
-					if (ImGui::Button("Pause"))
-					{
-						sync.iterations = 0;
-					}
-				}
-
-				ImGui::SameLine();
-				if (ImGui::Button("Step"))
-				{
-					++sync.iterations;
-				}
-
-				if (sync.iterations < 0)
-				{
-					ImGui::SameLine();
-					if (ImGui::Button("Reset"))
-					{
-						m_runtime.Reset();
-					}
-				}
-			}
+			++sync.iterations;
 		}
-	}
-	ImGui::End();
 
-	// STACK DISPLAY ----------------------------------------------------------------------------------------------------
-	bool stackDisplayOpen = true;
-	if (ImGui::Begin("Stack", &stackDisplayOpen, m_fileDialogOnTop))
-	{
-		ImGui::Text("The rStack is displayed with the deepest value at the top");
-		if (ImGui::BeginListBox("##Stack", ImGui::GetContentRegionAvail()))
+		if (sync.iterations < 0)
 		{
-			const bool invertStack = false;
-			const std::deque<int>& rStack = m_runtime.GetStack();
-			const size_t stackSize = rStack.size();
-			for (size_t i = 1; i <= stackSize; i++)
+			ImGui::SameLine();
+			if (ImGui::Button("Reset"))
 			{
-				std::string lbl = std::to_string(rStack[invertStack ? stackSize - i : i - 1]) + "##" + std::to_string(i);
-				ImGui::Selectable(lbl.c_str(), false, ImGuiSelectableFlags_Disabled);
+				m_pRuntime->Reset();
 			}
-			ImGui::EndListBox();
 		}
 	}
 	ImGui::End();
@@ -463,7 +423,7 @@ void EsoProg::Render()
 
 bool EsoProg::IsRuntimeWaitingOnInput()
 {
-	return m_runtime.IsWaitingForCharInput() || m_runtime.IsWaitingForValInput();
+	return m_pRuntime->IsWaitingForCharInput() || m_pRuntime->IsWaitingForValInput();
 }
 
 void EsoProg::CopyState()
@@ -473,7 +433,7 @@ void EsoProg::CopyState()
 
 	m_cachedExecutionHistory = m_executionHistoryStream.str();
 	m_cachedOutput = m_outputStream.str();
-	m_runtime.CopyState();
+	m_pRuntime->CacheState();
 
 	sync.renderWantsState = false;
 	sync.runtimeStateMtx.unlock();

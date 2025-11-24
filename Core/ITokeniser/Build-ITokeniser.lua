@@ -1,4 +1,4 @@
-project "PietInterpreter"
+project "ITokeniser"
    kind "StaticLib"
    language "C++"
    cppdialect "C++20"
@@ -12,20 +12,9 @@ project "PietInterpreter"
 
 	  -- Include Core
 	  "%{wks.location}/Core/ImGuiHelpers/ImGuiValueChangeCallbacks",
-      "%{wks.location}/Core/SmartEnums/Src",
-      "%{wks.location}/Core/ELanguages/Src",
-	  "%{wks.location}/Core/ITokeniser/Src",
-	  "%{wks.location}/Core/IStack/Src",
-	  "%{wks.location}/Core/IRuntime/Src",
 
       -- Include externals
-      "%{wks.location}/%{externals.spdlog}/include",
-      "%{wks.location}/%{externals.stb}",
-      "%{wks.location}/%{externals.imgui}",
-      "%{wks.location}/%{externals.imgui}/misc/cpp",
-      "%{wks.location}/%{externals.imgui}/backends",
-      "%{wks.location}/%{externals.imgui}/examples/libs/glfw/include",
-      "%{wks.location}/%{externals.FontAwesomeHeader}"
+      "%{wks.location}/%{externals.spdlog}/include"
    }
 
    targetdir ("%{wks.location}/bin/%{prj.name}/" .. OutputDir)

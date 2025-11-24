@@ -11,8 +11,14 @@ project "EsoProg"
       "Src",
 
 	  -- Include Core
+	  "%{wks.location}/Core/SmartEnums/Src",
+	  "%{wks.location}/Core/ELanguages/Src",
 	  "%{wks.location}/Core/ImGuiHelpers/FileDialogBox",
 	  "%{wks.location}/Core/ImGuiHelpers/ImGuiValueChangeCallbacks",
+      "%{wks.location}/Core/ITokeniser/Src",
+      "%{wks.location}/Core/IStack/Src",
+	  "%{wks.location}/Core/IRuntime/Src",
+	  "%{wks.location}/Core/NullInterpreter/Src",
 	  "%{wks.location}/Core/PietInterpreter/Src",
 
       -- Include externals
@@ -21,10 +27,11 @@ project "EsoProg"
       "%{wks.location}/%{externals.imgui}/misc/cpp",
       "%{wks.location}/%{externals.imgui}/backends",
       "%{wks.location}/%{externals.imgui}/examples/libs/glfw/include",
-      "%{wks.location}/%{externals.FontAwesomeHeader}/"
+      "%{wks.location}/%{externals.FontAwesomeHeader}"
    }
 
-   libdirs {
+   libdirs
+   {
        "%{wks.location}/%{externals.imgui}/examples/libs/glfw/lib-vc2010-64"
    }
 
@@ -39,6 +46,7 @@ project "EsoProg"
       "Logger",
       "ImGuiFileDialogBox",
       "ImGuiValueChangeCallbacks",
+      "IStack",
       "PietInterpreter"
    }
 
