@@ -142,9 +142,9 @@ void EsoProg::PreFileLoad(const std::filesystem::path path)
 	{
 	case EFileType::Image:
 	{
-		if (m_runtime.GetRuntimeLanguage() == ELanguages::Piet)
+		if (m_pRuntime->GetRuntimeLanguage() == ELanguages::Piet)
 		{
-			static_cast<PietRuntime*>(m_runtime.GetRuntimePtr())->UnsetImage();
+			static_cast<PietRuntime*>(m_pRuntime)->UnsetImage();
 			if (m_bImageLoaded)
 			{
 				stbi_image_free(m_imageData);
@@ -161,7 +161,7 @@ void EsoProg::PreFileLoad(const std::filesystem::path path)
 	}
 	m_outputStream.str(std::string());
 	m_executionHistoryStream.str(std::string());
-	m_runtime.Reset();
+	m_pRuntime->Reset();
 }
 
 EsoProg::EFileType::Enum EsoProg::LoadFile(const std::filesystem::path path)
@@ -182,7 +182,7 @@ EsoProg::EFileType::Enum EsoProg::LoadFile(const std::filesystem::path path)
 	}
 	case EFileType::Image:
 	{
-		if (m_runtime.GetRuntimeLanguage() == ELanguages::Piet)
+		if (m_pRuntime->GetRuntimeLanguage() == ELanguages::Piet)
 		{
 
 			if (m_bImageLoaded)
@@ -209,7 +209,7 @@ EsoProg::EFileType::Enum EsoProg::LoadFile(const std::filesystem::path path)
 			sync.renderWantsState = true;
 			sync.runtimeStateMtx.lock();
 
-			static_cast<PietRuntime*>(m_runtime.GetRuntimePtr())->SetImage(&m_texture, m_imageData, m_imageWidth, m_imageHeight);
+			static_cast<PietRuntime*>(m_pRuntime)->SetImage(&m_texture, m_imageData, m_imageWidth, m_imageHeight);
 			sync.renderWantsState = false;
 			sync.runtimeStateMtx.unlock();
 			sync.finishedStateWithCv.notify_one();
@@ -248,7 +248,7 @@ void EsoProg::SetCurrentLanugage(ELanguages::Enum language)
 
 void EsoProg::UpdateRuntime()
 {
-	m_runtime.StepExecution();
+	m_pRuntime->StepExecution();
 }
 
 void EsoProg::Render()
@@ -291,14 +291,14 @@ void EsoProg::Render()
 	}
 
 	// Input Value Box --------------------------------------------------------------------------------------------
-	if (m_runtime.IsWaitingForValInput())
+	if (m_pRuntime->IsWaitingForValInput())
 	{
 		if (ImGui::Begin("Input Val"))
 		{
 			ImGui::InputText("##valInput", &m_programInput, ImGuiInputTextFlags_CharsDecimal | ImGuiInputTextFlags_CallbackEdit);
 			if (ImGui::Button("Submit"))
 			{
-				m_runtime.InputVal(std::stoi(m_programInput));
+				m_pRuntime->InputVal(std::stoi(m_programInput));
 				m_programInput = "";
 				if (sync.iterations != -1)
 				{
@@ -311,14 +311,14 @@ void EsoProg::Render()
 	}
 
 	// Input Char Box --------------------------------------------------------------------------------------------
-	if (m_runtime.IsWaitingForCharInput())
+	if (m_pRuntime->IsWaitingForCharInput())
 	{
 		if (ImGui::Begin("Input Char"))
 		{
 			ImGui::InputText("##charInput", &m_programInput, ImGuiInputTextFlags_CallbackEdit);
 			if (ImGui::Button("Submit (will only submit first character)"))
 			{
-				m_runtime.InputChar((char)m_programInput[0]);
+				m_pRuntime->InputChar((char)m_programInput[0]);
 				m_programInput = "";
 				if (sync.iterations != -1)
 				{
@@ -329,7 +329,7 @@ void EsoProg::Render()
 			if (ImGui::Button("Submit Enter Char"))
 			{
 				m_programInput = "";
-				m_runtime.InputChar(10);
+				m_pRuntime->InputChar(10);
 				if (sync.iterations != -1)
 				{
 					sync.iterations = 0;
@@ -340,7 +340,7 @@ void EsoProg::Render()
 		ImGui::End();
 	}
 
-	m_runtime.RenderWindows(sync);
+	m_pRuntime->RenderWindows(sync);
 
 	// CODE EDITOR --------------------------------------------------------------------------------------------------
 	bool code_editor_open = true;
@@ -423,7 +423,7 @@ void EsoProg::Render()
 					ImGui::SameLine();
 					if (ImGui::Button("Reset"))
 					{
-						m_runtime.Reset();
+						m_pRuntime->Reset();
 					}
 				}
 			}
@@ -452,7 +452,7 @@ void EsoProg::Render()
 
 bool EsoProg::IsRuntimeWaitingOnInput()
 {
-	return m_runtime.IsWaitingForCharInput() || m_runtime.IsWaitingForValInput();
+	return m_pRuntime->IsWaitingForCharInput() || m_pRuntime->IsWaitingForValInput();
 }
 
 void EsoProg::CopyState()
@@ -462,7 +462,7 @@ void EsoProg::CopyState()
 
 	m_cachedExecutionHistory = m_executionHistoryStream.str();
 	m_cachedOutput = m_outputStream.str();
-	m_runtime.CacheState();
+	m_pRuntime->CacheState();
 
 	sync.renderWantsState = false;
 	sync.runtimeStateMtx.unlock();

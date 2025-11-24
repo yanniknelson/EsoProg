@@ -5,11 +5,13 @@
 #include "PietTextTokeniser.h"
 #include "PietImageTokeniser.h"
 
+#include "ELanguages.h"
+
 #include <iostream>
 #include <sstream>
 
 #include <Stack.h>
-#include <IRuntime.h>
+#include <CRuntime.h>
 #include <string>
 #include <thread>
 #include <mutex>
@@ -19,11 +21,13 @@
 
 #include "GLFW/glfw3.h"
 
-class PietRuntime : public IRuntime<PietToken>
+class PietRuntime : public CRuntime<PietToken>
 {
 	using TPietTokeniser = ITokeniser<PietToken>;
 public:
-	PietRuntime(std::ostringstream& rOutputStream, std::ostringstream& rExecutionhistoryStream) : IRuntime(rOutputStream, rExecutionhistoryStream) {};
+	PietRuntime(std::ostringstream& rOutputStream, std::ostringstream& rExecutionhistoryStream) : CRuntime(rOutputStream, rExecutionhistoryStream) {};
+
+	virtual ELanguages::Enum GetRuntimeLanguage() const override { return ELanguages::Piet; }
 
 	enum class SourceType
 	{

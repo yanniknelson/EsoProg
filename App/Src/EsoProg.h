@@ -15,8 +15,9 @@
 //Custom classes
 #include <FileDialogBox.h>
 #include <IconsFontAwesome7.h>
-#include <RuntimeWrapper.h>
-#include "SmartEnum.h"
+#include <IRuntime.h>
+#include <PietRuntime.h>
+#include <SmartEnums.h>
 
 class EsoProg {
 
@@ -27,6 +28,7 @@ class EsoProg {
 	CreateSmartEnum(EFileType, EFILETYPES);
 
 #undef EFILETYPES
+
 	void CheckShortCuts();
 
 	void HandleNew();
@@ -71,7 +73,6 @@ class EsoProg {
 	GLuint m_texture;
 
 	//Interpreting
-	PietTextTokeniser m_textValidationTokeniser;
 	bool m_bIsTokenError = false;
 	bool m_bVerificationAttempted = false;
 	int m_tokenErrorLine = 0;
@@ -79,7 +80,9 @@ class EsoProg {
 	std::ostringstream m_executionHistoryStream{ "" };
 	std::string m_cachedExecutionHistory{ "" };
 	std::string m_cachedOutput{ "" };
-	RuntimeWrapper m_runtime{ m_outputStream, m_executionHistoryStream };
+
+	IRuntime* m_pRuntime{nullptr};
+	PietRuntime m_PietRuntime{m_outputStream, m_executionHistoryStream};
 
 	ImGuiInputTextFlags m_codeEditorFlags = ImGuiInputTextFlags_CallbackCharFilter | ImGuiInputTextFlags_EnterReturnsTrue;
 	std::string m_code{ "" };
@@ -99,6 +102,8 @@ public:
 		//SetCurrentLanugage(ELanguages::Piet);
 
 		glGenTextures(1, &m_texture);
+
+		m_pRuntime = &m_PietRuntime;
 
 		//Merge font awesome into the default font
 		ImGuiIO io = ImGui::GetIO();

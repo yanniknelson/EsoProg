@@ -12,6 +12,8 @@ project "PietInterpreter"
 
 	  -- Include Core
 	  "%{wks.location}/Core/ImGuiHelpers/ImGuiValueChangeCallbacks",
+      "%{wks.location}/Core/SmartEnums/Src",
+      "%{wks.location}/Core/ELanguages/Src",
 	  "%{wks.location}/Core/ITokeniser/Src",
 	  "%{wks.location}/Core/IStack/Src",
 	  "%{wks.location}/Core/IRuntime/Src",

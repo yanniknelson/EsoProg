@@ -1,4 +1,4 @@
-project "SmartEnums"
+project "ELanguages"
    kind "StaticLib"
    language "C++"
    cppdialect "C++20"
@@ -8,6 +8,7 @@ project "SmartEnums"
 
    includedirs
    {
+	   "%{wks.location}/Core/SmartEnums/Src"
    }
 
    targetdir ("%{wks.location}/bin/%{prj.name}/" .. OutputDir)

@@ -11,6 +11,8 @@ project "IRuntime"
       "Src",
 
 	  -- Include Core
+	  "%{wks.location}/Core/SmartEnums/Src",
+	  "%{wks.location}/Core/ELanguages/Src",
 	  "%{wks.location}/Core/ITokeniser/Src",
 	  "%{wks.location}/Core/ImGuiHelpers/ImGuiValueChangeCallbacks",
 
