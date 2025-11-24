@@ -79,7 +79,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>PLATFORM_WINDOWS;WINDOWS;DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>Src;..\Core\SmartEnums\Src;..\Core\ELanguages\Src;..\Core\ImGuiHelpers\FileDialogBox;..\Core\ImGuiHelpers\ImGuiSetStyles;..\Core\ImGuiHelpers\ImGuiValueChangeCallbacks;..\Core\ITokeniser\Src;..\Core\IStack\Src;..\Core\IRuntime\Src;..\Core\NullInterpreter\Src;..\Core\PietInterpreter\Src;..\Vendor\stb;..\Vendor\imgui;..\Vendor\imgui\misc\cpp;..\Vendor\imgui\backends;..\Vendor\imgui\examples\libs\glfw\include;..\Vendor\FontAwesomeHeaders;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>Src;..\Core\SmartEnums\Src;..\Core\ELanguages\Src;..\Core\ImGuiHelpers\FileDialogBox;..\Core\ImGuiHelpers\ImGuiSetStyles;..\Core\ImGuiHelpers\ImGuiValueChangeCallbacks;..\Core\ITokeniser\Src;..\Core\IStack\Src;..\Core\IRuntime\Src;..\Core\NullInterpreter\Src;..\Core\PietInterpreter\Src;..\Core\BrainFckInterpreter\Src;..\Vendor\stb;..\Vendor\imgui;..\Vendor\imgui\misc\cpp;..\Vendor\imgui\backends;..\Vendor\imgui\examples\libs\glfw\include;..\Vendor\FontAwesomeHeaders;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
@@ -99,7 +99,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>PLATFORM_WINDOWS;WINDOWS;RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>Src;..\Core\SmartEnums\Src;..\Core\ELanguages\Src;..\Core\ImGuiHelpers\FileDialogBox;..\Core\ImGuiHelpers\ImGuiSetStyles;..\Core\ImGuiHelpers\ImGuiValueChangeCallbacks;..\Core\ITokeniser\Src;..\Core\IStack\Src;..\Core\IRuntime\Src;..\Core\NullInterpreter\Src;..\Core\PietInterpreter\Src;..\Vendor\stb;..\Vendor\imgui;..\Vendor\imgui\misc\cpp;..\Vendor\imgui\backends;..\Vendor\imgui\examples\libs\glfw\include;..\Vendor\FontAwesomeHeaders;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>Src;..\Core\SmartEnums\Src;..\Core\ELanguages\Src;..\Core\ImGuiHelpers\FileDialogBox;..\Core\ImGuiHelpers\ImGuiSetStyles;..\Core\ImGuiHelpers\ImGuiValueChangeCallbacks;..\Core\ITokeniser\Src;..\Core\IStack\Src;..\Core\IRuntime\Src;..\Core\NullInterpreter\Src;..\Core\PietInterpreter\Src;..\Core\BrainFckInterpreter\Src;..\Vendor\stb;..\Vendor\imgui;..\Vendor\imgui\misc\cpp;..\Vendor\imgui\backends;..\Vendor\imgui\examples\libs\glfw\include;..\Vendor\FontAwesomeHeaders;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -125,7 +125,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>PLATFORM_WINDOWS;WINDOWS;DIST;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>Src;..\Core\SmartEnums\Src;..\Core\ELanguages\Src;..\Core\ImGuiHelpers\FileDialogBox;..\Core\ImGuiHelpers\ImGuiSetStyles;..\Core\ImGuiHelpers\ImGuiValueChangeCallbacks;..\Core\ITokeniser\Src;..\Core\IStack\Src;..\Core\IRuntime\Src;..\Core\NullInterpreter\Src;..\Core\PietInterpreter\Src;..\Vendor\stb;..\Vendor\imgui;..\Vendor\imgui\misc\cpp;..\Vendor\imgui\backends;..\Vendor\imgui\examples\libs\glfw\include;..\Vendor\FontAwesomeHeaders;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>Src;..\Core\SmartEnums\Src;..\Core\ELanguages\Src;..\Core\ImGuiHelpers\FileDialogBox;..\Core\ImGuiHelpers\ImGuiSetStyles;..\Core\ImGuiHelpers\ImGuiValueChangeCallbacks;..\Core\ITokeniser\Src;..\Core\IStack\Src;..\Core\IRuntime\Src;..\Core\NullInterpreter\Src;..\Core\PietInterpreter\Src;..\Core\BrainFckInterpreter\Src;..\Vendor\stb;..\Vendor\imgui;..\Vendor\imgui\misc\cpp;..\Vendor\imgui\backends;..\Vendor\imgui\examples\libs\glfw\include;..\Vendor\FontAwesomeHeaders;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>None</DebugInformationFormat>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -155,6 +155,9 @@
     <ClCompile Include="Src\Main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="README.md" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\Vendor\spdlog.vcxproj">
       <Project>{8EAD431C-7A4F-6EF2-630A-82464F4BF542}</Project>
     </ProjectReference>
@@ -178,6 +181,9 @@
     </ProjectReference>
     <ProjectReference Include="..\Core\PietInterpreter\PietInterpreter.vcxproj">
       <Project>{8B89E382-F714-5147-0026-D43B6C30AD47}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\Core\BrainFckInterpreter\BrainFckInterpreter.vcxproj">
+      <Project>{598F1F13-C5F0-FC20-4E5E-43D3BABE33E0}</Project>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
