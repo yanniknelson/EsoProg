@@ -79,7 +79,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>PLATFORM_WINDOWS;WINDOWS;DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>Src;..\Core\SmartEnums\Src;..\Core\ELanguages\Src;..\Core\ImGuiHelpers\FileDialogBox;..\Core\ImGuiHelpers\ImGuiValueChangeCallbacks;..\Core\ITokeniser\Src;..\Core\IStack\Src;..\Core\IRuntime\Src;..\Core\PietInterpreter\Src;..\Vendor\stb;..\Vendor\imgui;..\Vendor\imgui\misc\cpp;..\Vendor\imgui\backends;..\Vendor\imgui\examples\libs\glfw\include;..\Vendor\FontAwesomeHeaders;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>Src;..\Core\SmartEnums\Src;..\Core\ELanguages\Src;..\Core\ImGuiHelpers\FileDialogBox;..\Core\ImGuiHelpers\ImGuiValueChangeCallbacks;..\Core\ITokeniser\Src;..\Core\IStack\Src;..\Core\IRuntime\Src;..\Core\NullInterpreter\Src;..\Core\PietInterpreter\Src;..\Vendor\stb;..\Vendor\imgui;..\Vendor\imgui\misc\cpp;..\Vendor\imgui\backends;..\Vendor\imgui\examples\libs\glfw\include;..\Vendor\FontAwesomeHeaders;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
@@ -99,7 +99,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>PLATFORM_WINDOWS;WINDOWS;RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>Src;..\Core\SmartEnums\Src;..\Core\ELanguages\Src;..\Core\ImGuiHelpers\FileDialogBox;..\Core\ImGuiHelpers\ImGuiValueChangeCallbacks;..\Core\ITokeniser\Src;..\Core\IStack\Src;..\Core\IRuntime\Src;..\Core\PietInterpreter\Src;..\Vendor\stb;..\Vendor\imgui;..\Vendor\imgui\misc\cpp;..\Vendor\imgui\backends;..\Vendor\imgui\examples\libs\glfw\include;..\Vendor\FontAwesomeHeaders;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>Src;..\Core\SmartEnums\Src;..\Core\ELanguages\Src;..\Core\ImGuiHelpers\FileDialogBox;..\Core\ImGuiHelpers\ImGuiValueChangeCallbacks;..\Core\ITokeniser\Src;..\Core\IStack\Src;..\Core\IRuntime\Src;..\Core\NullInterpreter\Src;..\Core\PietInterpreter\Src;..\Vendor\stb;..\Vendor\imgui;..\Vendor\imgui\misc\cpp;..\Vendor\imgui\backends;..\Vendor\imgui\examples\libs\glfw\include;..\Vendor\FontAwesomeHeaders;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -125,7 +125,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>PLATFORM_WINDOWS;WINDOWS;DIST;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>Src;..\Core\SmartEnums\Src;..\Core\ELanguages\Src;..\Core\ImGuiHelpers\FileDialogBox;..\Core\ImGuiHelpers\ImGuiValueChangeCallbacks;..\Core\ITokeniser\Src;..\Core\IStack\Src;..\Core\IRuntime\Src;..\Core\PietInterpreter\Src;..\Vendor\stb;..\Vendor\imgui;..\Vendor\imgui\misc\cpp;..\Vendor\imgui\backends;..\Vendor\imgui\examples\libs\glfw\include;..\Vendor\FontAwesomeHeaders;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>Src;..\Core\SmartEnums\Src;..\Core\ELanguages\Src;..\Core\ImGuiHelpers\FileDialogBox;..\Core\ImGuiHelpers\ImGuiValueChangeCallbacks;..\Core\ITokeniser\Src;..\Core\IStack\Src;..\Core\IRuntime\Src;..\Core\NullInterpreter\Src;..\Core\PietInterpreter\Src;..\Vendor\stb;..\Vendor\imgui;..\Vendor\imgui\misc\cpp;..\Vendor\imgui\backends;..\Vendor\imgui\examples\libs\glfw\include;..\Vendor\FontAwesomeHeaders;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>None</DebugInformationFormat>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>

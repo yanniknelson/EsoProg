@@ -31,6 +31,7 @@ public:
 	};
 
 	virtual ELanguages::Enum GetRuntimeLanguage() const override { return ELanguages::Piet; }
+	virtual std::vector<std::string> GetSupportedFileTypes() const override { return { ".txt", ".jpg", ".png", ".gif", ".ppm" }; }
 
 	enum class SourceType
 	{

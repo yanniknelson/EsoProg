@@ -235,15 +235,17 @@ void EsoProg::SetCurrentLanugage(ELanguages::Enum language)
 	{
 	case(ELanguages::Piet):
 	{
-		FileDialogBox::Set_Allowed_Type({ ".txt", ".jpg", ".png", ".gif", ".ppm" });
+		m_pRuntime = &m_pietRuntime;
 		newName += " - Piet";
 		break;
 	}
 	default:
 	{
-		FileDialogBox::Set_Allowed_Type({ ".txt" });
+		m_pRuntime = &m_nullRuntime;
 	}
 	}
+	m_pRuntime->Reset();
+	FileDialogBox::Set_Allowed_Type(m_pRuntime->GetSupportedFileTypes());
 	glfwSetWindowTitle(i_pWindow, newName.c_str());
 }
 

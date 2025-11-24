@@ -22,6 +22,7 @@ public:
 	CRuntime(std::ostringstream& rOutputStream, std::ostringstream& rExecutionhistoryStream) : IRuntime(rOutputStream, rExecutionhistoryStream) {}
 
 	virtual ELanguages::Enum GetRuntimeLanguage() const = 0;
+	virtual std::vector<std::string> GetSupportedFileTypes() const = 0;
 
 	virtual void SetSourceCode(std::string str) override
 	{

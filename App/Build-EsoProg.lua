@@ -18,6 +18,7 @@ project "EsoProg"
       "%{wks.location}/Core/ITokeniser/Src",
       "%{wks.location}/Core/IStack/Src",
 	  "%{wks.location}/Core/IRuntime/Src",
+	  "%{wks.location}/Core/NullInterpreter/Src",
 	  "%{wks.location}/Core/PietInterpreter/Src",
 
       -- Include externals
