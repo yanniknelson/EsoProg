@@ -74,7 +74,7 @@ class EsoProg {
 
 	//Interpreting
 	bool m_bIsTokenError = false;
-	bool m_bVerificationAttempted = false;
+	bool m_bCodeChangedSinceLastStep = false;
 	int m_tokenErrorLine = 0;
 	std::ostringstream m_outputStream{ "" };
 	std::ostringstream m_executionHistoryStream{ "" };

@@ -156,7 +156,7 @@ void EsoProg::PreFileLoad(const std::filesystem::path path)
 	case EFileType::Text:
 	{
 		m_code = "";
-		m_bVerificationAttempted = false;
+		m_bCodeChangedSinceLastStep = true;
 	}
 	}
 	m_outputStream.str(std::string());
@@ -249,6 +249,11 @@ void EsoProg::SetCurrentLanugage(ELanguages::Enum language)
 
 bool EsoProg::UpdateRuntime()
 {
+	if (m_bCodeChangedSinceLastStep)
+	{
+		m_pRuntime->SetSourceCode(m_code);
+		m_bCodeChangedSinceLastStep = false;
+	}
 	return m_pRuntime->StepExecution();
 }
 
@@ -349,10 +354,10 @@ void EsoProg::Render()
 	{
 		ImGui::Text("Warning: Pressing ESC will delete all non submitted changes");
 
-		if (ImGui::InputTextMultiline("##code", &m_code, ImVec2(-FLT_MIN, ImGui::GetContentRegionAvail().y - (ImGui::GetTextLineHeight() * 1.5f)), ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_CallbackEdit, TextInputCallback, &m_bVerificationAttempted))
+		if (ImGui::InputTextMultiline("##code", &m_code, ImVec2(-FLT_MIN, ImGui::GetContentRegionAvail().y - (ImGui::GetTextLineHeight() * 1.5f)), ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_CallbackEdit, TextInputCallback, &m_bCodeChangedSinceLastStep))
 		{
 			std::cout << "code changed" << std::endl;
-			m_bVerificationAttempted = false;
+			sync.iterations = 0; // stop execution on code change
 		}
 
 		if (ImGui::Button("Run"))
@@ -365,7 +370,7 @@ void EsoProg::Render()
 		{
 			int currentinstructionWaitTime = sync.instructionWaitTime.load();
 			int newInstructionWaitTime = currentinstructionWaitTime;
-			ImGui::SliderInt("Execution Speed", &newInstructionWaitTime, 0, 1000);
+			ImGui::SliderInt("##ExecutionSpeed", &newInstructionWaitTime, 0, 1000);
 			sync.instructionWaitTime.compare_exchange_strong(currentinstructionWaitTime, newInstructionWaitTime);
 		}
 

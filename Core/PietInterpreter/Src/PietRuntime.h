@@ -91,6 +91,7 @@ private:
 	virtual PietToken StepExecution_Internal() override;
 	virtual void ResetTokenisers() override
 	{
+		m_stack.Clear();
 		m_textTokeniser.SetTextStream(m_code);
 		m_imageTokeniser.Reset();
 	}
