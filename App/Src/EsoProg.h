@@ -18,6 +18,7 @@
 #include <IRuntime.h>
 #include <NullRuntime.h>
 #include <PietRuntime.h>
+#include <BrainFckRuntime.h>
 #include <SmartEnums.h>
 
 class EsoProg {
@@ -83,8 +84,9 @@ class EsoProg {
 	std::string m_cachedOutput{ "" };
 
 	IRuntime* m_pRuntime{nullptr};
-	PietRuntime m_pietRuntime{ m_sync, m_outputStream, m_executionHistoryStream};
-	NullRuntime m_nullRuntime{ m_sync, m_outputStream, m_executionHistoryStream};
+	NullRuntime m_nullRuntime{m_outputStream, m_executionHistoryStream};
+	PietRuntime m_pietRuntime{m_outputStream, m_executionHistoryStream};
+	BrainFckRuntime m_brainFckRuntime{m_outputStream, m_executionHistoryStream};
 
 	ImGuiInputTextFlags m_codeEditorFlags = ImGuiInputTextFlags_CallbackCharFilter | ImGuiInputTextFlags_EnterReturnsTrue;
 	std::string m_code{ "" };

@@ -23,17 +23,6 @@ public:
 	}
 
 protected:
-
-	/// <summary>
-	/// Convert from string to TokenType enum
-	/// </summary>
-	/// <param name="rString - "> string to be converted </param>
-	/// <returns> TokenType enum corresponding to input string </returns>
-	virtual TokenClass::TokenType StringToTokenType(std::string& rString) const
-	{
-		return TokenClass::TokenType::End;
-	}
-
 	std::stringstream* m_pStrStream{ nullptr };
 	int m_lineNumber = 1;
 };

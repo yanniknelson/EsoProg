@@ -8,6 +8,7 @@
 
 #include <stb_image.h>
 #include <PietRuntime.h>
+#include <BrainFckRuntime.h>
 
 const char* EsoProg::i_ProgramName = "EsoProg";
 GLFWwindow* EsoProg::i_pWindow = nullptr;
@@ -259,6 +260,12 @@ void EsoProg::SetCurrentLanugage(ELanguages::Enum language)
 	{
 		m_pRuntime = &m_pietRuntime;
 		newName += " - Piet";
+		break;
+	}
+	case(ELanguages::Brainfck):
+	{
+		m_pRuntime = &m_brainFckRuntime;
+		newName += " - Brain F*ck";
 		break;
 	}
 	default:
