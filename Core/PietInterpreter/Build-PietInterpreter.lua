@@ -4,7 +4,7 @@ project "PietInterpreter"
    cppdialect "C++20"
    targetdir "bin/%{cfg.buildcfg}"
 
-   files { "Src/**.h", "Src/**.cpp" }
+   files { "Src/**.h", "Src/**.cpp", "README.md" }
 
    includedirs
    {

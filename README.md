@@ -4,7 +4,7 @@
 EsoProg is intended to be a programming playground for esoteoric languages such as:
 
 - :white_check_mark: Piet
-- :white_large_square: BrainF*ck
+- :construction_worker: BrainF*ck (See the BrainFck branch)
 - :white_large_square: COW
 - :white_large_square: Auld
 
@@ -12,5 +12,7 @@ EsoProg is intended to be a programming playground for esoteoric languages such 
 ![](./ReadMe_Resources/PietQuest_Running.png)
 
 # How To Build
-To build this program you must have vcpkg and cmake installed.
-I then recommend you use visual studio to open the repro director and build from there.
+Ensure you get this repository recursively as the vendors have been added as sub modules.
+Once you have the source, go into the Scripts folder and run the setup script for your OS.<br><br>
+Now you have your solution, there should be a Premake Project inside it, to update your solution, you can rebuild that project.
+From here you should be able to build using visual studio.

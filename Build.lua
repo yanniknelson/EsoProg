@@ -14,7 +14,9 @@ project "Premake"
 	targetdir ("%{wks.location}/bin/%{cfg.buildcfg}/%{prj.name}")
 
 	files {
-		"%{wks.location}/**.lua"
+		"%{wks.location}/**.lua",
+		"%{wks.location}/LICENSE.md",
+		"%{wks.location}/README.md"
 	}
 
 	postbuildmessage "Regenerating project files with Premake5!"
