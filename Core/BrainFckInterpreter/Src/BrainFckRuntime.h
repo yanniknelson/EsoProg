@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ITokeniser.h"
+#include "IMemoryArray.h"
 #include "BrainFckToken.h"
 #include "BrainFckTokeniser.h"
 
@@ -9,7 +10,6 @@
 #include <iostream>
 #include <sstream>
 
-#include <Stack.h>
 #include <CRuntime.h>
 #include <string>
 #include <vector>
@@ -25,7 +25,7 @@ public:
 	void Reset()
 	{
 		ResetTokenisers();
-		m_stack.Clear();
+		m_array.Clear();
 	}
 
 	virtual void RenderWindows(RuntimeSyncronisationStruct& rSync) override;
@@ -35,8 +35,8 @@ private:
 
 	BrainFckTokeniser m_tokeniser;
 
-	Stack m_stack;
-	Stack m_cachedStack;
+	IMemoryArray<uint8_t> m_array;
+	IMemoryArray<uint8_t> m_cachedArray;
 
 	float m_aspectRatio = 1.f;
 	std::string m_codelSizeStr{ "1" };
@@ -49,7 +49,7 @@ private:
 	virtual BrainFckToken StepExecution_Internal() override;
 	virtual void ResetTokenisers() override
 	{
-		m_stack.Clear();
+		m_array.Clear();
 		m_tokeniser.SetTextStream(m_code);
 	}
 };

@@ -45,10 +45,7 @@ BrainFckToken BrainFckRuntime::StepExecution_Internal()
 	}
 	case(BrainFckToken::TokenType::Output_Char):
 	{
-		if (m_stack.GetSize() > 0)
-		{
-			m_rOutputStream << (char)m_stack.Pop();
-		}
+		m_rOutputStream << (char)m_array.Get(0);
 		break;
 	}
 	case(BrainFckToken::TokenType::Input_Char):
@@ -82,15 +79,15 @@ BrainFckToken BrainFckRuntime::StepExecution_Internal()
 
 void BrainFckRuntime::OnInput(int val)
 {
-	m_stack.Push(val);
+	m_array.Set(0, val);
 }
 
 void BrainFckRuntime::RenderWindows(RuntimeSyncronisationStruct& rSync)
 {
-	m_cachedStack.DisplayStack();
+	m_cachedArray.DisplayArray();
 }
 
 void BrainFckRuntime::CacheState()
 {
-	m_cachedStack = m_stack;
+	m_cachedArray = m_array;
 }
