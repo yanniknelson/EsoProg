@@ -1,27 +1,27 @@
 #pragma once
 
-#include "PietToken.h"
+#include "BrainFckToken.h"
 
 #include <ITextTokeniser.h>
 #include <strstream>
 #include <iostream>
 
 
-class PietTextTokeniser : public ITextTokeniser<PietToken>
+class BrainFckTokeniser : public ITextTokeniser<BrainFckToken>
 {
 public:
 
-	PietTextTokeniser() {};
+	BrainFckTokeniser() {};
 
 private:
 
 	/// <summary>
-	/// Convert from string to TokenType enum
+	/// Convert from char to TokenType enum
 	/// </summary>
-	/// <param name="rString - "> string to be converted </param>
-	/// <returns> TokenType enum corresponding to input string </returns>
-	virtual PietToken::TokenType StringToTokenType(std::string& rString) const override;
+	/// <param name="chr - "> char to be converted </param>
+	/// <returns> TokenType enum corresponding to input char </returns>
+	inline BrainFckToken::TokenType CharToToken(const char chr) const;
 
-	PietToken GetNextToken();
-	virtual PietToken Pop_Internal() override;
+	BrainFckToken GetNextToken();
+	virtual BrainFckToken Pop_Internal() override;
 };

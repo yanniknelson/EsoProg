@@ -3,175 +3,74 @@
 #include <iostream>
 #include <sstream>
 
-PietToken PietTextTokeniser::GetNextToken()
+BrainFckToken BrainFckTokeniser::Pop_Internal()
 {
-	if (!m_pStrStream->rdbuf()->in_avail())
-	{
-		m_tLastPopped.m_type = PietToken::TokenType::End;
-		m_tLastPopped.m_value = NAN;
-		return m_tLastPopped;
-	}
+	BrainFckToken token = GetNextToken();
+	return token;
+}
+
+BrainFckToken BrainFckTokeniser::GetNextToken()
+{
 	char ch = ' ';
+	BrainFckToken::TokenType currentTokenType = CharToToken(ch);
 	std::string word;
-	while (isspace(ch))
+	// ignore all white space and characters that aren't ><+-.,[]
+	while (m_pStrStream->rdbuf()->in_avail() || isspace(ch) || currentTokenType == BrainFckToken::TokenType::Unrecognised_Token)
 	{
 		m_pStrStream->get(ch);
 		if (ch == '\n') { m_lineNumber++; }
 	}
 
-	if (isdigit(ch))
+	if (!m_pStrStream->rdbuf()->in_avail())
 	{
-		m_pStrStream->putback(ch);
-		m_tLastPopped.m_type = PietToken::TokenType::Value;
-		*m_pStrStream >> m_tLastPopped.m_value;
+		m_tLastPopped.m_type = BrainFckToken::TokenType::End;
+		return m_tLastPopped;
 	}
-	else
-	{
-		m_pStrStream->putback(ch);
-		*m_pStrStream >> word;
-		m_tLastPopped.m_type = StringToTokenType(word);
-		m_tLastPopped.m_value = NAN;
-
-		if (m_tLastPopped.m_type == PietToken::TokenType::CHAR || m_tLastPopped.m_type == PietToken::TokenType::INT)
-		{
-			m_tLastPopped.m_type = PietToken::TokenType::Unrecognised_Token;
-		}
-
-		if (m_tLastPopped.m_type == PietToken::TokenType::Input)
-		{
-			word = "";
-			*m_pStrStream >> word;
-			m_tLastPopped.m_type = StringToTokenType(word);
-
-			if (m_tLastPopped.m_type == PietToken::TokenType::CHAR)
-			{
-				m_tLastPopped.m_type = PietToken::TokenType::Input_Char;
-			}
-			else if (m_tLastPopped.m_type == PietToken::TokenType::INT)
-			{
-				m_tLastPopped.m_type = PietToken::TokenType::Input_Val;
-			}
-			else
-			{
-				m_tLastPopped.m_type = PietToken::TokenType::Unrecognised_Token;
-			}
-		}
-		else if (m_tLastPopped.m_type == PietToken::TokenType::Output)
-		{
-			word = "";
-			*m_pStrStream >> word;
-			m_tLastPopped.m_type = StringToTokenType(word);
-
-			if (m_tLastPopped.m_type == PietToken::TokenType::CHAR)
-			{
-				m_tLastPopped.m_type = PietToken::TokenType::Output_Char;
-			}
-			else if (m_tLastPopped.m_type == PietToken::TokenType::INT)
-			{
-				m_tLastPopped.m_type = PietToken::TokenType::Output_Val;
-			}
-			else
-			{
-				m_tLastPopped.m_type = PietToken::TokenType::Unrecognised_Token;
-			}
-		}
-
-	}
+	
+	m_tLastPopped.m_type = currentTokenType;
 
 	return m_tLastPopped;
 }
 
-PietToken PietTextTokeniser::Pop_Internal()
+inline BrainFckToken::TokenType BrainFckTokeniser::CharToToken(const char chr) const
 {
-	PietToken token = GetNextToken();
-	if (token.m_type == PietToken::TokenType::Push)
+	switch (chr)
 	{
-		PietToken value = Pop_Internal();
-		if (value.m_type != PietToken::TokenType::Value)
-		{
-			__debugbreak();
-		}
-		token.m_value = value.m_value;
+	case('>'):
+	{
+		return BrainFckToken::TokenType::Move_Right;
 	}
-	return token;
-}
-
-PietToken::TokenType PietTextTokeniser::StringToTokenType(std::string& rString) const
-{
-	if (rString == "PUSH")
+	case('<'):
 	{
-		return PietToken::TokenType::Push;
+		return BrainFckToken::TokenType::Move_Left;
 	}
-	else if (rString == "POP")
+	case('+'):
 	{
-		return PietToken::TokenType::Pop;
+		return BrainFckToken::TokenType::Increment;
 	}
-	else if (rString == "Add")
+	case('-'):
 	{
-		return PietToken::TokenType::Add;
+		return BrainFckToken::TokenType::Decrement;
 	}
-	else if (rString == "SUB")
+	case('.'):
 	{
-		return PietToken::TokenType::Subtract;
+		return BrainFckToken::TokenType::Output_Char;
 	}
-	else if (rString == "MUL")
+	case(','):
 	{
-		return PietToken::TokenType::Multiply;
+		return BrainFckToken::TokenType::Input_Char;
 	}
-	else if (rString == "DIV")
+	case('['):
 	{
-		return PietToken::TokenType::Divide;
+		return BrainFckToken::TokenType::Branch_Start;
 	}
-	else if (rString == "MOD")
+	case(']'):
 	{
-		return PietToken::TokenType::Modulo;
+		return BrainFckToken::TokenType::Branch_End;
 	}
-	else if (rString == "NOT")
+	default:
 	{
-		return PietToken::TokenType::Not;
+		return BrainFckToken::TokenType::Unrecognised_Token;
 	}
-	else if (rString == "GR")
-	{
-		return PietToken::TokenType::Greater;
-	}
-	else if (rString == "PNTR")
-	{
-		return PietToken::TokenType::Pointer;
-	}
-	else if (rString == "SWTCH")
-	{
-		return PietToken::TokenType::Switch;
-	}
-	else if (rString == "DUP")
-	{
-		return PietToken::TokenType::Duplicate;
-	}
-	else if (rString == "ROLL")
-	{
-		return PietToken::TokenType::Roll;
-	}
-	else if (rString == "END")
-	{
-		return PietToken::TokenType::End;
-	}
-	else if (rString == "OUT")
-	{
-		return PietToken::TokenType::Output;
-	}
-	else if (rString == "IN")
-	{
-		return PietToken::TokenType::Input;
-	}
-	else if (rString == "CHAR")
-	{
-		return PietToken::TokenType::CHAR;
-	}
-	else if (rString == "INT")
-	{
-		return PietToken::TokenType::INT;
-	}
-	else
-	{
-		return PietToken::TokenType::Unrecognised_Token;
 	}
 }
