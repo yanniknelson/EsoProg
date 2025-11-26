@@ -51,7 +51,7 @@ public:
 		if (typename std::map<int, memType>::iterator it = m_array.find(indx);
 			it != m_array.end())
 		{
-			(*it)++;
+			++(it->second);
 		}
 		else
 		{
@@ -61,12 +61,12 @@ public:
 		m_minIndex = m_minIndex < indx ? m_minIndex : indx;
 	}
 
-	int Decrement(int indx)
+	void Decrement(int indx)
 	{
 		if (typename std::map<int, memType>::iterator it = m_array.find(indx);
 			it != m_array.end())
 		{
-			(*it)--;
+			--(it->second);
 		}
 		else
 		{
@@ -85,7 +85,7 @@ public:
 		return os;
 	}
 
-	void DisplayArray() const
+	void DisplayArray(const int index) const
 	{
 		if (ImGui::Begin("Memory Array"))
 		{

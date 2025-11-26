@@ -58,8 +58,6 @@ protected:
 	std::string m_codeStr = "";
 	std::stringstream m_code;
 
-	ITokeniser<TokenClass>* m_activeTokeniser = nullptr;
-
 	virtual void OnSourceSet() = 0;
 	virtual void OnInput(int val) = 0;
 

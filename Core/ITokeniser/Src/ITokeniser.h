@@ -10,7 +10,7 @@ public:
 	/// <returns> The next token </returns>
 	const TokenClass& Pop()
 	{
-		return Pop_Internal();;
+		return Pop_Internal();
 	}
 
 	/// <summary>

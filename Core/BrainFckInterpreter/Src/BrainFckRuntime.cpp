@@ -19,33 +19,33 @@
 
 BrainFckToken BrainFckRuntime::StepExecution_Internal()
 {
-	const BrainFckToken token = m_activeTokeniser->Pop();
+	const BrainFckToken token = m_tokeniser.Pop();
 
 	switch (token.m_type)
 	{
 	case(BrainFckToken::TokenType::Move_Right):
 	{
-		
+		++m_currentIndex;
 		break;
 	}
 	case(BrainFckToken::TokenType::Move_Left):
 	{
-		
+		--m_currentIndex;
 		break;
 	}
 	case(BrainFckToken::TokenType::Increment):
 	{
-		
+		m_array.Increment(m_currentIndex);
 		break;
 	}
 	case(BrainFckToken::TokenType::Decrement):
 	{
-		
+		m_array.Decrement(m_currentIndex);
 		break;
 	}
 	case(BrainFckToken::TokenType::Output_Char):
 	{
-		m_rOutputStream << (char)m_array.Get(0);
+		m_rOutputStream << (char)m_array.Get(m_currentIndex);
 		break;
 	}
 	case(BrainFckToken::TokenType::Input_Char):
@@ -79,15 +79,16 @@ BrainFckToken BrainFckRuntime::StepExecution_Internal()
 
 void BrainFckRuntime::OnInput(int val)
 {
-	m_array.Set(0, val);
+	m_array.Set(m_currentIndex, val);
 }
 
 void BrainFckRuntime::RenderWindows(RuntimeSyncronisationStruct& rSync)
 {
-	m_cachedArray.DisplayArray();
+	m_cachedArray.DisplayArray(m_cachedIndex);
 }
 
 void BrainFckRuntime::CacheState()
 {
+	m_cachedIndex = m_currentIndex;
 	m_cachedArray = m_array;
 }

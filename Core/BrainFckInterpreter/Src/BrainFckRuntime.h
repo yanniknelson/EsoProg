@@ -35,7 +35,9 @@ private:
 
 	BrainFckTokeniser m_tokeniser;
 
+	int m_currentIndex{ 0 };
 	IMemoryArray<uint8_t> m_array;
+	int m_cachedIndex{ 0 };
 	IMemoryArray<uint8_t> m_cachedArray;
 
 	float m_aspectRatio = 1.f;
