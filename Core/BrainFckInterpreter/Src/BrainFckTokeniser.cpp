@@ -12,23 +12,22 @@ BrainFckToken BrainFckTokeniser::Pop_Internal()
 BrainFckToken BrainFckTokeniser::GetNextToken()
 {
 	char ch = ' ';
-	BrainFckToken::TokenType currentTokenType = CharToToken(ch);
+	BrainFckToken::TokenType currentTokenType = BrainFckToken::TokenType::Unrecognised_Token;
 	std::string word;
 	// ignore all white space and characters that aren't ><+-.,[]
-	while (m_pStrStream->rdbuf()->in_avail() || isspace(ch) || currentTokenType == BrainFckToken::TokenType::Unrecognised_Token)
+	while (m_pStrStream->rdbuf()->in_avail() && (isspace(ch) || currentTokenType == BrainFckToken::TokenType::Unrecognised_Token))
 	{
 		m_pStrStream->get(ch);
+		currentTokenType = CharToToken(ch);
 		if (ch == '\n') { m_lineNumber++; }
 	}
 
-	if (!m_pStrStream->rdbuf()->in_avail())
+	if (currentTokenType == BrainFckToken::TokenType::Unrecognised_Token)
 	{
-		m_tLastPopped.m_type = BrainFckToken::TokenType::End;
-		return m_tLastPopped;
+		currentTokenType = BrainFckToken::TokenType::End;
 	}
 	
 	m_tLastPopped.m_type = currentTokenType;
-
 	return m_tLastPopped;
 }
 

@@ -73,6 +73,8 @@ private:
 	PietTextTokeniser m_textTokeniser;
 	PietImageTokeniser m_imageTokeniser;
 
+	TPietTokeniser* m_activeTokeniser = nullptr;
+
 	Stack m_stack;
 	Stack m_cachedStack;
 
