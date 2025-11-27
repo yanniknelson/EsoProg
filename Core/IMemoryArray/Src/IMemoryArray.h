@@ -1,7 +1,9 @@
 #pragma once
 
 #include <map>
+#include <limits>
 #include <iostream>
+#include <string>
 
 #include <imgui.h>
 
@@ -9,15 +11,15 @@ template<typename memType>
 class IMemoryArray {
 
 	std::map<int, memType> m_array;
-	int m_maxIndex{ 0 };
-	int m_minIndex{ 0 };
+	int m_maxIndex{ INT_MIN };
+	int m_minIndex{ INT_MAX };
 	int m_mainFocus{ 0 };
 public:
 
 	void Clear() {
 		m_array.clear();
-		m_maxIndex = 0;
-		m_minIndex = 0;
+		m_maxIndex = INT_MIN;
+		m_minIndex = INT_MAX;
 	};
 
 	bool Empty() const { return m_array.empty(); };
@@ -85,16 +87,32 @@ public:
 		return os;
 	}
 
+#define MemoryCellSize 50.f
+#define MemoryCellHalfSize MemoryCellSize/2.f
+
 	void DisplayArray(const int index) const
 	{
 		if (ImGui::Begin("Memory Array"))
 		{
+			ImGuiStyle& style = ImGui::GetStyle();
 			const ImVec2 windowPos = ImGui::GetCursorScreenPos();
 			const ImVec2 windowSize = ImGui::GetContentRegionAvail();
 			const ImVec2 windowCenter(windowPos.x + (windowSize.x / 2), windowPos.y + (windowSize.y / 2));
+			const float cellYPos = windowCenter.y - MemoryCellHalfSize;
+			const size_t numCells = (windowSize.x / MemoryCellSize) - 1;
+			const float cellStartXPos = windowCenter.x - (numCells/ 2.f * MemoryCellSize);
 			ImDrawList* pDrawList = ImGui::GetWindowDrawList();
-			pDrawList->AddRectFilled(windowCenter, ImVec2(windowCenter.x + 20, windowCenter.y + 20), IM_COL32(75, 75, 75, 255), 4.0f);
-			pDrawList->AddRect(windowCenter, ImVec2(windowCenter.x + 20, windowCenter.y + 20), IM_COL32(100, 100, 100, 255), 4.0f);
+			for (size_t cellNum = 0; cellNum < numCells; cellNum++)
+			{
+				const ImVec2 rectMin(cellStartXPos + cellNum * MemoryCellSize, cellYPos);
+				const ImVec2 rectMax(rectMin.x + MemoryCellSize, rectMin.y + MemoryCellSize);
+				const std::string val = std::to_string(Get(index));
+				const ImVec2 textSize = ImGui::CalcTextSize(val.c_str(), 0, true, MemoryCellSize - 10);
+				const ImVec2 textPos(rectMin.x + MemoryCellHalfSize - textSize.x / 2.f, rectMin.y + MemoryCellHalfSize - textSize.y / 2.f);
+				pDrawList->AddRectFilled(rectMin, rectMax, ImColor(style.Colors[ImGuiCol_FrameBg]), 4.0f);
+				pDrawList->AddRect(rectMin, rectMax, ImColor(style.Colors[ImGuiCol_Border]), 4.0f);
+				pDrawList->AddText(textPos, ImColor(style.Colors[ImGuiCol_Text]), val.c_str());
+			}
 		}
 		ImGui::End();
 	}
