@@ -13,7 +13,7 @@ void SetImGuiShapingStyle()
     style.DisabledAlpha = 1.0f;
     style.WindowPadding = ImVec2(12.0f, 12.0f);
     style.WindowRounding = 11.5f;
-    style.WindowBorderSize = 0.0f;
+    style.WindowBorderSize = 1.0f;
     style.WindowMinSize = ImVec2(20.0f, 20.0f);
     style.WindowTitleAlign = ImVec2(0.5f, 0.5f);
     style.WindowMenuButtonPosition = ImGuiDir_Left;
@@ -34,7 +34,7 @@ void SetImGuiShapingStyle()
     style.GrabMinSize = 3.7f;
     style.GrabRounding = 20.0f;
     style.TabRounding = 10.0f;
-    style.TabBorderSize = 0.0f;
+    style.TabBorderSize = 1.0f;
     //style.TabMinWidthForCloseButton = 0.0f;
     style.ColorButtonPosition = ImGuiDir_Left;
     style.ButtonTextAlign = ImVec2(0.5f, 0.5f);
