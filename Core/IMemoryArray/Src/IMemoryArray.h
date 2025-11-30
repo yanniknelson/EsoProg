@@ -99,19 +99,24 @@ public:
 			const ImVec2 windowSize = ImGui::GetContentRegionAvail();
 			const ImVec2 windowCenter(windowPos.x + (windowSize.x / 2), windowPos.y + (windowSize.y / 2));
 			const float cellYPos = windowCenter.y - MemoryCellHalfSize;
-			const size_t numCells = (windowSize.x / MemoryCellSize) - 1;
+			const size_t halfNumCells = ((windowSize.x / MemoryCellSize) - 1.5)/2;
+			const size_t numCells = (halfNumCells << 1) + 1;
 			const float cellStartXPos = windowCenter.x - (numCells/ 2.f * MemoryCellSize);
 			ImDrawList* pDrawList = ImGui::GetWindowDrawList();
 			for (size_t cellNum = 0; cellNum < numCells; cellNum++)
 			{
 				const ImVec2 rectMin(cellStartXPos + cellNum * MemoryCellSize, cellYPos);
 				const ImVec2 rectMax(rectMin.x + MemoryCellSize, rectMin.y + MemoryCellSize);
-				const std::string val = std::to_string(Get(index));
-				const ImVec2 textSize = ImGui::CalcTextSize(val.c_str(), 0, true, MemoryCellSize - 10);
-				const ImVec2 textPos(rectMin.x + MemoryCellHalfSize - textSize.x / 2.f, rectMin.y + MemoryCellHalfSize - textSize.y / 2.f);
+				const int cellIndex = index - halfNumCells + cellNum;
+				const ImVec2 cellIndexTextSize = ImGui::CalcTextSize(std::to_string(cellIndex).c_str(), 0, true, MemoryCellSize - 10);
+				const ImVec2 cellIndexTextPos(rectMin.x + MemoryCellHalfSize - cellIndexTextSize.x / 2.f, rectMin.y - cellIndexTextSize.y - 10.f);
+				pDrawList->AddText(cellIndexTextPos, ImColor(style.Colors[ImGuiCol_Text]), std::to_string(cellIndex).c_str());
 				pDrawList->AddRectFilled(rectMin, rectMax, ImColor(style.Colors[ImGuiCol_FrameBg]), 4.0f);
 				pDrawList->AddRect(rectMin, rectMax, ImColor(style.Colors[ImGuiCol_Border]), 4.0f);
-				pDrawList->AddText(textPos, ImColor(style.Colors[ImGuiCol_Text]), val.c_str());
+				const std::string val = std::to_string(Get(cellIndex));
+				const ImVec2 valTextSize = ImGui::CalcTextSize(val.c_str(), 0, true, MemoryCellSize - 10);
+				const ImVec2 valTextPos(rectMin.x + MemoryCellHalfSize - valTextSize.x / 2.f, rectMin.y + MemoryCellHalfSize - valTextSize.y / 2.f);
+				pDrawList->AddText(valTextPos, ImColor(style.Colors[ImGuiCol_Text]), val.c_str());
 			}
 		}
 		ImGui::End();
