@@ -228,7 +228,7 @@ void PietRuntime::RenderImageDisplay(RuntimeSyncronisationStruct& rSync)
 		{
 			int currentinstructionWaitTime = rSync.instructionWaitTime.load();
 			int newInstructionWaitTime = currentinstructionWaitTime;
-			ImGui::SliderInt("Execution Speed", &newInstructionWaitTime, 0, 1000);
+			ImGui::SliderInt("##ExecutionSpeed", &newInstructionWaitTime, 0, 1000);
 			rSync.instructionWaitTime.compare_exchange_strong(currentinstructionWaitTime, newInstructionWaitTime);
 		}
 
