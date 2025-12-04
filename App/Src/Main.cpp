@@ -90,12 +90,18 @@ int main(int, char**)
 
     std::thread runtimeWorker([&]()
         {
-            RuntimeSyncronisationStruct& rSync = pProgramInstance->sync;
+            RuntimeSyncronisationStruct& rSync = pProgramInstance->m_sync;
             rSync.runtimeStateMtx.lock(); // lock the state for the first iterations
             while (!rSync.exit)
             {
                 while (rSync.iterations != 0) // run while we have iterations to run
                 {
+                    if (rSync.wantsReset)
+                    {
+                        pProgramInstance->ResetImplementation();
+                        rSync.wantsReset = false;
+                    }
+
                     if (rSync.iterations > 0)
                     {
                         --rSync.iterations;
@@ -117,7 +123,7 @@ int main(int, char**)
                     {
                         rSync.runtimeStateMtx.unlock();
                         std::unique_lock<std::mutex> lck(rSync.waitingOnInputMtx);
-                        rSync.waitingOnInputCV.wait(lck, [&]() { return pProgramInstance->sync.exit || !pProgramInstance->IsRuntimeWaitingOnInput(); });
+                        rSync.waitingOnInputCV.wait(lck, [&]() { return pProgramInstance->m_sync.exit || !pProgramInstance->IsRuntimeWaitingOnInput(); });
                         rSync.runtimeStateMtx.lock();
                     }
 
@@ -180,13 +186,13 @@ int main(int, char**)
 
         glfwSwapBuffers(window);
     }
-    pProgramInstance->sync.iterations = 0;
-    pProgramInstance->sync.exit = true;
+    pProgramInstance->m_sync.iterations = 0;
+    pProgramInstance->m_sync.exit = true;
     if (runtimeWorker.joinable())
     {
         if (pProgramInstance->IsRuntimeWaitingOnInput())
         {
-            pProgramInstance->sync.waitingOnInputCV.notify_all();
+            pProgramInstance->m_sync.waitingOnInputCV.notify_all();
         }
         runtimeWorker.join();
     }

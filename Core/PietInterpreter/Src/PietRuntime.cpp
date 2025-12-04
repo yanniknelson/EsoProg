@@ -196,7 +196,7 @@ void PietRuntime::OnInput(int val)
 	m_stack.Push(val);
 }
 
-void PietRuntime::RenderImageDisplay(RuntimeSyncronisationStruct& rSync)
+void PietRuntime::RenderImageDisplay()
 {
 	if (ImGui::Begin("Piet Image"))
 	{
@@ -213,25 +213,26 @@ void PietRuntime::RenderImageDisplay(RuntimeSyncronisationStruct& rSync)
 
 		if (ImGui::Button("Run"))
 		{
+			Reset();
 			m_currentSourceType = SourceType::Image;
 			m_activeTokeniser = (TPietTokeniser*)&m_imageTokeniser;
-			rSync.iterations = -1;
+			m_rSync.iterations = -1;
 		}
 
 		ImGui::SameLine();
 		{
-			int currentinstructionWaitTime = rSync.instructionWaitTime.load();
-			int newInstructionWaitTime = currentinstructionWaitTime;
-			ImGui::SliderInt("##ExecutionSpeed", &newInstructionWaitTime, 0, 1000);
-			rSync.instructionWaitTime.compare_exchange_strong(currentinstructionWaitTime, newInstructionWaitTime);
+			int currentinstructionWaitTime = m_rSync.instructionWaitTime.load();
+			float newInstructionWaitTime = currentinstructionWaitTime/1000.f;
+			ImGui::SliderFloat("##ExecutionSpeed", &newInstructionWaitTime, 0, 3);
+			m_rSync.instructionWaitTime.compare_exchange_strong(currentinstructionWaitTime, static_cast<int>(newInstructionWaitTime * 1000.f));
 		}
 
-		if (rSync.iterations == -1)
+		if (m_rSync.iterations == -1)
 		{
 			ImGui::SameLine();
 			if (ImGui::Button("Pause"))
 			{
-				rSync.iterations = 0;
+				m_rSync.iterations = 0;
 			}
 		}
 
@@ -240,10 +241,11 @@ void PietRuntime::RenderImageDisplay(RuntimeSyncronisationStruct& rSync)
 		{
 			if (m_currentSourceType != SourceType::Image)
 			{
+				Reset();
 				m_currentSourceType = SourceType::Image;
 				m_activeTokeniser = (TPietTokeniser*)&m_imageTokeniser;
 			}
-			++rSync.iterations;
+			++m_rSync.iterations;
 		}
 
 		ImGui::SameLine();
@@ -271,10 +273,10 @@ void PietRuntime::RenderImageDisplay(RuntimeSyncronisationStruct& rSync)
 	}
 }
 
-void PietRuntime::RenderWindows(RuntimeSyncronisationStruct& rSync)
+void PietRuntime::RenderWindows()
 {
 	m_cachedStack.DisplayStack();
-	RenderImageDisplay(rSync);
+	RenderImageDisplay();
 }
 
 void PietRuntime::CacheState()

@@ -222,13 +222,13 @@ EsoProg::EFileType::Enum EsoProg::LoadFile(const std::filesystem::path path)
 				//glGenerateMipmap(GL_TEXTURE_2D);
 				m_bImageLoaded = true;
 			}
-			sync.renderWantsState = true;
-			sync.runtimeStateMtx.lock();
+			m_sync.renderWantsState = true;
+			m_sync.runtimeStateMtx.lock();
 
 			static_cast<PietRuntime*>(m_pRuntime)->SetImage(&m_texture, m_imageData, m_imageWidth, m_imageHeight);
-			sync.renderWantsState = false;
-			sync.runtimeStateMtx.unlock();
-			sync.finishedStateWithCv.notify_one();
+			m_sync.renderWantsState = false;
+			m_sync.runtimeStateMtx.unlock();
+			m_sync.finishedStateWithCv.notify_one();
 		}
 		break;
 	}
@@ -262,6 +262,11 @@ void EsoProg::SetCurrentLanugage(ELanguages::Enum language)
 	m_pRuntime->Reset();
 	FileDialogBox::Set_Allowed_Type(m_pRuntime->GetSupportedFileTypes());
 	glfwSetWindowTitle(i_pWindow, newName.c_str());
+}
+
+void EsoProg::ResetImplementation()
+{
+	m_pRuntime->ResetImplementation();
 }
 
 bool EsoProg::UpdateRuntime()
@@ -323,11 +328,11 @@ void EsoProg::Render()
 			{
 				m_pRuntime->InputVal(std::stoi(m_programInput));
 				m_programInput = "";
-				if (sync.iterations != -1)
+				if (m_sync.iterations != -1)
 				{
-					sync.iterations = 0;
+					m_sync.iterations = 0;
 				}
-				sync.waitingOnInputCV.notify_one();
+				m_sync.waitingOnInputCV.notify_one();
 			}
 		}
 		ImGui::End();
@@ -343,27 +348,27 @@ void EsoProg::Render()
 			{
 				m_pRuntime->InputChar((char)m_programInput[0]);
 				m_programInput = "";
-				if (sync.iterations != -1)
+				if (m_sync.iterations != -1)
 				{
-					sync.iterations = 0;
+					m_sync.iterations = 0;
 				}
-				sync.waitingOnInputCV.notify_one();
+				m_sync.waitingOnInputCV.notify_one();
 			}
 			if (ImGui::Button("Submit Enter Char"))
 			{
 				m_programInput = "";
 				m_pRuntime->InputChar(10);
-				if (sync.iterations != -1)
+				if (m_sync.iterations != -1)
 				{
-					sync.iterations = 0;
+					m_sync.iterations = 0;
 				}
-				sync.waitingOnInputCV.notify_one();
+				m_sync.waitingOnInputCV.notify_one();
 			}
 		}
 		ImGui::End();
 	}
 
-	m_pRuntime->RenderWindows(sync);
+	m_pRuntime->RenderWindows();
 
 	// CODE EDITOR --------------------------------------------------------------------------------------------------
 	bool code_editor_open = true;
@@ -374,39 +379,39 @@ void EsoProg::Render()
 		if (ImGui::InputTextMultiline("##code", &m_code, ImVec2(-FLT_MIN, ImGui::GetContentRegionAvail().y - (ImGui::GetTextLineHeight() * 1.5f)), ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_CallbackEdit, TextInputCallback, &m_bCodeChangedSinceLastStep))
 		{
 			std::cout << "code changed" << std::endl;
-			sync.iterations = 0; // stop execution on code change
+			m_sync.iterations = 0; // stop execution on code change
 		}
 
 		if (ImGui::Button("Run"))
 		{
 			m_pRuntime->SetSourceCode(m_code);
-			sync.iterations = -1; // add a run speed
+			m_sync.iterations = -1; // add a run speed
 		}
 
 		ImGui::SameLine();
 		{
-			int currentinstructionWaitTime = sync.instructionWaitTime.load();
-			int newInstructionWaitTime = currentinstructionWaitTime;
-			ImGui::SliderInt("##ExecutionSpeed", &newInstructionWaitTime, 0, 1000);
-			sync.instructionWaitTime.compare_exchange_strong(currentinstructionWaitTime, newInstructionWaitTime);
+			int currentinstructionWaitTime = m_sync.instructionWaitTime.load();
+			float newInstructionWaitTime = currentinstructionWaitTime / 1000.f;
+			ImGui::SliderFloat("##ExecutionSpeed", &newInstructionWaitTime, 0, 3);
+			m_sync.instructionWaitTime.compare_exchange_strong(currentinstructionWaitTime, static_cast<int>(newInstructionWaitTime * 1000.f));
 		}
 
-		if (sync.iterations == -1)
+		if (m_sync.iterations == -1)
 		{
 			ImGui::SameLine();
 			if (ImGui::Button("Pause"))
 			{
-				sync.iterations = 0;
+				m_sync.iterations = 0;
 			}
 		}
 
 		ImGui::SameLine();
 		if (ImGui::Button("Step"))
 		{
-			++sync.iterations;
+			++m_sync.iterations;
 		}
 
-		if (sync.iterations < 0)
+		if (m_sync.iterations < 0)
 		{
 			ImGui::SameLine();
 			if (ImGui::Button("Reset"))
@@ -443,14 +448,14 @@ bool EsoProg::IsRuntimeWaitingOnInput()
 
 void EsoProg::CopyState()
 {
-	sync.renderWantsState = true;
-	sync.runtimeStateMtx.lock();
+	m_sync.renderWantsState = true;
+	m_sync.runtimeStateMtx.lock();
 
 	m_cachedExecutionHistory = m_executionHistoryStream.str();
 	m_cachedOutput = m_outputStream.str();
 	m_pRuntime->CacheState();
 
-	sync.renderWantsState = false;
-	sync.runtimeStateMtx.unlock();
-	sync.finishedStateWithCv.notify_one();
+	m_sync.renderWantsState = false;
+	m_sync.runtimeStateMtx.unlock();
+	m_sync.finishedStateWithCv.notify_one();
 }

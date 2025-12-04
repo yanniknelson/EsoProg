@@ -25,7 +25,7 @@ class PietRuntime : public CRuntime<PietToken>
 {
 	using TPietTokeniser = ITokeniser<PietToken>;
 public:
-	PietRuntime(std::ostringstream& rOutputStream, std::ostringstream& rExecutionhistoryStream) : CRuntime(rOutputStream, rExecutionhistoryStream)
+	PietRuntime(RuntimeSyncronisationStruct& rSync, std::ostringstream& rOutputStream, std::ostringstream& rExecutionhistoryStream) : CRuntime(rSync, rOutputStream, rExecutionhistoryStream)
 	{
 		m_activeTokeniser = (TPietTokeniser*)&m_textTokeniser;
 	};
@@ -60,13 +60,15 @@ public:
 
 	void SetCodelSize(const int size);
 
-	void Reset()
+	virtual void ResetImplementation() override
 	{
-		ResetTokenisers();
 		m_stack.Clear();
-	}
+		m_textTokeniser.SetTextStream(m_code);
+		m_imageTokeniser.Reset();
+		ResetOutput();
+	};
 
-	virtual void RenderWindows(RuntimeSyncronisationStruct& rSync) override;
+	virtual void RenderWindows() override;
 	virtual void CacheState() override;
 
 private:
@@ -84,17 +86,11 @@ private:
 
 	SourceType m_currentSourceType{ SourceType::Text };
 
-	void RenderImageDisplay(RuntimeSyncronisationStruct& rSync);
+	void RenderImageDisplay();
 
 	virtual void OnSourceSet() override;
 
 	virtual void OnInput(int val) override;
 
 	virtual PietToken StepExecution_Internal() override;
-	virtual void ResetTokenisers() override
-	{
-		m_stack.Clear();
-		m_textTokeniser.SetTextStream(m_code);
-		m_imageTokeniser.Reset();
-	}
 };
