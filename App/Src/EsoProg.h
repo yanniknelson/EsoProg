@@ -83,8 +83,8 @@ class EsoProg {
 	std::string m_cachedOutput{ "" };
 
 	IRuntime* m_pRuntime{nullptr};
-	PietRuntime m_pietRuntime{m_outputStream, m_executionHistoryStream};
-	NullRuntime m_nullRuntime{m_outputStream, m_executionHistoryStream};
+	PietRuntime m_pietRuntime{ m_sync, m_outputStream, m_executionHistoryStream};
+	NullRuntime m_nullRuntime{ m_sync, m_outputStream, m_executionHistoryStream};
 
 	ImGuiInputTextFlags m_codeEditorFlags = ImGuiInputTextFlags_CallbackCharFilter | ImGuiInputTextFlags_EnterReturnsTrue;
 	std::string m_code{ "" };
@@ -94,7 +94,7 @@ public:
 	static const char* i_ProgramName;
 	static GLFWwindow* i_pWindow;
 
-	RuntimeSyncronisationStruct sync;
+	RuntimeSyncronisationStruct m_sync;
 
 	EsoProg(GLFWwindow* pWindow)
 	{
@@ -115,6 +115,7 @@ public:
 		io.Fonts->AddFontFromFileTTF("../Vendor/Font-Awesome/otfs/Font Awesome 7 Free-Solid-900.otf", 16.0f, &icons_config, icons_ranges);
 	}
 
+	void ResetImplementation();
 	bool UpdateRuntime();
 	void Render();
 	bool IsRuntimeWaitingOnInput();
