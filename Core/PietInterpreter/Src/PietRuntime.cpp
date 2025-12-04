@@ -187,16 +187,8 @@ PietToken PietRuntime::StepExecution_Internal()
 
 void PietRuntime::OnSourceSet()
 {
-	if (!m_codeStr.empty())
-	{
-		m_currentSourceType = SourceType::Text;
-		m_activeTokeniser = (TPietTokeniser*)&m_textTokeniser;
-	}
-	else
-	{
-		m_currentSourceType = SourceType::Image;
-		m_activeTokeniser = (TPietTokeniser*)&m_imageTokeniser;
-	}
+	m_currentSourceType = SourceType::Text;
+	m_activeTokeniser = (TPietTokeniser*)&m_textTokeniser;
 }
 
 void PietRuntime::OnInput(int val)
@@ -204,11 +196,11 @@ void PietRuntime::OnInput(int val)
 	m_stack.Push(val);
 }
 
-void PietRuntime::RenderImageDisplay(RuntimeSyncronisationStruct& rSync)
+void PietRuntime::RenderImageDisplay()
 {
 	if (ImGui::Begin("Piet Image"))
 	{
-		if (m_currentSourceType == SourceType::Image)
+		if (m_pTexture)
 		{
 			const ImVec2 area = ImGui::GetContentRegionAvail();
 			ImVec2 desired = ImVec2(area.x, (int)area.x * m_aspectRatio);
@@ -221,30 +213,39 @@ void PietRuntime::RenderImageDisplay(RuntimeSyncronisationStruct& rSync)
 
 		if (ImGui::Button("Run"))
 		{
-			rSync.iterations = -1;
+			Reset();
+			m_currentSourceType = SourceType::Image;
+			m_activeTokeniser = (TPietTokeniser*)&m_imageTokeniser;
+			m_rSync.iterations = -1;
 		}
 
 		ImGui::SameLine();
 		{
-			int currentinstructionWaitTime = rSync.instructionWaitTime.load();
-			int newInstructionWaitTime = currentinstructionWaitTime;
-			ImGui::SliderInt("Execution Speed", &newInstructionWaitTime, 0, 1000);
-			rSync.instructionWaitTime.compare_exchange_strong(currentinstructionWaitTime, newInstructionWaitTime);
+			int currentinstructionWaitTime = m_rSync.instructionWaitTime.load();
+			float newInstructionWaitTime = currentinstructionWaitTime/1000.f;
+			ImGui::SliderFloat("##ExecutionSpeed", &newInstructionWaitTime, 0, 3);
+			m_rSync.instructionWaitTime.compare_exchange_strong(currentinstructionWaitTime, static_cast<int>(newInstructionWaitTime * 1000.f));
 		}
 
-		if (rSync.iterations == -1)
+		if (m_rSync.iterations == -1)
 		{
 			ImGui::SameLine();
 			if (ImGui::Button("Pause"))
 			{
-				rSync.iterations = 0;
+				m_rSync.iterations = 0;
 			}
 		}
 
 		ImGui::SameLine();
 		if (ImGui::Button("Step"))
 		{
-			++rSync.iterations;
+			if (m_currentSourceType != SourceType::Image)
+			{
+				Reset();
+				m_currentSourceType = SourceType::Image;
+				m_activeTokeniser = (TPietTokeniser*)&m_imageTokeniser;
+			}
+			++m_rSync.iterations;
 		}
 
 		ImGui::SameLine();
@@ -272,10 +273,10 @@ void PietRuntime::RenderImageDisplay(RuntimeSyncronisationStruct& rSync)
 	}
 }
 
-void PietRuntime::RenderWindows(RuntimeSyncronisationStruct& rSync)
+void PietRuntime::RenderWindows()
 {
 	m_cachedStack.DisplayStack();
-	RenderImageDisplay(rSync);
+	RenderImageDisplay();
 }
 
 void PietRuntime::CacheState()

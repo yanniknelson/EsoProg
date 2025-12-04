@@ -19,7 +19,7 @@ template<typename TokenClass>
 class CRuntime : public IRuntime
 {
 public:
-	CRuntime(std::ostringstream& rOutputStream, std::ostringstream& rExecutionhistoryStream) : IRuntime(rOutputStream, rExecutionhistoryStream) {}
+	CRuntime(RuntimeSyncronisationStruct& rSync, std::ostringstream& rOutputStream, std::ostringstream& rExecutionhistoryStream) : IRuntime(rSync, rOutputStream, rExecutionhistoryStream) {}
 
 	virtual ELanguages::Enum GetRuntimeLanguage() const = 0;
 	virtual std::vector<std::string> GetSupportedFileTypes() const = 0;
@@ -49,7 +49,9 @@ public:
 		return token.m_type != TokenClass::TokenType::End;
 	}
 
-	virtual void RenderWindows(RuntimeSyncronisationStruct& rSync) = 0;
+	virtual void ResetImplementation() = 0;
+
+	virtual void RenderWindows() = 0;
 	virtual void CacheState() = 0;
 
 protected:
@@ -60,5 +62,4 @@ protected:
 	virtual void OnInput(int val) = 0;
 
 	virtual TokenClass StepExecution_Internal() = 0;
-	virtual void ResetTokenisers() = 0;
 };

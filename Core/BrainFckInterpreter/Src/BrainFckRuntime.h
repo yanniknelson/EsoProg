@@ -17,18 +17,18 @@
 class BrainFckRuntime : public CRuntime<BrainFckToken>
 {
 public:
-	BrainFckRuntime(std::ostringstream& rOutputStream, std::ostringstream& rExecutionhistoryStream) : CRuntime(rOutputStream, rExecutionhistoryStream) {};
+	BrainFckRuntime(RuntimeSyncronisationStruct& rSync, std::ostringstream& rOutputStream, std::ostringstream& rExecutionhistoryStream) : CRuntime(rSync, rOutputStream, rExecutionhistoryStream) {};
 
 	virtual ELanguages::Enum GetRuntimeLanguage() const override { return ELanguages::Brainfck; }
 	virtual std::vector<std::string> GetSupportedFileTypes() const override { return { ".txt" }; }
 
-	void Reset()
+	virtual void ResetImplementation() override
 	{
-		ResetTokenisers();
 		m_array.Clear();
+		m_tokeniser.SetTextStream(m_code);
 	}
 
-	virtual void RenderWindows(RuntimeSyncronisationStruct& rSync) override;
+	virtual void RenderWindows() override;
 	virtual void CacheState() override;
 
 private:
@@ -49,9 +49,4 @@ private:
 	virtual void OnInput(int val) override;
 
 	virtual BrainFckToken StepExecution_Internal() override;
-	virtual void ResetTokenisers() override
-	{
-		m_array.Clear();
-		m_tokeniser.SetTextStream(m_code);
-	}
 };

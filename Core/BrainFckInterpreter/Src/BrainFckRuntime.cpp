@@ -82,7 +82,7 @@ void BrainFckRuntime::OnInput(int val)
 	m_array.Set(m_currentIndex, val);
 }
 
-void BrainFckRuntime::RenderWindows(RuntimeSyncronisationStruct& rSync)
+void BrainFckRuntime::RenderWindows()
 {
 	m_cachedArray.DisplayArray(m_cachedIndex);
 }

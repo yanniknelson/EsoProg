@@ -17,6 +17,7 @@ struct RuntimeSyncronisationStruct
 	std::atomic<int> instructionWaitTime = 0;
 	std::atomic<bool> exit = false;
 	std::atomic<bool> renderWantsState = false;
+	std::atomic<bool> wantsReset = false;
 	std::condition_variable finishedStateWithCv;
 	std::mutex finishedWithStateMtx;
 	std::mutex runtimeStateMtx;
@@ -29,7 +30,7 @@ class IRuntime
 {
 public:
 
-	IRuntime(std::ostringstream& rOutputStream, std::ostringstream& rExecutionhistoryStream) : m_rOutputStream(rOutputStream), m_rExecutionHistoryStream(rExecutionhistoryStream) {}
+	IRuntime(RuntimeSyncronisationStruct& rSync, std::ostringstream& rOutputStream, std::ostringstream& rExecutionhistoryStream) : m_rSync(rSync), m_rOutputStream(rOutputStream), m_rExecutionHistoryStream(rExecutionhistoryStream) {}
 
 	virtual ELanguages::Enum GetRuntimeLanguage() const = 0;
 	virtual std::vector<std::string> GetSupportedFileTypes() const = 0;
@@ -40,10 +41,22 @@ public:
 
 	void Reset()
 	{
+		m_rSync.wantsReset = true;
+		// If we were waiting for input then we need to update the condition variable to re-enable execution
+		if (m_waitingForCharInput || m_waitingForValInput)
+		{
+			m_waitingForCharInput = m_waitingForValInput = false;
+			m_rSync.waitingOnInputCV.notify_one();
+		}
+	}
+
+	void ResetOutput()
+	{
 		m_rOutputStream.str(std::string());
 		m_rExecutionHistoryStream.str(std::string());
-		ResetTokenisers();
 	}
+
+	virtual void ResetImplementation() = 0;
 
 	void InputChar(int val)
 	{
@@ -72,12 +85,13 @@ public:
 		return m_waitingForCharInput;
 	}
 
-	virtual void RenderWindows(RuntimeSyncronisationStruct& rSync) = 0;
+	virtual void RenderWindows() = 0;
 	virtual void CacheState() = 0;
 
 protected:
 	virtual void OnInput(int val) = 0;
-	virtual void ResetTokenisers() = 0;
+
+	RuntimeSyncronisationStruct& m_rSync;
 
 	std::ostringstream& m_rOutputStream;
 	std::ostringstream& m_rExecutionHistoryStream;
