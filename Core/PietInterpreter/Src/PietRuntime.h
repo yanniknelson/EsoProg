@@ -46,6 +46,7 @@ public:
 		m_pTexture = pTexture;
 		m_aspectRatio = (float)imageHeight / (float)imageWidth;
 		m_imageTokeniser.SetImage(imageData, imageWidth, imageHeight);
+		m_activeTokeniser = &m_imageTokeniser;
 	}
 
 	void UnsetImage()
