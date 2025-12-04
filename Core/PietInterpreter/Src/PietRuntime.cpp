@@ -187,16 +187,8 @@ PietToken PietRuntime::StepExecution_Internal()
 
 void PietRuntime::OnSourceSet()
 {
-	if (!m_codeStr.empty())
-	{
-		m_currentSourceType = SourceType::Text;
-		m_activeTokeniser = (TPietTokeniser*)&m_textTokeniser;
-	}
-	else
-	{
-		m_currentSourceType = SourceType::Image;
-		m_activeTokeniser = (TPietTokeniser*)&m_imageTokeniser;
-	}
+	m_currentSourceType = SourceType::Text;
+	m_activeTokeniser = (TPietTokeniser*)&m_textTokeniser;
 }
 
 void PietRuntime::OnInput(int val)
@@ -208,7 +200,7 @@ void PietRuntime::RenderImageDisplay(RuntimeSyncronisationStruct& rSync)
 {
 	if (ImGui::Begin("Piet Image"))
 	{
-		if (m_currentSourceType == SourceType::Image)
+		if (m_pTexture)
 		{
 			const ImVec2 area = ImGui::GetContentRegionAvail();
 			ImVec2 desired = ImVec2(area.x, (int)area.x * m_aspectRatio);
@@ -221,6 +213,8 @@ void PietRuntime::RenderImageDisplay(RuntimeSyncronisationStruct& rSync)
 
 		if (ImGui::Button("Run"))
 		{
+			m_currentSourceType = SourceType::Image;
+			m_activeTokeniser = (TPietTokeniser*)&m_imageTokeniser;
 			rSync.iterations = -1;
 		}
 
@@ -244,6 +238,11 @@ void PietRuntime::RenderImageDisplay(RuntimeSyncronisationStruct& rSync)
 		ImGui::SameLine();
 		if (ImGui::Button("Step"))
 		{
+			if (m_currentSourceType != SourceType::Image)
+			{
+				m_currentSourceType = SourceType::Image;
+				m_activeTokeniser = (TPietTokeniser*)&m_imageTokeniser;
+			}
 			++rSync.iterations;
 		}
 
