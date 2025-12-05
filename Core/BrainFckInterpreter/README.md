@@ -50,3 +50,17 @@ Brain F*ck operates on an array of memory cells (all intially zero) with a point
 </table>
 
 Table from https://esolangs.org/wiki/Brainfuck
+
+# Brain F*ck Grammar
+
+The grammar we will use for parsing Brain F*ck is:
+
+program := expr+ EOF<br>
+&emsp;&emsp;expr := op | loop<br>
+&emsp;&emsp;loop := "[" expr+ "]"<br>
+&emsp;&emsp;&ensp;&nbsp;op := ><br>
+&emsp;&emsp;&emsp;&emsp;&emsp;| <<br>
+&emsp;&emsp;&emsp;&emsp;&emsp;| +<br>
+&emsp;&emsp;&emsp;&emsp;&emsp;| -<br>
+&emsp;&emsp;&emsp;&emsp;&emsp;| ,<br>
+&emsp;&emsp;&emsp;&emsp;&emsp;| .<br>
