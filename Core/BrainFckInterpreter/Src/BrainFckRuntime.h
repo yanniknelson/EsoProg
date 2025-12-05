@@ -40,10 +40,6 @@ private:
 	int m_cachedIndex{ 0 };
 	IMemoryArray<uint8_t> m_cachedArray;
 
-	float m_aspectRatio = 1.f;
-	std::string m_codelSizeStr{ "1" };
-	int m_codelSize{ 1 };
-
 	virtual void OnSourceSet() override {};
 
 	virtual void OnInput(int val) override;
