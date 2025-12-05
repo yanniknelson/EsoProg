@@ -27,8 +27,7 @@ BrainFckToken BrainFckTokeniser::GetNextToken()
 		currentTokenType = BrainFckToken::TokenType::End;
 	}
 	
-	m_tLastPopped.m_type = currentTokenType;
-	return m_tLastPopped;
+	return currentTokenType;
 }
 
 inline BrainFckToken::TokenType BrainFckTokeniser::CharToToken(const char chr) const

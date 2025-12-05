@@ -7,7 +7,9 @@ class IAST
 {
 public:
 
-	void Parse();
+	void Parse()
+	{
+	};
 
 protected:
 	ITokeniser<TokenClass> m_tokeniser;

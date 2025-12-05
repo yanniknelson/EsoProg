@@ -12,6 +12,7 @@ public:
 		Pointer, Switch, Duplicate, Roll, Input, Output, INT, CHAR, Input_Char, Input_Val, Output_Char, Output_Val, NOP, End, Unrecognised_Token
 	};
 
+	PietToken(const TokenType type, const int value) : m_type(type), m_value(value) {};
 	PietToken(const TokenType type) : m_type(type), m_value(NAN) {};
 
 	TokenType m_type = TokenType::Start;
