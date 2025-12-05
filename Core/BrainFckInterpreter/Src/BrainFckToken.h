@@ -16,8 +16,8 @@ public:
 	x(Decrement)\
 	x(Output_Char)\
 	x(Input_Char)\
-	x(Branch_Start)\
-	x(Branch_End)\
+	x(Loop_Start)\
+	x(Loop_End)\
 	x(NOP)\
 	x(End)\
 	x(Unrecognised_Token)

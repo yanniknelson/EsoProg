@@ -60,11 +60,11 @@ inline BrainFckToken::TokenType::Enum BrainFckTokeniser::CharToToken(const char 
 	}
 	case('['):
 	{
-		return BrainFckToken::TokenType::Branch_Start;
+		return BrainFckToken::TokenType::Loop_Start;
 	}
 	case(']'):
 	{
-		return BrainFckToken::TokenType::Branch_End;
+		return BrainFckToken::TokenType::Loop_End;
 	}
 	default:
 	{

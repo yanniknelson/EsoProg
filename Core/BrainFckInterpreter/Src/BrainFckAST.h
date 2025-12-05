@@ -10,11 +10,11 @@ class RightOp : public IOperation
 {
 };
 
-class PlusOp : public IOperation
+class IncOp : public IOperation
 {
 };
 
-class NegOp : public IOperation
+class DecOp : public IOperation
 {
 };
 
@@ -28,6 +28,11 @@ class OutOp : public IOperation
 
 class Loop : public IOperation
 {
-protected:
+public:
+	Loop(IRegion pParent)
+		: IOperation(pParent)
+		, m_content(pParent)
+	{
+	}
 	IRegion m_content;
 };
