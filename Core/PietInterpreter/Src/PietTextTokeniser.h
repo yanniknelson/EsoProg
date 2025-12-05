@@ -20,7 +20,7 @@ private:
 	/// </summary>
 	/// <param name="rString - "> string to be converted </param>
 	/// <returns> TokenType enum corresponding to input string </returns>
-	PietToken::TokenType StringToTokenType(std::string& rString) const;
+	PietToken::TokenType::Enum StringToTokenType(std::string& rString) const;
 
 	PietToken GetNextToken();
 	virtual PietToken Pop_Internal() override;

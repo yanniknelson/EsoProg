@@ -12,7 +12,7 @@ BrainFckToken BrainFckTokeniser::Pop_Internal()
 BrainFckToken BrainFckTokeniser::GetNextToken()
 {
 	char ch = ' ';
-	BrainFckToken::TokenType currentTokenType = BrainFckToken::TokenType::Unrecognised_Token;
+	BrainFckToken::TokenType::Enum currentTokenType = BrainFckToken::TokenType::Unrecognised_Token;
 	std::string word;
 	// ignore all white space and characters that aren't ><+-.,[]
 	while (m_pStrStream->rdbuf()->in_avail() && (isspace(ch) || currentTokenType == BrainFckToken::TokenType::Unrecognised_Token))
@@ -30,7 +30,7 @@ BrainFckToken BrainFckTokeniser::GetNextToken()
 	return currentTokenType;
 }
 
-inline BrainFckToken::TokenType BrainFckTokeniser::CharToToken(const char chr) const
+inline BrainFckToken::TokenType::Enum BrainFckTokeniser::CharToToken(const char chr) const
 {
 	switch (chr)
 	{

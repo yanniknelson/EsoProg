@@ -2,20 +2,48 @@
 
 #include <IToken.h>
 #include <iostream>
+#include <SmartEnums.h>
 
 class PietToken : public IToken
 {
 public:
-	enum class TokenType
-	{
-		Start, Value, Push, Pop, Add, Subtract, Multiply, Divide, Modulo, Not, Greater,
-		Pointer, Switch, Duplicate, Roll, Input, Output, INT, CHAR, Input_Char, Input_Val, Output_Char, Output_Val, NOP, End, Unrecognised_Token
-	};
 
-	PietToken(const TokenType type, const int value) : m_type(type), m_value(value) {};
-	PietToken(const TokenType type) : m_type(type), m_value(NAN) {};
+#define ETOKENTYPE(x)\
+    x(Start)\
+	x(Value)\
+	x(Push)\
+	x(Pop)\
+	x(Add)\
+	x(Subtract)\
+	x(Multiply)\
+	x(Divide)\
+	x(Modulo)\
+	x(Not)\
+	x(Greater)\
+	x(Pointer)\
+	x(Switch)\
+	x(Duplicate)\
+	x(Roll)\
+	x(Input)\
+	x(Output)\
+	x(INT)\
+	x(CHAR)\
+	x(Input_Char)\
+	x(Input_Val)\
+	x(Output_Char)\
+	x(Output_Val)\
+	x(NOP)\
+	x(End)\
+	x(Unrecognised_Token)
 
-	TokenType m_type = TokenType::Start;
+	CreateSmartEnum(TokenType, ETOKENTYPE);
+
+#undef ETOKENTYPE
+
+	PietToken(const TokenType::Enum type, const int value) : m_type(type), m_value(value) {};
+	PietToken(const TokenType::Enum type) : m_type(type), m_value(NAN) {};
+
+	TokenType::Enum m_type = TokenType::Start;
 	int m_value;
 
 	/// <summary>
@@ -26,115 +54,10 @@ public:
 	/// <returns></returns>
 	friend std::ostream& operator<<(std::ostream& os, const PietToken& tk)
 	{
-		switch (tk.m_type)
+		os << PietToken::TokenType::ToString(tk.m_type);
+		if(tk.m_type == TokenType::Push)
 		{
-		case(TokenType::Value):
-		{
-			os << tk.m_value;
-			break;
-		}
-		case(TokenType::Push):
-		{
-			os << "Push " << tk.m_value;
-			break;
-		}
-		case(TokenType::Pop):
-		{
-			os << "Pop";
-			break;
-		}
-		case(TokenType::Add):
-		{
-			os << "Add";
-			break;
-		}
-		case(TokenType::Subtract):
-		{
-			os << "Subtract";
-			break;
-		}
-		case(TokenType::Multiply):
-		{
-			os << "Multiply";
-			break;
-		}
-		case(TokenType::Divide):
-		{
-			os << "Divide";
-			break;
-		}
-		case(TokenType::Modulo):
-		{
-			os << "Modulo";
-			break;
-		}
-		case(TokenType::Not):
-		{
-			os << "Not";
-			break;
-		}
-		case(TokenType::Greater):
-		{
-			os << "Greater";
-			break;
-		}
-		case(TokenType::Pointer):
-		{
-			os << "Pointer";
-			break;
-		}
-		case(TokenType::Switch):
-		{
-			os << "Switch";
-			break;
-		}
-		case(TokenType::Duplicate):
-		{
-			os << "Duplicate";
-			break;
-		}
-		case(TokenType::Roll):
-		{
-			os << "Roll";
-			break;
-		}
-		case(TokenType::Input_Char):
-		{
-			os << "Input_Char";
-			break;
-		}
-		case(TokenType::Input_Val):
-		{
-			os << "Input_Val";
-			break;
-		}
-		case(TokenType::Output_Char):
-		{
-			os << "Output_Char";
-			break;
-		}
-		case(TokenType::Output_Val):
-		{
-			os << "Output_Val";
-			break;
-		}
-		case(TokenType::NOP):
-		{
-			os << "NOP";
-			break;
-		}
-		case(TokenType::End):
-		{
-			os << "End";
-			break;
-		}
-		case(TokenType::Unrecognised_Token):
-		{
-			os << "Unrecognised_Token";
-			break;
-		}
-		default:
-			break;
+			os << " " << tk.m_value;
 		}
 		return os;
 	}

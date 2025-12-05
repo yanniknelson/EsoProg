@@ -17,7 +17,7 @@ PietToken PietTextTokeniser::GetNextToken()
 		if (ch == '\n') { m_lineNumber++; }
 	}
 
-	PietToken::TokenType type = PietToken::TokenType::Unrecognised_Token;
+	PietToken::TokenType::Enum type = PietToken::TokenType::Unrecognised_Token;
 	int value = 0;
 
 	if (isdigit(ch))
@@ -82,7 +82,7 @@ PietToken PietTextTokeniser::Pop_Internal()
 	return token;
 }
 
-PietToken::TokenType PietTextTokeniser::StringToTokenType(std::string& rString) const
+PietToken::TokenType::Enum PietTextTokeniser::StringToTokenType(std::string& rString) const
 {
 	if (rString == "PUSH")
 	{
