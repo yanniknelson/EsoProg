@@ -53,11 +53,11 @@ BrainFckToken BrainFckRuntime::StepExecution_Internal()
 		m_waitingForCharInput = true;
 		break;
 	}
-	case(BrainFckToken::TokenType::Branch_Start):
+	case(BrainFckToken::TokenType::Loop_Start):
 	{
 		break;
 	}
-	case(BrainFckToken::TokenType::Branch_End):
+	case(BrainFckToken::TokenType::Loop_End):
 	{
 		break;
 	}
