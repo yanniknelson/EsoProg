@@ -1,16 +1,32 @@
 #pragma once
 
-#include <ITokeniser.h>
+#include <vector>
 
-template<typename TokenClass>
-class IAST
+class IRegion;
+
+class IOperation
 {
 public:
+	IOperation(IRegion* pRegion) : m_pRegion(pRegion) {};
+	
+protected:
+	IRegion* m_pRegion{ nullptr };
+};
 
-	void Parse()
+class IRegion : public IOperation
+{
+public:
+	IRegion(IRegion* pRegion) : IOperation(pRegion) {};
+	~IRegion()
 	{
-	};
+		for (IOperation* pOperation : m_contents)
+		{
+			delete pOperation;
+		}
+	}
+	
+	void AddOperation(IOperation* pOperation) { m_contents.push_back(pOperation); }
 
 protected:
-	ITokeniser<TokenClass> m_tokeniser;
+	std::vector<IOperation*> m_contents;
 };
