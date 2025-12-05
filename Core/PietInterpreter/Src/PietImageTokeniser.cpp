@@ -24,7 +24,7 @@ PietToken PietImageTokeniser::Pop_Internal()
 	}
 
 	PietColour nextCol = GetPietColourFromLocation(m_currentBlock.m_endingCodel);
-	PietToken::TokenType type = ConvertColoursToInstruction(m_currentBlock.m_pCodelInfo->m_pietColour, nextCol);
+	PietToken::TokenType::Enum type = ConvertColoursToInstruction(m_currentBlock.m_pCodelInfo->m_pietColour, nextCol);
 	if (type == PietToken::TokenType::Push)
 	{
 		return PietToken(type, m_currentBlock.m_pCodelInfo->m_size);
@@ -254,9 +254,9 @@ void PietImageTokeniser::RotateDirectionPointer(BlockInfo& blockInfo, const int 
 	}
 }
 
-PietToken::TokenType PietImageTokeniser::ConvertColoursToInstruction(const PietColour colour1, const PietColour colour2)
+PietToken::TokenType::Enum PietImageTokeniser::ConvertColoursToInstruction(const PietColour colour1, const PietColour colour2)
 {
-	static const PietToken::TokenType conversionTable[6][3] = { {PietToken::TokenType::NOP, PietToken::TokenType::Push, PietToken::TokenType::Pop}
+	static const PietToken::TokenType::Enum conversionTable[6][3] = { {PietToken::TokenType::NOP, PietToken::TokenType::Push, PietToken::TokenType::Pop}
 														, {PietToken::TokenType::Add, PietToken::TokenType::Subtract, PietToken::TokenType::Multiply}
 														, {PietToken::TokenType::Divide, PietToken::TokenType::Modulo, PietToken::TokenType::Not}
 														, {PietToken::TokenType::Greater, PietToken::TokenType::Pointer, PietToken::TokenType::Switch}

@@ -298,7 +298,7 @@ private:
 
 	static void RotateDirectionPointer(BlockInfo& blockinfo, const int times);
 
-	static PietToken::TokenType ConvertColoursToInstruction(const PietColour colour1, const PietColour colour2);
+	static PietToken::TokenType::Enum ConvertColoursToInstruction(const PietColour colour1, const PietColour colour2);
 
 	/// <summary>
 	/// Query the image data
