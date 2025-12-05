@@ -7,9 +7,7 @@ PietToken PietTextTokeniser::GetNextToken()
 {
 	if (!m_pStrStream->rdbuf()->in_avail())
 	{
-		m_tLastPopped.m_type = PietToken::TokenType::End;
-		m_tLastPopped.m_value = NAN;
-		return m_tLastPopped;
+		return PietToken(PietToken::TokenType::End);
 	}
 	char ch = ' ';
 	std::string word;
@@ -19,66 +17,54 @@ PietToken PietTextTokeniser::GetNextToken()
 		if (ch == '\n') { m_lineNumber++; }
 	}
 
+	PietToken::TokenType type = PietToken::TokenType::Unrecognised_Token;
+	int value = 0;
+
 	if (isdigit(ch))
 	{
+		type = PietToken::TokenType::Value;
 		m_pStrStream->putback(ch);
-		m_tLastPopped.m_type = PietToken::TokenType::Value;
-		*m_pStrStream >> m_tLastPopped.m_value;
+		*m_pStrStream >> value;
 	}
 	else
 	{
 		m_pStrStream->putback(ch);
 		*m_pStrStream >> word;
-		m_tLastPopped.m_type = StringToTokenType(word);
-		m_tLastPopped.m_value = NAN;
+		type = StringToTokenType(word);
 
-		if (m_tLastPopped.m_type == PietToken::TokenType::CHAR || m_tLastPopped.m_type == PietToken::TokenType::INT)
-		{
-			m_tLastPopped.m_type = PietToken::TokenType::Unrecognised_Token;
-		}
-
-		if (m_tLastPopped.m_type == PietToken::TokenType::Input)
+		if (type == PietToken::TokenType::Input)
 		{
 			word = "";
 			*m_pStrStream >> word;
-			m_tLastPopped.m_type = StringToTokenType(word);
+			type = StringToTokenType(word);
 
-			if (m_tLastPopped.m_type == PietToken::TokenType::CHAR)
+			if (type == PietToken::TokenType::CHAR)
 			{
-				m_tLastPopped.m_type = PietToken::TokenType::Input_Char;
+				type = PietToken::TokenType::Input_Char;
 			}
-			else if (m_tLastPopped.m_type == PietToken::TokenType::INT)
+			else if (type == PietToken::TokenType::INT)
 			{
-				m_tLastPopped.m_type = PietToken::TokenType::Input_Val;
-			}
-			else
-			{
-				m_tLastPopped.m_type = PietToken::TokenType::Unrecognised_Token;
+				type = PietToken::TokenType::Input_Val;
 			}
 		}
-		else if (m_tLastPopped.m_type == PietToken::TokenType::Output)
+		else if (type == PietToken::TokenType::Output)
 		{
 			word = "";
 			*m_pStrStream >> word;
-			m_tLastPopped.m_type = StringToTokenType(word);
+			type = StringToTokenType(word);
 
-			if (m_tLastPopped.m_type == PietToken::TokenType::CHAR)
+			if (type == PietToken::TokenType::CHAR)
 			{
-				m_tLastPopped.m_type = PietToken::TokenType::Output_Char;
+				type = PietToken::TokenType::Output_Char;
 			}
-			else if (m_tLastPopped.m_type == PietToken::TokenType::INT)
+			else if (type == PietToken::TokenType::INT)
 			{
-				m_tLastPopped.m_type = PietToken::TokenType::Output_Val;
-			}
-			else
-			{
-				m_tLastPopped.m_type = PietToken::TokenType::Unrecognised_Token;
+				type = PietToken::TokenType::Output_Val;
 			}
 		}
-
 	}
 
-	return m_tLastPopped;
+	return PietToken(type, value);
 }
 
 PietToken PietTextTokeniser::Pop_Internal()

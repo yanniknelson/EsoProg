@@ -15,18 +15,17 @@ PietToken PietImageTokeniser::Pop_Internal()
 
 	if (m_currentBlock.m_startingCodel == m_currentBlock.m_endingCodel)
 	{
-		m_tLastPopped.m_type = PietToken::TokenType::End;
-		return m_tLastPopped;
+		return PietToken::TokenType::End;
 	}
 
 	PietColour nextCol = GetPietColourFromLocation(m_currentBlock.m_endingCodel);
-	m_tLastPopped.m_type = ConvertColoursToInstruction(m_currentBlock.m_pCodelInfo->m_pietColour, nextCol);
-	if (m_tLastPopped.m_type == PietToken::TokenType::Push)
+	PietToken::TokenType type = ConvertColoursToInstruction(m_currentBlock.m_pCodelInfo->m_pietColour, nextCol);
+	if (type == PietToken::TokenType::Push)
 	{
-		m_tLastPopped.m_value = m_currentBlock.m_pCodelInfo->m_size;
+		return PietToken(type, m_currentBlock.m_pCodelInfo->m_size);
 	}
 
-	return m_tLastPopped;
+	return PietToken(type);
 }
 
 void PietImageTokeniser::SetImage(const unsigned char* imageData, const int width, const int height)
