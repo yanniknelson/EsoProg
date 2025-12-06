@@ -153,25 +153,32 @@ void EsoProg::CreateMenuBar()
 
 void EsoProg::PreFileLoad(const std::filesystem::path path)
 {
-	switch (m_currentFileType)
+	const EFileType::Enum fileType = path.extension() == ".txt" ? EFileType::Text : EFileType::Image;
+	switch (fileType)
 	{
 	case EFileType::Image:
 	{
-		if (m_pRuntime->GetRuntimeLanguage() == ELanguages::Piet)
+		if (m_currentFileType == EFileType::Image)
 		{
-			static_cast<PietRuntime*>(m_pRuntime)->UnsetImage();
-			if (m_bImageLoaded)
+			if (m_pRuntime->GetRuntimeLanguage() == ELanguages::Piet)
 			{
-				stbi_image_free(m_imageData);
-				m_bImageLoaded = false;
+				static_cast<PietRuntime*>(m_pRuntime)->UnsetImage();
+				if (m_bImageLoaded)
+				{
+					stbi_image_free(m_imageData);
+					m_bImageLoaded = false;
+				}
 			}
-			break;
 		}
+		break;
 	}
 	case EFileType::Text:
 	{
-		m_code = "";
-		m_bCodeChangedSinceLastStep = true;
+		if (m_currentFileType == EFileType::Text)
+		{
+			m_code = "";
+			m_bCodeChangedSinceLastStep = true;
+		}
 	}
 	}
 	m_outputStream.str(std::string());
