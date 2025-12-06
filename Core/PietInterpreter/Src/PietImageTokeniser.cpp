@@ -11,6 +11,11 @@ const char* PietImageTokeniser::i_directionIcons[static_cast<int>(Direction::Cou
 
 PietToken PietImageTokeniser::Pop_Internal()
 {
+    if (m_imageData == nullptr) 
+    {
+        return PietToken::TokenType::End;
+    }
+
 	m_currentBlock = GetBlockInfo(m_currentBlock.m_endingCodel, m_currentBlock.m_endingDirectionPointer, m_currentBlock.m_endingCodelChooser);
 
 	if (m_currentBlock.m_startingCodel == m_currentBlock.m_endingCodel)
