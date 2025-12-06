@@ -9,6 +9,7 @@ class IOperation
 {
 public:
 	IOperation(typename IOperation<OperationTypes>* pParent) : m_pParent(pParent) {};
+	virtual ~IOperation() = default;
 	virtual OperationTypes::Enum GetType() const = 0;
 	
 protected:
