@@ -12,6 +12,7 @@ class BrainFckTokeniser : public ITextTokeniser<BrainFckToken>
 public:
 
 	BrainFckTokeniser() {};
+	virtual void ResetImplementation() override {};
 
 private:
 

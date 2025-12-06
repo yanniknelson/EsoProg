@@ -12,6 +12,7 @@ class PietTextTokeniser : public ITextTokeniser<PietToken>
 public:
 
 	PietTextTokeniser() {};
+	virtual void ResetImplementation() override {};
 
 private:
 
