@@ -8,9 +8,9 @@ class BrainFckParser: public IParser<BrainFckToken, BrainFckOperationTypes>
 {
 public:
 	BrainFckParser(ITokeniser<BrainFckToken>* pTokeniser) : IParser(pTokeniser) {}
-	virtual BrainFckOperation* Parse() override;
+	virtual BrainFckOperationPtr Parse() override;
 private:
-	BrainFckOperation* ParseExpression(BrainFckOperation* parentRegion);
-	BrainFckOperation* ParseOp(BrainFckOperation* parentRegion);
-	BrainFckOperation* ParseLoop(BrainFckOperation* parentRegion);
+	BrainFckOperationPtr ParseExpression(BrainFckOperationPtr parentRegion);
+	BrainFckOperationPtr ParseOp(BrainFckOperationPtr parentRegion);
+	BrainFckOperationPtr ParseLoop(BrainFckOperationPtr parentRegion);
 };

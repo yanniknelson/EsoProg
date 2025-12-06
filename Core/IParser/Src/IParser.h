@@ -4,6 +4,7 @@
 #include <ITokeniser.h>
 #include <string>
 #include <vector>
+#include <memory>
 
 template<typename TokenClass, typename LanguageOperations>
 class IParser
@@ -11,7 +12,7 @@ class IParser
 public:
 	IParser(ITokeniser<TokenClass>* pTokeniser) : m_pTokeniser(pTokeniser) {}
 
-	virtual IOperation<LanguageOperations>* Parse() = 0;
+	virtual std::shared_ptr<IOperation<LanguageOperations>> Parse() = 0;
 
 protected:
 	bool Check(const TokenClass::TokenType::Enum expected)
