@@ -187,8 +187,17 @@ PietToken PietRuntime::StepExecution_Internal()
 
 void PietRuntime::OnSourceSet()
 {
-	m_currentSourceType = SourceType::Text;
-	m_activeTokeniser = (TPietTokeniser*)&m_textTokeniser;
+	if (m_bForceImage)
+	{
+		m_currentSourceType = SourceType::Image;
+		m_activeTokeniser = (TPietTokeniser*)&m_imageTokeniser;
+		m_bForceImage = false;
+	}
+	else
+	{
+		m_currentSourceType = SourceType::Text;
+		m_activeTokeniser = (TPietTokeniser*)&m_textTokeniser;
+	}
 }
 
 void PietRuntime::OnInput(int val)
@@ -214,6 +223,7 @@ void PietRuntime::RenderImageDisplay()
 		if (ImGui::Button("Run"))
 		{
 			Reset();
+			m_bForceImage = true;
 			m_currentSourceType = SourceType::Image;
 			m_activeTokeniser = (TPietTokeniser*)&m_imageTokeniser;
 			m_rSync.iterations = -1;
@@ -241,6 +251,7 @@ void PietRuntime::RenderImageDisplay()
 		{
 			if (m_currentSourceType != SourceType::Image)
 			{
+				m_bForceImage = true;
 				Reset();
 				m_currentSourceType = SourceType::Image;
 				m_activeTokeniser = (TPietTokeniser*)&m_imageTokeniser;

@@ -86,6 +86,7 @@ private:
 	std::string m_codelSizeStr{ "1" };
 	int m_codelSize{ 1 };
 
+	bool m_bForceImage = false;
 	SourceType m_currentSourceType{ SourceType::Text };
 
 	void RenderImageDisplay();
