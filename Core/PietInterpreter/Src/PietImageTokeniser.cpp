@@ -56,7 +56,7 @@ void PietImageTokeniser::SetCodelSize(const int size)
 	m_codelSize = size;
 }
 
-void PietImageTokeniser::Reset()
+void PietImageTokeniser::ResetImplementation()
 {
 	m_currentBlock = {};
 }

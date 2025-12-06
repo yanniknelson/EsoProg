@@ -52,6 +52,15 @@ public:
 			}
 		}
 	}
+
+	void Reset()
+	{
+		m_buff.clear();
+		ResetImplementation();
+	}
+	
+	virtual void ResetImplementation() = 0;
+
 protected:
 
 	virtual TokenClass Pop_Internal()

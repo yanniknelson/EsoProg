@@ -19,7 +19,7 @@ public:
 	void SetImage(const unsigned char* imageData, const int width, const int height);
 	void UnsetImage();
 	void SetCodelSize(const int size);
-	void Reset();
+	virtual void ResetImplementation() override;
 
 	int GetInstructionNumber();
 
