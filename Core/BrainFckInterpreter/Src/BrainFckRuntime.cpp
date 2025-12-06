@@ -80,9 +80,6 @@ BrainFckToken BrainFckRuntime::StepExecution_Internal()
 void BrainFckRuntime::OnSourceSet()
 {
 	Program* pProgram = static_cast<Program*>(m_parser.Parse());
-	// NEED TO ADD MEMORY LEAK ANALYSIS TOOL TO ENSURE THIS WORKS CORRECTLY
-	// breakpointing in the region destructor only hits for the program region, even with loops in the program
-	// (which also have regions which should destruct properly)
 	delete pProgram;
 }
 
