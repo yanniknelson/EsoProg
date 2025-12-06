@@ -14,6 +14,7 @@ public:
 	void SetTextStream(std::stringstream& m_code)
 	{
 		m_pStrStream = &m_code;
+		ITokeniser<TokenClass>::Reset();
 		m_lineNumber = 1;
 	}
 

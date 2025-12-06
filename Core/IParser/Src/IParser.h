@@ -5,13 +5,13 @@
 #include <string>
 #include <vector>
 
-template<typename TokenClass>
+template<typename TokenClass, typename LanguageOperations>
 class IParser
 {
 public:
 	IParser(ITokeniser<TokenClass>* pTokeniser) : m_pTokeniser(pTokeniser) {}
 
-	virtual IRegion Parse() = 0;
+	virtual IOperation<LanguageOperations>* Parse() = 0;
 
 protected:
 	bool Check(const TokenClass::TokenType::Enum expected)

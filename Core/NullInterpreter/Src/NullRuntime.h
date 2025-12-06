@@ -21,6 +21,7 @@ public:
 	virtual bool StepExecution() { return false;  };
 
 	virtual void ResetImplementation() override {};
+	virtual void ResetCodeStream() override {};
 
 	virtual void RenderWindows() override {};
 	virtual void CacheState() override {};

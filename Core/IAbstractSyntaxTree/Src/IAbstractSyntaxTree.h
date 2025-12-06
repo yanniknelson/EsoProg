@@ -2,35 +2,42 @@
 
 #include <vector>
 
-class IRegion;
+template<typename OperationTypes> class IRegion;
 
+template<typename OperationTypes>
 class IOperation
 {
 public:
-	IOperation(IRegion* pRegion) : m_pRegion(pRegion) {};
+	IOperation(typename IOperation<OperationTypes>* pParent) : m_pParent(pParent) {};
+	virtual OperationTypes::Enum GetType() const = 0;
 	
 protected:
-	IRegion* m_pRegion{ nullptr };
+	typename IOperation<OperationTypes>* m_pParent{ nullptr };
 };
 
-class IRegion : public IOperation
+template<typename OperationTypes>
+class IRegion
 {
 public:
-	IRegion(IRegion* pRegion) : IOperation(pRegion) {};
-	/*~IRegion()
+	IRegion() {};
+	virtual ~IRegion()
 	{
-		for (IOperation* pOperation : m_contents)
+		for (IOperation<OperationTypes>* pOperation : m_contents)
 		{
 			delete pOperation;
 		}
-	}*/
+	}
 	
-	void AddOperation(IOperation pOperation) { m_contents.push_back(pOperation); }
+	void AddOperation(typename IOperation<OperationTypes>* pOperation) { m_contents.push_back(pOperation); }
 
 protected:
-	std::vector<IOperation> m_contents;
+	std::vector<typename IOperation<OperationTypes>*> m_contents;
 };
 
-class IError : public IOperation
+template<typename OperationTypes>
+class IError : public IOperation<OperationTypes>
 {
+public:
+	IError(IOperation<OperationTypes>* pParent) : IOperation<OperationTypes>(pParent) {};
+	virtual OperationTypes::Enum GetType() const { return OperationTypes::Error; };
 };

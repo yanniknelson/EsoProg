@@ -280,6 +280,7 @@ void EsoProg::SetCurrentLanugage(ELanguages::Enum language)
 
 void EsoProg::ResetImplementation()
 {
+	m_pRuntime->ResetCodeStream();
 	m_pRuntime->ResetImplementation();
 }
 
