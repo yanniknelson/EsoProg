@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vector>
+#include <memory>
 
 template<typename OperationTypes> class IRegion;
 
@@ -8,12 +9,12 @@ template<typename OperationTypes>
 class IOperation
 {
 public:
-	IOperation(typename IOperation<OperationTypes>* pParent) : m_pParent(pParent) {};
+	IOperation(typename std::shared_ptr<IOperation<OperationTypes>> pParent) : m_pParent(pParent) {};
 	virtual ~IOperation() = default;
 	virtual OperationTypes::Enum GetType() const = 0;
 	
 protected:
-	typename IOperation<OperationTypes>* m_pParent{ nullptr };
+	typename std::shared_ptr<IOperation<OperationTypes>> m_pParent{ nullptr };
 };
 
 template<typename OperationTypes>
@@ -21,24 +22,18 @@ class IRegion
 {
 public:
 	IRegion() {};
-	virtual ~IRegion()
-	{
-		for (IOperation<OperationTypes>* pOperation : m_contents)
-		{
-			delete pOperation;
-		}
-	}
+	virtual ~IRegion() = default;
 	
-	void AddOperation(typename IOperation<OperationTypes>* pOperation) { m_contents.push_back(pOperation); }
+	void AddOperation(typename std::shared_ptr<IOperation<OperationTypes>> pOperation) { m_contents.push_back(pOperation); }
 
 protected:
-	std::vector<typename IOperation<OperationTypes>*> m_contents;
+	std::vector<typename std::shared_ptr<IOperation<OperationTypes>>> m_contents;
 };
 
 template<typename OperationTypes>
 class IError : public IOperation<OperationTypes>
 {
 public:
-	IError(IOperation<OperationTypes>* pParent) : IOperation<OperationTypes>(pParent) {};
+	IError(std::shared_ptr<IOperation<OperationTypes>> pParent) : IOperation<OperationTypes>(pParent) {};
 	virtual OperationTypes::Enum GetType() const { return OperationTypes::Error; };
 };

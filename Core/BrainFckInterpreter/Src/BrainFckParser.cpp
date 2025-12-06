@@ -1,13 +1,13 @@
 #include "BrainFckParser.h"
 #include "BrainFckAST.h"
 
-BrainFckOperation* BrainFckParser::Parse()
+BrainFckOperationPtr BrainFckParser::Parse()
 {
-	Program* pProgram = new Program(nullptr);
+	std::shared_ptr<Program> pProgram = std::make_shared<Program>(nullptr);
 
 	if (!Check(BrainFckToken::TokenType::End))
 	{
-		pProgram->m_content.AddOperation(ParseExpression(nullptr));
+		pProgram->m_region.AddOperation(ParseExpression(nullptr));
 	}
 	else
 	{
@@ -16,12 +16,12 @@ BrainFckOperation* BrainFckParser::Parse()
 
 	while (!Check(BrainFckToken::TokenType::End))
 	{
-		pProgram->m_content.AddOperation(ParseExpression(nullptr));
+		pProgram->m_region.AddOperation(ParseExpression(nullptr));
 	}
 	return pProgram;
 }
 
-BrainFckOperation* BrainFckParser::ParseExpression(BrainFckOperation* parentRegion)
+BrainFckOperationPtr BrainFckParser::ParseExpression(BrainFckOperationPtr parentRegion)
 {
 	if (Check(BrainFckToken::TokenType::Loop_Start))
 	{
@@ -30,62 +30,61 @@ BrainFckOperation* BrainFckParser::ParseExpression(BrainFckOperation* parentRegi
 	return ParseOp(parentRegion);
 }
 
-BrainFckOperation* BrainFckParser::ParseOp(BrainFckOperation* pParent)
+BrainFckOperationPtr BrainFckParser::ParseOp(BrainFckOperationPtr pParent)
 {
 	if (Check(BrainFckToken::TokenType::Move_Left))
 	{
 		Match(BrainFckToken::TokenType::Move_Left);
-		return new LeftOp(pParent);
+		return std::make_shared<LeftOp>(pParent);
 	}
 
 	if (Check(BrainFckToken::TokenType::Move_Right))
 	{
 		Match(BrainFckToken::TokenType::Move_Right);
-		return new RightOp(pParent);
+		return std::make_shared<RightOp>(pParent);
 	}
 
 	if (Check(BrainFckToken::TokenType::Increment))
 	{
 		Match(BrainFckToken::TokenType::Increment);
-		return new IncOp(pParent);
+		return std::make_shared<IncOp>(pParent);
 	}
 
 	if (Check(BrainFckToken::TokenType::Decrement))
 	{
 		Match(BrainFckToken::TokenType::Decrement);
-		return new DecOp(pParent);
+		return std::make_shared<DecOp>(pParent);
 	}
 
 	if (Check(BrainFckToken::TokenType::Input_Char))
 	{
 		Match(BrainFckToken::TokenType::Input_Char);
-		return new InOp(pParent);
+		return std::make_shared<InOp>(pParent);
 	}
 
 	if (Check(BrainFckToken::TokenType::Output_Char))
 	{
 		Match(BrainFckToken::TokenType::Output_Char);
-		return new OutOp(pParent);
+		return std::make_shared<OutOp>(pParent);
 	}
 
 	Error("Expected an operator token (<>+-.,)");
-	return new BrainFckError(pParent);
+	return std::make_shared<BrainFckError>(pParent);
 }
 
-BrainFckOperation* BrainFckParser::ParseLoop(BrainFckOperation* pParent)
+BrainFckOperationPtr BrainFckParser::ParseLoop(BrainFckOperationPtr pParent)
 {
 	if (Match(BrainFckToken::TokenType::Loop_Start).m_type != BrainFckToken::TokenType::Unrecognised_Token)
 	{
-		Loop* pLoop = new Loop(pParent);
+		std::shared_ptr<Loop> pLoop = std::make_shared<Loop>(pParent);
 		if (!Check(BrainFckToken::TokenType::End))
 		{
-			pLoop->m_content.AddOperation(ParseExpression(pLoop));
+			pLoop->m_region.AddOperation(ParseExpression(pLoop));
 		}
 		else
 		{
 			Error("Empty program can't be parsed");
-			delete pLoop;
-			return new BrainFckError(pParent);
+			return std::make_shared<BrainFckError>(pParent);
 		}
 
 		while (!Check(BrainFckToken::TokenType::End))
@@ -95,9 +94,9 @@ BrainFckOperation* BrainFckParser::ParseLoop(BrainFckOperation* pParent)
 				Match(BrainFckToken::TokenType::Loop_End);
 				break;
 			}
-			pLoop->m_content.AddOperation(ParseExpression(pLoop));
+			pLoop->m_region.AddOperation(ParseExpression(pLoop));
 		}
 		return pLoop;
 	}
-	return new BrainFckError(pParent);
+	return std::make_shared<BrainFckError>(pParent);
 }
