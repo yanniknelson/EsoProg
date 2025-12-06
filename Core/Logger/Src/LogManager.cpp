@@ -45,8 +45,8 @@ void CLogManager::Initialize(const std::vector<SLoggerDetails>& rLoggers)
 			if (!sinks.empty())
 			{
 				std::shared_ptr<spdlog::async_logger> pLogger = std::make_shared<spdlog::async_logger>(rLoggerDetail.m_loggerName, sinks.begin(), sinks.end(), spdlog::thread_pool(), spdlog::async_overflow_policy::block);
-				pLogger->set_level(spdlog::level::trace);
-				pLogger->flush_on(spdlog::level::trace);
+				pLogger->set_level(rLoggerDetail.m_level);
+				pLogger->flush_on(rLoggerDetail.m_level);
 				spdlog::register_logger(pLogger);
 				m_nLoggers += 1;
 			}
@@ -70,4 +70,13 @@ void CLogManager::Shutdown(const char* m_loggerName)
 			spdlog::shutdown();
 		}
 	}
+}
+
+///////////////////////////////////////////
+void CLogManager::ShutdownAll()
+{
+    spdlog::drop_all();
+    m_bInitialized = false;
+    m_nLoggers = 0;
+    spdlog::shutdown();
 }
