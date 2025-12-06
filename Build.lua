@@ -20,9 +20,23 @@ project "Premake"
 	}
 
 	postbuildmessage "Regenerating project files with Premake5!"
-	postbuildcommands {
-		"%{wks.location}/Vendor/Binaries/Premake/Windows/premake5.exe %{_ACTION} --file=\"%{wks.location}Build.lua\""
-	}
+
+        filter "system:windows"
+            postbuildcommands {
+                "%{wks.location}/Vendor/Binaries/Premake/Windows/premake5.exe %{_ACTION} --file=\"%{wks.location}Build.lua\""
+            }
+
+        filter "system:linux"
+            postbuildcommands {
+                "%{wks.location}/Vendor/Binaries/Premake/Linux/premake5 %{_ACTION} --file=\"%{wks.location}Build.lua\""
+            }
+
+        filter "system:macosx"
+            postbuildcommands {
+                "%{wks.location}/Vendor/Binaries/Premake/macOS/premake5 %{_ACTION} --file=\"%{wks.location}Build.lua\""
+            }
+
+        filter {} -- Clear filter
 
 OutputDir = "%{cfg.system}-%{cfg.architecture}/%{cfg.buildcfg}"
 
