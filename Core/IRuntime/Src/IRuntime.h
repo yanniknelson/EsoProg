@@ -18,6 +18,7 @@ struct RuntimeSyncronisationStruct
 	std::atomic<bool> exit = false;
 	std::atomic<bool> renderWantsState = false;
 	std::atomic<bool> wantsReset = false;
+	std::atomic<bool> resetCodeSource = false;
 	std::condition_variable finishedStateWithCv;
 	std::mutex finishedWithStateMtx;
 	std::mutex runtimeStateMtx;
@@ -57,6 +58,7 @@ public:
 	}
 
 	virtual void ResetImplementation() = 0;
+	virtual void ResetCodeStream() = 0;
 
 	void InputChar(int val)
 	{

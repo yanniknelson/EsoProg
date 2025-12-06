@@ -27,10 +27,8 @@ public:
 	virtual void SetSourceCode(std::string str) override
 	{
 		m_codeStr = str;
-		std::stringstream tmp(m_codeStr.c_str());
-		m_code.swap(tmp);
+		m_rSync.resetCodeSource = true;
 		Reset();
-		OnSourceSet();
 	}
 
 	virtual bool StepExecution() override
@@ -50,6 +48,13 @@ public:
 	}
 
 	virtual void ResetImplementation() = 0;
+
+	virtual void ResetCodeStream() override
+	{
+		std::stringstream tmp(m_codeStr.c_str());
+		m_code.swap(tmp);
+		OnSourceSet();
+	}
 
 	virtual void RenderWindows() = 0;
 	virtual void CacheState() = 0;

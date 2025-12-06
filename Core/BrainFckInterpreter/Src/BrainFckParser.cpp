@@ -1,13 +1,13 @@
 #include "BrainFckParser.h"
 #include "BrainFckAST.h"
 
-IRegion BrainFckParser::Parse()
+BrainFckOperation* BrainFckParser::Parse()
 {
-	IRegion program(nullptr);
+	Program* pProgram = new Program(nullptr);
 
 	if (!Check(BrainFckToken::TokenType::End))
 	{
-		program.AddOperation(ParseExpression(&program));
+		pProgram->m_content.AddOperation(ParseExpression(nullptr));
 	}
 	else
 	{
@@ -16,12 +16,12 @@ IRegion BrainFckParser::Parse()
 
 	while (!Check(BrainFckToken::TokenType::End))
 	{
-		program.AddOperation(ParseExpression(&program));
+		pProgram->m_content.AddOperation(ParseExpression(nullptr));
 	}
-	return program;
+	return pProgram;
 }
 
-IOperation BrainFckParser::ParseExpression(IRegion* parentRegion)
+BrainFckOperation* BrainFckParser::ParseExpression(BrainFckOperation* parentRegion)
 {
 	if (Check(BrainFckToken::TokenType::Loop_Start))
 	{
@@ -30,67 +30,74 @@ IOperation BrainFckParser::ParseExpression(IRegion* parentRegion)
 	return ParseOp(parentRegion);
 }
 
-IOperation BrainFckParser::ParseOp(IRegion* parentRegion)
+BrainFckOperation* BrainFckParser::ParseOp(BrainFckOperation* pParent)
 {
 	if (Check(BrainFckToken::TokenType::Move_Left))
 	{
 		Match(BrainFckToken::TokenType::Move_Left);
-		return LeftOp(parentRegion);
+		return new LeftOp(pParent);
 	}
 
 	if (Check(BrainFckToken::TokenType::Move_Right))
 	{
 		Match(BrainFckToken::TokenType::Move_Right);
-		return RightOp(parentRegion);
+		return new RightOp(pParent);
 	}
 
 	if (Check(BrainFckToken::TokenType::Increment))
 	{
 		Match(BrainFckToken::TokenType::Increment);
-		return IncOp(parentRegion);
+		return new IncOp(pParent);
 	}
 
 	if (Check(BrainFckToken::TokenType::Decrement))
 	{
 		Match(BrainFckToken::TokenType::Decrement);
-		return DecOp(parentRegion);
+		return new DecOp(pParent);
 	}
 
 	if (Check(BrainFckToken::TokenType::Input_Char))
 	{
 		Match(BrainFckToken::TokenType::Input_Char);
-		return InOp(parentRegion);
+		return new InOp(pParent);
 	}
 
 	if (Check(BrainFckToken::TokenType::Output_Char))
 	{
 		Match(BrainFckToken::TokenType::Output_Char);
-		return OutOp(parentRegion);
+		return new OutOp(pParent);
 	}
 
 	Error("Expected an operator token (<>+-.,)");
-	return IError(parentRegion);
+	return new BrainFckError(pParent);
 }
 
-IOperation BrainFckParser::ParseLoop(IRegion* parentRegion)
+BrainFckOperation* BrainFckParser::ParseLoop(BrainFckOperation* pParent)
 {
 	if (Match(BrainFckToken::TokenType::Loop_Start).m_type != BrainFckToken::TokenType::Unrecognised_Token)
 	{
-		Loop loop(parentRegion);
+		Loop* pLoop = new Loop(pParent);
 		if (!Check(BrainFckToken::TokenType::End))
 		{
-			loop.m_content.AddOperation(ParseExpression(&loop.m_content));
+			pLoop->m_content.AddOperation(ParseExpression(pLoop));
 		}
 		else
 		{
 			Error("Empty program can't be parsed");
+			delete pLoop;
+			return new BrainFckError(pParent);
 		}
 
 		while (!Check(BrainFckToken::TokenType::End))
 		{
-			loop.m_content.AddOperation(ParseExpression(&loop.m_content));
+			if (Check(BrainFckToken::TokenType::Loop_End))
+			{
+				Match(BrainFckToken::TokenType::Loop_End);
+				break;
+			}
+			pLoop->m_content.AddOperation(ParseExpression(pLoop));
 		}
-		return loop;
+		return pLoop;
 	}
-	return IError(parentRegion);
+	return new BrainFckError(pParent);
 }
