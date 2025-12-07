@@ -20,14 +20,20 @@ protected:
 template<typename OperationTypes>
 class IRegion
 {
+	using TOperation = typename IOperation<OperationTypes>;
+	using TOperationPtr = std::shared_ptr<TOperation>;
+	using TRegion = std::vector<TOperationPtr>;
 public:
 	IRegion() {};
 	virtual ~IRegion() = default;
 	
-	void AddOperation(typename std::shared_ptr<IOperation<OperationTypes>> pOperation) { m_contents.push_back(pOperation); }
+	void AddOperation(typename TOperationPtr pOperation) { m_contents.push_back(pOperation); }
+
+	TRegion::iterator begin() { return m_contents.begin(); }
+	TRegion::iterator end() { return m_contents.end(); }
 
 protected:
-	std::vector<typename std::shared_ptr<IOperation<OperationTypes>>> m_contents;
+	TRegion m_contents;
 };
 
 template<typename OperationTypes>

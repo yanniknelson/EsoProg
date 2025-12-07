@@ -2,6 +2,7 @@
 
 #include "BrainFckRuntime.h"
 #include "BrainFckToken.h"
+#include "BrainFckAstVisitor.h"
 
 //ImGui imports
 #include <imgui.h>
@@ -80,6 +81,7 @@ BrainFckToken BrainFckRuntime::StepExecution_Internal()
 void BrainFckRuntime::OnSourceSet()
 {
 	m_pProgramAST = std::dynamic_pointer_cast<BrainFckProgram>(m_parser.Parse());
+	BrainFckPrintingVisitor().Traverse(m_pProgramAST);
 }
 
 void BrainFckRuntime::OnInput(int val)
