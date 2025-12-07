@@ -1,5 +1,5 @@
-project "NullInterpreter"
-   kind "None"
+project "IParser"
+   kind "StaticLib"
    language "C++"
    cppdialect "C++20"
    targetdir "bin/%{cfg.buildcfg}"
@@ -12,8 +12,9 @@ project "NullInterpreter"
 
 	  -- Include Core
       "%{wks.location}/Core/SmartEnums/Src",
-      "%{wks.location}/Core/ELanguages/Src",
-	  "%{wks.location}/Core/IRuntime/Src",
+	  "%{wks.location}/Core/LanguageHelpers/ELanguages/Src",
+	  "%{wks.location}/Core/LanguageHelpers/IAST/Src",
+	  "%{wks.location}/Core/LanguageHelpers/ITokeniser/Src",
 
       -- Include externals
       "%{wks.location}/%{externals.spdlog}/include"
