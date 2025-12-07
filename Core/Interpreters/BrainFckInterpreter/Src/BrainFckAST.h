@@ -16,19 +16,16 @@
 
 CreateSmartEnum(BrainFckOperationTypes, BRAINFCKOPERATIONS);
 
-
 #undef BRAINFCKOPERATIONS
 
 using BrainFckOperation = IOperation<BrainFckOperationTypes>;
 using BrainFckOperationPtr = std::shared_ptr<BrainFckOperation>;
 using BrainFckRegion = IRegion<BrainFckOperationTypes>;
 
-class Program : public BrainFckOperation
+class BrainFckProgram : public IProgram<BrainFckOperationTypes>
 {
 public:
-	Program(BrainFckOperationPtr pParent) : IOperation(pParent) {};
-	virtual BrainFckOperationTypes::Enum GetType() const { return BrainFckOperationTypes::Loop; };
-	BrainFckRegion m_region;
+	BrainFckProgram() : IProgram(nullptr) {};
 };
 
 class LeftOp : public BrainFckOperation
