@@ -3,7 +3,7 @@
 
 BrainFckOperationPtr BrainFckParser::Parse()
 {
-	std::shared_ptr<Program> pProgram = std::make_shared<Program>(nullptr);
+	std::shared_ptr<BrainFckProgram> pProgram = std::make_shared<BrainFckProgram>();
 
 	if (!Check(BrainFckToken::TokenType::End))
 	{

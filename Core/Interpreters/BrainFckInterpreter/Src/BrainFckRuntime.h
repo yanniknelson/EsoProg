@@ -40,7 +40,7 @@ private:
 
 	BrainFckTokeniser m_tokeniser;
 	BrainFckParser m_parser;
-	std::shared_ptr<Program> m_pProgramAST{ nullptr };
+	std::shared_ptr<BrainFckProgram> m_pProgramAST{ nullptr };
 
 	int m_currentIndex{ 0 };
 	IMemoryArray<uint8_t> m_array;

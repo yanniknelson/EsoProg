@@ -79,7 +79,7 @@ BrainFckToken BrainFckRuntime::StepExecution_Internal()
 
 void BrainFckRuntime::OnSourceSet()
 {
-	m_pProgramAST = std::dynamic_pointer_cast<Program>(m_parser.Parse());
+	m_pProgramAST = std::dynamic_pointer_cast<BrainFckProgram>(m_parser.Parse());
 }
 
 void BrainFckRuntime::OnInput(int val)
