@@ -1,5 +1,5 @@
 project "ELanguages"
-   kind "StaticLib"
+   kind "None"
    language "C++"
    cppdialect "C++20"
    targetdir "bin/%{cfg.buildcfg}"
