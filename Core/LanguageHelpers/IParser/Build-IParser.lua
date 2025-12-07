@@ -12,9 +12,9 @@ project "IParser"
 
 	  -- Include Core
       "%{wks.location}/Core/SmartEnums/Src",
-	  "%{wks.location}/Core/ELanguages/Src",
-	  "%{wks.location}/Core/IAST/Src",
-	  "%{wks.location}/Core/ITokeniser/Src",
+	  "%{wks.location}/Core/LanguageHelpers/ELanguages/Src",
+	  "%{wks.location}/Core/LanguageHelpers/IAST/Src",
+	  "%{wks.location}/Core/LanguageHelpers/ITokeniser/Src",
 
       -- Include externals
       "%{wks.location}/%{externals.spdlog}/include"

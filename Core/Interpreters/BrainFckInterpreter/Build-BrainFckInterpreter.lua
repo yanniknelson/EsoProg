@@ -1,4 +1,4 @@
-project "PietInterpreter"
+project "BrainFckInterpreter"
    kind "StaticLib"
    language "C++"
    cppdialect "C++20"
@@ -13,10 +13,12 @@ project "PietInterpreter"
 	  -- Include Core
 	  "%{wks.location}/Core/ImGuiHelpers/ImGuiValueChangeCallbacks",
       "%{wks.location}/Core/SmartEnums/Src",
-      "%{wks.location}/Core/ELanguages/Src",
-	  "%{wks.location}/Core/ITokeniser/Src",
-	  "%{wks.location}/Core/IStack/Src",
-	  "%{wks.location}/Core/IRuntime/Src",
+      "%{wks.location}/Core/LanguageHelpers/ELanguages/Src",
+      "%{wks.location}/Core/LanguageHelpers/IAST/Src",
+      "%{wks.location}/Core/LanguageHelpers/IParser/Src",
+	  "%{wks.location}/Core/LanguageHelpers/ITokeniser/Src",
+	  "%{wks.location}/Core/LanguageHelpers/IMemoryArray/Src",
+	  "%{wks.location}/Core/LanguageHelpers/IRuntime/Src",
 
       -- Include externals
       "%{wks.location}/%{externals.spdlog}/include",

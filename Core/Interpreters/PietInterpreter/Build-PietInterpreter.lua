@@ -1,22 +1,31 @@
-project "IAST"
+project "PietInterpreter"
    kind "StaticLib"
    language "C++"
    cppdialect "C++20"
    targetdir "bin/%{cfg.buildcfg}"
 
-   files { "Src/**.h", "Src/**.cpp" }
+   files { "Src/**.h", "Src/**.cpp", "README.md" }
 
    includedirs
    {
       "Src",
 
 	  -- Include Core
-      "%{wks.location}/Core/SmartEnums/Src",
-	  "%{wks.location}/Core/ELanguages/Src",
 	  "%{wks.location}/Core/ImGuiHelpers/ImGuiValueChangeCallbacks",
+      "%{wks.location}/Core/SmartEnums/Src",
+      "%{wks.location}/Core/LanguageHelpers/ELanguages/Src",
+	  "%{wks.location}/Core/LanguageHelpers/ITokeniser/Src",
+	  "%{wks.location}/Core/LanguageHelpers/IStack/Src",
+	  "%{wks.location}/Core/LanguageHelpers/IRuntime/Src",
 
       -- Include externals
-      "%{wks.location}/%{externals.spdlog}/include"
+      "%{wks.location}/%{externals.spdlog}/include",
+      "%{wks.location}/%{externals.stb}",
+      "%{wks.location}/%{externals.imgui}",
+      "%{wks.location}/%{externals.imgui}/misc/cpp",
+      "%{wks.location}/%{externals.imgui}/backends",
+      "%{wks.location}/%{externals.imgui}/examples/libs/glfw/include",
+      "%{wks.location}/%{externals.FontAwesomeHeader}"
    }
 
    targetdir ("%{wks.location}/bin/%{prj.name}/" .. OutputDir)
