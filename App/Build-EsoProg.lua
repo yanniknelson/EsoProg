@@ -17,7 +17,7 @@ project "EsoProg"
 	  "%{wks.location}/Core/ImGuiHelpers/ImGuiSetStyles",
 	  "%{wks.location}/Core/ImGuiHelpers/ImGuiValueChangeCallbacks",
       "%{wks.location}/Core/ITokeniser/Src",
-      "%{wks.location}/Core/IAbstractSyntaxTree/Src",
+      "%{wks.location}/Core/IAST/Src",
       "%{wks.location}/Core/IParser/Src",
       "%{wks.location}/Core/IStack/Src",
 	  "%{wks.location}/Core/IMemoryArray/Src",

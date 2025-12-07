@@ -1,6 +1,6 @@
 #pragma once
 
-#include <IAbstractSyntaxTree.h>
+#include <IAST.h>
 #include <SmartEnums.h>
 
 #define BRAINFCKOPERATIONS(x)\

@@ -1,6 +1,6 @@
 #pragma once
 
-#include <IAbstractSyntaxTree.h>
+#include <IAST.h>
 #include <ITokeniser.h>
 #include <string>
 #include <vector>

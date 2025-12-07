@@ -13,7 +13,7 @@ project "IParser"
 	  -- Include Core
       "%{wks.location}/Core/SmartEnums/Src",
 	  "%{wks.location}/Core/ELanguages/Src",
-	  "%{wks.location}/Core/IAbstractSyntaxTree/Src",
+	  "%{wks.location}/Core/IAST/Src",
 	  "%{wks.location}/Core/ITokeniser/Src",
 
       -- Include externals

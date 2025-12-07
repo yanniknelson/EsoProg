@@ -14,7 +14,7 @@ project "BrainFckInterpreter"
 	  "%{wks.location}/Core/ImGuiHelpers/ImGuiValueChangeCallbacks",
       "%{wks.location}/Core/SmartEnums/Src",
       "%{wks.location}/Core/ELanguages/Src",
-      "%{wks.location}/Core/IAbstractSyntaxTree/Src",
+      "%{wks.location}/Core/IAST/Src",
       "%{wks.location}/Core/IParser/Src",
 	  "%{wks.location}/Core/ITokeniser/Src",
 	  "%{wks.location}/Core/IMemoryArray/Src",
