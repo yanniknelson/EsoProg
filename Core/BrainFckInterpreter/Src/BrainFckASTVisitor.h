@@ -1,8 +1,9 @@
 #pragma once
 
 #include <IASTVisitor.h>
+#include<BrainFckAST.h>
 
-class BrainFckVisitor : public IASTVisitor
+class BrainFckVisitor : public IASTVisitor<BrainFckOperationTypes>
 {
 
 };
