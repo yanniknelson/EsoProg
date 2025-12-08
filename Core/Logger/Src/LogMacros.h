@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cstdlib>
+
 #include "spdlog/spdlog.h"
 #include "spdlog/fmt/bundled/format.h"
 
@@ -7,9 +9,7 @@
 #define LOG(logger, log_level, ...) \
     do { \
         if (logger && logger->should_log(log_level)) { \
-            logger->log(spdlog::source_loc{__FILE__, __LINE__, SPDLOG_FUNCTION}, \
-            log_level, \
-            __VA_ARGS__); \
+            logger->log(spdlog::source_loc{__FILE__, __LINE__, SPDLOG_FUNCTION}, log_level, __VA_ARGS__); \
         } \
     } while (0)
 
@@ -19,9 +19,7 @@
 #define LOG_FATAL(logger, ...) \
     do { \
         if (logger) { \
-            logger->log(spdlog::source_loc{__FILE__, __LINE__, SPDLOG_FUNCTION}, \
-                        spdlog::level::critical, \
-                        __VA_ARGS__); \
+            logger->log(spdlog::source_loc{__FILE__, __LINE__, SPDLOG_FUNCTION}, spdlog::level::critical, __VA_ARGS__); \
             spdlog::shutdown(); \
             std::abort(); \
         } \
