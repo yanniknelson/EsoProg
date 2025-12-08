@@ -1,3 +1,15 @@
+-- Define option to enable profiler
+newoption
+{
+    trigger = "ENABLE_PROFILER",
+    description = "Enable the profiler integration.",
+    allowed = {
+      { "ON",  "Enable Profiler" },
+      { "OFF", "Disable Profiler" }
+    },
+    default = "OFF"
+}
+
 workspace "EsoProg"
    architecture "x64"
    configurations { "Debug", "Release", "Dist" }
@@ -23,17 +35,17 @@ project "Premake"
 
         filter "system:windows"
             postbuildcommands {
-                "%{wks.location}/Vendor/Binaries/Premake/Windows/premake5.exe %{_ACTION} --file=\"%{wks.location}/Build.lua\""
+                "%{wks.location}/Vendor/Binaries/Premake/Windows/premake5.exe %{_ACTION} --file=\"%{wks.location}Build.lua\""
             }
 
         filter "system:linux"
             postbuildcommands {
-                "%{wks.location}/Vendor/Binaries/Premake/Linux/premake5 %{_ACTION} --file=\"%{wks.location}/Build.lua\""
+                "%{wks.location}/Vendor/Binaries/Premake/Linux/premake5 %{_ACTION} --file=\"%{wks.location}Build.lua\""
             }
 
         filter "system:macosx"
             postbuildcommands {
-                "%{wks.location}/Vendor/Binaries/Premake/macOS/premake5 %{_ACTION} --file=\"%{wks.location}/Build.lua\""
+                "%{wks.location}/Vendor/Binaries/Premake/macOS/premake5 %{_ACTION} --file=\"%{wks.location}Build.lua\""
             }
 
         filter {} -- Clear filter
@@ -59,6 +71,7 @@ group "Core/Common/ILanguageParser"
 	include "Core/IStack/Build-IStack.lua"
 group "Core/Common"
 	include "Core/Logger/Build-Logger.lua"
+	include "Core/Profiler/Build-Profiler.lua"
 	include "Core/SmartEnums/Build-SmartEnums.lua"
 group "Core"
 	include "Core/ELanguages/Build-ELanguages.lua"
@@ -67,5 +80,4 @@ group "Core"
 group "App"
 	include "App/Build-EsoProg.lua"
 group ""
-
 
