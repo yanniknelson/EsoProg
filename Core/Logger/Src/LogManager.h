@@ -15,8 +15,10 @@ using TLoggerPtr = std::shared_ptr<logger>;
 
 namespace sinks
 {
-    template<typename Mutex> class base_sink;
-    using TSinkPtr = std::shared_ptr<base_sink<std::mutex>>;
+
+class sink;
+using TSinkPtr = std::shared_ptr<sink>;
+
 }
 }
 
@@ -58,7 +60,7 @@ public:
      *
      * @returns A shared pointer to the requested spdlog logger.
      */
-    static TLoggerPtr Get(const std::string& name = "", bool is_console_output = true, bool is_file_output = true, bool is_unique_file = false);
+    static spdlog::TLoggerPtr Get(const std::string& name = "", bool is_console_output = true, bool is_file_output = true, bool is_unique_file = false);
 
     /**
      * @brief Drops a logger instance.
@@ -74,14 +76,14 @@ public:
      *
      * @param[in] log_level The new default log level.
      */
-    static void SetDefaultLogLevel(const LogLevel& log_level);
+    static void SetDefaultLogLevel(const ELogLevel& log_level);
 
     /**
      * @brief Sets default flush level.
      *
      * @param[in] flush_level The new default flush level.
      */
-    static void SetDefaultFlushLevel(const LogLevel& flush_level);
+    static void SetDefaultFlushLevel(const ELogLevel& flush_level);
 
 private:
 
@@ -104,9 +106,11 @@ private:
     /// A pointer to the file sink.
     static spdlog::sinks::TSinkPtr m_sharedFileSink;
 
-    /// Default Log LogLevel
-    static LogLevel m_defaultLogLevel;
+    /// Default Log ELogLevel
+    static ELogLevel m_defaultLogLevel;
 
-    /// Default Flush LogLevel
-    static LogLevel m_defaultFlushLevel;
+    /// Default Flush ELogLevel
+    static ELogLevel m_defaultFlushLevel;
 };
+
+} // namespace Log

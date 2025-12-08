@@ -19,8 +19,8 @@ namespace Log
 bool CLogManager::m_isInitialized = false;
 spdlog::sinks::TSinkPtr CLogManager::m_sharedConsoleSink;
 spdlog::sinks::TSinkPtr CLogManager::m_sharedFileSink;
-LogLevel CLogManager::m_defaultLogLevel = LogLevel::TRACE;
-LogLevel CLogManager::m_defaultFlushLevel = LogLevel::INFO;
+ELogLevel CLogManager::m_defaultLogLevel = ELogLevel::TRACE;
+ELogLevel CLogManager::m_defaultFlushLevel = ELogLevel::INFO;
 
 // Constants
 const std::string DEFAULT_LOG_PATTERN = "[%n] [%d-%m-%Y %X.%e (%z)] [thread %t] [%s:%# %!] [%^%l%$] %v";
@@ -77,14 +77,12 @@ void CLogManager::Shutdown()
     spdlog::drop_all();
     // Shutdown spdlog
     spdlog::shutdown();
-    // Clear logger cache
-    m_loggers.clear();
     // Set initialized as false
     m_isInitialized = false;
 }
 
 // Get function.
-spdlog::TLoggerPtr CLogManager::Get(const std::string name, bool is_console_output, bool is_file_output, bool is_unqiue_file)
+spdlog::TLoggerPtr CLogManager::Get(const std::string& name, bool is_console_output, bool is_file_output, bool is_unique_file)
 {
     const std::string logger_name = name.empty() ? "DEFAULT" : name; // Use "DEFAULT" constant
 
@@ -139,7 +137,7 @@ spdlog::TLoggerPtr CLogManager::Get(const std::string name, bool is_console_outp
         new_logger->set_level(to_spdlog_level(m_defaultLogLevel));
 
         // Register new logger
-        spdlog::register_logger(new_logger)
+        spdlog::register_logger(new_logger);
 
         return new_logger;
     }
@@ -158,7 +156,7 @@ void CLogManager::Drop(const std::string& name)
 }
 
 // Setter functions.
-void CLogManager::SetDefaultLogLevel(const LogLevel& log_level)
+void CLogManager::SetDefaultLogLevel(const ELogLevel& log_level)
 {
     m_defaultLogLevel = log_level;
 
@@ -169,7 +167,7 @@ void CLogManager::SetDefaultLogLevel(const LogLevel& log_level)
     });
 }
 
-void CLogManager::SetDefaultFlushLevel(const LogLevel& flush_level)
+void CLogManager::SetDefaultFlushLevel(const ELogLevel& flush_level)
 {
     m_defaultFlushLevel = flush_level;
 
