@@ -53,7 +53,7 @@ private:
 
 	virtual void OnInput(int val) override;
 
-	virtual BrainFckOperationTypes::Enum GetEnd() override;
+	virtual bool ShouldEnd(const BrainFckOperationTypes::Enum& token) override;
 
 	virtual BrainFckOperationTypes::Enum StepExecution_Internal() override;
 };

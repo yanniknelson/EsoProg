@@ -11,7 +11,8 @@ TBrainFckOperationPtr BrainFckParser::Parse_Internal()
 	}
 	else
 	{
-		Error("Empty program can't be parsed");
+		pProgram->m_pRegion->AddOperation(std::make_shared<BrainFckError>(pProgram, pProgram->m_pRegion));
+		Error("Empty program can't be run");
 	}
 
 	while (!Check(BrainFckToken::TokenType::End))
@@ -83,8 +84,9 @@ TBrainFckOperationPtr BrainFckParser::ParseLoop(TBrainFckOperationPtr pParent, T
 		}
 		else
 		{
-			Error("Empty program can't be parsed");
-			return std::make_shared<BrainFckError>(pParent, pParentRegion);
+			pLoop->m_pRegion->AddOperation(std::make_shared<BrainFckError>(pLoop, pLoop->m_pRegion));
+			Error("Empty loop can't be run");
+			return pLoop;
 		}
 
 		while (!Check(BrainFckToken::TokenType::End))
