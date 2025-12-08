@@ -4,7 +4,7 @@ void BrainFckPrintingVisitor::Traverse(TProgramPtr pProgram)
 {
 	Print("Program");
 	m_depth = 1;
-	for (BrainFckOperationPtr pOperation : pProgram->m_region)
+	for (TBrainFckOperationPtr pOperation : *pProgram->m_pRegion)
 	{
 		Traverse(pOperation);
 	}
@@ -12,7 +12,7 @@ void BrainFckPrintingVisitor::Traverse(TProgramPtr pProgram)
 	Print("Program End");
 };
 
-void BrainFckPrintingVisitor::Traverse(BrainFckOperationPtr pOperation)
+void BrainFckPrintingVisitor::Traverse(TBrainFckOperationPtr pOperation)
 {
 	switch (pOperation->GetType())
 	{
@@ -38,7 +38,7 @@ void BrainFckPrintingVisitor::Traverse(BrainFckOperationPtr pOperation)
 	}
 }
 
-void BrainFckPrintingVisitor::Visit(BrainFckOperationPtr pOperation)
+void BrainFckPrintingVisitor::Visit(TBrainFckOperationPtr pOperation)
 {
 	Print(BrainFckOperationTypes::ToString(pOperation->GetType()));
 };
@@ -47,7 +47,7 @@ void BrainFckPrintingVisitor::Traverse(std::shared_ptr<Loop> pLoop)
 {
 	Print("Loop Start");
 	m_depth += 1;
-	for (BrainFckOperationPtr pOperation : pLoop->m_region)
+	for (TBrainFckOperationPtr pOperation : *pLoop->m_pRegion)
 	{
 		Traverse(pOperation);
 	}

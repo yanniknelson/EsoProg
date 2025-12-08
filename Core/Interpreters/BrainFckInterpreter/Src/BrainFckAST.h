@@ -18,68 +18,69 @@ CreateSmartEnum(BrainFckOperationTypes, BRAINFCKOPERATIONS);
 
 #undef BRAINFCKOPERATIONS
 
-using BrainFckOperation = IOperation<BrainFckOperationTypes>;
-using BrainFckOperationPtr = std::shared_ptr<BrainFckOperation>;
-using BrainFckRegion = IRegion<BrainFckOperationTypes>;
+using TBrainFckOperation = IOperation<BrainFckOperationTypes>;
+using TBrainFckOperationPtr = std::shared_ptr<TBrainFckOperation>;
+using TBrainFckRegion = IRegion<BrainFckOperationTypes>;
+using TBrainFckRegionPtr = std::shared_ptr<TBrainFckRegion>;
 
 class BrainFckProgram : public IProgram<BrainFckOperationTypes>
 {
 public:
-	BrainFckProgram() : IProgram(nullptr) {};
+	BrainFckProgram() : IProgram(nullptr, nullptr) {};
 };
 
-class LeftOp : public BrainFckOperation
+class LeftOp : public TBrainFckOperation
 {
 public:
-	LeftOp(BrainFckOperationPtr pParent) : IOperation(pParent) {};
+	LeftOp(TBrainFckOperationPtr pParent, TBrainFckRegionPtr pRegion) : IOperation(pParent, pRegion) {};
 	virtual BrainFckOperationTypes::Enum GetType() const { return BrainFckOperationTypes::LeftOp; };
 };
 
-class RightOp : public BrainFckOperation
+class RightOp : public TBrainFckOperation
 {
 public:
-	RightOp(BrainFckOperationPtr pParent) : IOperation(pParent) {};
+	RightOp(TBrainFckOperationPtr pParent, TBrainFckRegionPtr pRegion) : IOperation(pParent, pRegion) {};
 	virtual BrainFckOperationTypes::Enum GetType() const { return BrainFckOperationTypes::RightOp; };
 };
 
-class IncOp : public BrainFckOperation
+class IncOp : public TBrainFckOperation
 {
 public:
-	IncOp(BrainFckOperationPtr pParent) : IOperation(pParent) {};
+	IncOp(TBrainFckOperationPtr pParent, TBrainFckRegionPtr pRegion) : IOperation(pParent, pRegion) {};
 	virtual BrainFckOperationTypes::Enum GetType() const { return BrainFckOperationTypes::IncOp; };
 };
 
-class DecOp : public BrainFckOperation
+class DecOp : public TBrainFckOperation
 {
 public:
-	DecOp(BrainFckOperationPtr pParent) : IOperation(pParent) {};
+	DecOp(TBrainFckOperationPtr pParent, TBrainFckRegionPtr pRegion) : IOperation(pParent, pRegion) {};
 	virtual BrainFckOperationTypes::Enum GetType() const { return BrainFckOperationTypes::DecOp; };
 };
 
-class InOp : public BrainFckOperation
+class InOp : public TBrainFckOperation
 {
 public:
-	InOp(BrainFckOperationPtr pParent) : IOperation(pParent) {};
+	InOp(TBrainFckOperationPtr pParent, TBrainFckRegionPtr pRegion) : IOperation(pParent, pRegion) {};
 	virtual BrainFckOperationTypes::Enum GetType() const { return BrainFckOperationTypes::InOp; };
 };
 
-class OutOp : public BrainFckOperation
+class OutOp : public TBrainFckOperation
 {
 public:
-	OutOp(BrainFckOperationPtr pParent) : IOperation(pParent) {};
+	OutOp(TBrainFckOperationPtr pParent, TBrainFckRegionPtr pRegion) : IOperation(pParent, pRegion) {};
 	virtual BrainFckOperationTypes::Enum GetType() const { return BrainFckOperationTypes::OutOp; };
 };
 
-class Loop : public BrainFckOperation
+class Loop : public TBrainFckOperation
 {
 public:
-	Loop(BrainFckOperationPtr pParent) : IOperation(pParent) {};
+	Loop(TBrainFckOperationPtr pParent, TBrainFckRegionPtr pRegion) : IOperation(pParent, pRegion) {};
 	virtual BrainFckOperationTypes::Enum GetType() const { return BrainFckOperationTypes::Loop; };
-	BrainFckRegion m_region;
+	TBrainFckRegionPtr m_pRegion = std::make_shared<TBrainFckRegion>();
 };
 
 class BrainFckError : public IError<BrainFckOperationTypes>
 {
 public:
-	BrainFckError(BrainFckOperationPtr pParent) : IError(pParent) {};
+	BrainFckError(TBrainFckOperationPtr pParent, TBrainFckRegionPtr pRegion) : IError(pParent, pRegion) {};
 };
