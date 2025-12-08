@@ -256,7 +256,7 @@ void PietImageTokeniser::RotateDirectionPointer(BlockInfo& blockInfo, const int 
 
 PietToken::TokenType::Enum PietImageTokeniser::ConvertColoursToInstruction(const PietColour colour1, const PietColour colour2)
 {
-	static const PietToken::TokenType::Enum conversionTable[6][3] = { {PietToken::TokenType::NOP, PietToken::TokenType::Push, PietToken::TokenType::Pop}
+	static const PietToken::TokenType::Enum conversionTable[6][3] = { {PietToken::TokenType::Unrecognised_Token, PietToken::TokenType::Push, PietToken::TokenType::Pop}
 														, {PietToken::TokenType::Add, PietToken::TokenType::Subtract, PietToken::TokenType::Multiply}
 														, {PietToken::TokenType::Divide, PietToken::TokenType::Modulo, PietToken::TokenType::Not}
 														, {PietToken::TokenType::Greater, PietToken::TokenType::Pointer, PietToken::TokenType::Switch}
@@ -265,9 +265,13 @@ PietToken::TokenType::Enum PietImageTokeniser::ConvertColoursToInstruction(const
 
 	// White acts as a reset for the colour, moving into it 'clears' the current colour,
 	// so we can't execute when we move into or out of it, thus return NOP
-	if (colour1.m_hue == Hue::White || colour2.m_hue == Hue::White)
+	if (colour2.m_hue == Hue::White)
 	{
-		return PietToken::TokenType::NOP;
+		return PietToken::TokenType::EnterSlide;
+	}
+	if (colour1.m_hue == Hue::White)
+	{
+		return PietToken::TokenType::ExitSlide;
 	}
 
 	int hueDiffIndx = (int)colour2.m_hue - (int)colour1.m_hue;

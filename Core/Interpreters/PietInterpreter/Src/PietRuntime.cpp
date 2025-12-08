@@ -169,9 +169,13 @@ PietToken PietRuntime::StepExecution_Internal()
 		}
 		break;
 	}
-	case(PietToken::TokenType::NOP):
+	case(PietToken::TokenType::EnterSlide):
 	{
-		return PietToken::TokenType::NOP;
+		return PietToken::TokenType::EnterSlide;
+	}
+	case(PietToken::TokenType::ExitSlide):
+	{
+		return PietToken::TokenType::ExitSlide;
 	}
 	case (PietToken::TokenType::End):
 	{
@@ -203,6 +207,11 @@ void PietRuntime::OnSourceSet()
 void PietRuntime::OnInput(int val)
 {
 	m_stack.Push(val);
+}
+
+PietToken PietRuntime::GetEnd()
+{
+	return PietToken(PietToken::TokenType::End, 0);
 }
 
 void PietRuntime::RenderImageDisplay()

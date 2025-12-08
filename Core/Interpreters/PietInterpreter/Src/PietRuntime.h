@@ -95,5 +95,7 @@ private:
 
 	virtual void OnInput(int val) override;
 
+	virtual PietToken GetEnd() override;
+
 	virtual PietToken StepExecution_Internal() override;
 };

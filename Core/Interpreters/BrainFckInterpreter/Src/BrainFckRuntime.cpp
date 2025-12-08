@@ -18,55 +18,42 @@
 
 #include <ImGuiValueChangeCallbacks.h>
 
-BrainFckToken BrainFckRuntime::StepExecution_Internal()
+BrainFckOperationTypes::Enum BrainFckRuntime::StepExecution_Internal()
 {
-	const BrainFckToken token = m_tokeniser.Pop();
-
-	switch (token.m_type)
+	BrainFckOperationTypes::Enum operation = m_runtimeVisitor.Step(m_array.Get(m_currentIndex));
+	switch (operation)
 	{
-	case(BrainFckToken::TokenType::Move_Right):
+	case(BrainFckOperationTypes::RightOp):
 	{
 		++m_currentIndex;
 		break;
 	}
-	case(BrainFckToken::TokenType::Move_Left):
+	case(BrainFckOperationTypes::LeftOp):
 	{
 		--m_currentIndex;
 		break;
 	}
-	case(BrainFckToken::TokenType::Increment):
+	case(BrainFckOperationTypes::IncOp):
 	{
 		m_array.Increment(m_currentIndex);
 		break;
 	}
-	case(BrainFckToken::TokenType::Decrement):
+	case(BrainFckOperationTypes::DecOp):
 	{
 		m_array.Decrement(m_currentIndex);
 		break;
 	}
-	case(BrainFckToken::TokenType::Output_Char):
+	case(BrainFckOperationTypes::OutOp):
 	{
 		m_rOutputStream << (char)m_array.Get(m_currentIndex);
 		break;
 	}
-	case(BrainFckToken::TokenType::Input_Char):
+	case(BrainFckOperationTypes::InOp):
 	{
 		m_waitingForCharInput = true;
 		break;
 	}
-	case(BrainFckToken::TokenType::Loop_Start):
-	{
-		break;
-	}
-	case(BrainFckToken::TokenType::Loop_End):
-	{
-		break;
-	}
-	case(BrainFckToken::TokenType::NOP):
-	{
-		return BrainFckToken::TokenType::NOP;
-	}
-	case (BrainFckToken::TokenType::End):
+	case (BrainFckOperationTypes::End):
 	{
 		m_bIsRunning = false;
 		break;
@@ -75,13 +62,14 @@ BrainFckToken BrainFckRuntime::StepExecution_Internal()
 		break;
 	}
 
-	return token;
+	return operation;
 }
 
 void BrainFckRuntime::OnSourceSet()
 {
 	m_pProgramAST = std::dynamic_pointer_cast<BrainFckProgram>(m_parser.Parse());
 	BrainFckPrintingVisitor().Traverse(m_pProgramAST);
+	m_runtimeVisitor.SetProgram(m_pProgramAST);
 }
 
 void BrainFckRuntime::OnInput(int val)
@@ -89,7 +77,12 @@ void BrainFckRuntime::OnInput(int val)
 	m_array.Set(m_currentIndex, val);
 }
 
-void BrainFckRuntime::RenderWindows(RuntimeSyncronisationStruct& rSync)
+BrainFckOperationTypes::Enum BrainFckRuntime::GetEnd()
+{
+	return BrainFckOperationTypes::End;
+}
+
+void BrainFckRuntime::RenderWindows()
 {
 	m_cachedArray.DisplayArray(m_cachedIndex);
 }

@@ -39,12 +39,9 @@ public:
 		}
 
 		const TokenClass token = StepExecution_Internal();
-		if (token.m_type != TokenClass::TokenType::NOP)
-		{
-			m_rExecutionHistoryStream << token << std::endl;
-		}
+		m_rExecutionHistoryStream << token << std::endl;
 
-		return token.m_type != TokenClass::TokenType::End;
+		return token != GetEnd();
 	}
 
 	virtual void ResetImplementation() = 0;
@@ -65,6 +62,7 @@ protected:
 
 	virtual void OnSourceSet() = 0;
 	virtual void OnInput(int val) = 0;
+	virtual TokenClass GetEnd() = 0;
 
 	virtual TokenClass StepExecution_Internal() = 0;
 };
