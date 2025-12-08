@@ -84,13 +84,13 @@ void CLogManager::Shutdown()
 }
 
 // Get function.
-std::shared_ptr<spdlog::logger> CLogManager::Get(const std::string name, bool is_console_output, bool is_file_output, bool is_unqiue_file)
+spdlog::TLoggerPtr CLogManager::Get(const std::string name, bool is_console_output, bool is_file_output, bool is_unqiue_file)
 {
     const std::string logger_name = name.empty() ? "DEFAULT" : name; // Use "DEFAULT" constant
 
     // Retrive pre-existing logger
     spdlog::TLoggerPtr logger = spdlog::get(logger_name);
-    if (!logger)
+    if (logger)
     {
         return logger;
     }
@@ -138,6 +138,9 @@ std::shared_ptr<spdlog::logger> CLogManager::Get(const std::string name, bool is
         new_logger->flush_on(to_spdlog_level(m_defaultFlushLevel));
         new_logger->set_level(to_spdlog_level(m_defaultLogLevel));
 
+        // Register new logger
+        spdlog::register_logger(new_logger)
+
         return new_logger;
     }
 
@@ -158,11 +161,23 @@ void CLogManager::Drop(const std::string& name)
 void CLogManager::SetDefaultLogLevel(const LogLevel& log_level)
 {
     m_defaultLogLevel = log_level;
+
+    spdlog::apply_all([log_level](spdlog::TLoggerPtr logger)
+    {
+        // Set the new log level for the individual logger
+        logger->set_level(to_spdlog_level(log_level));
+    });
 }
 
 void CLogManager::SetDefaultFlushLevel(const LogLevel& flush_level)
 {
     m_defaultFlushLevel = flush_level;
+
+    spdlog::apply_all([flush_level](spdlog::TLoggerPtr logger)
+    {
+        // Set the new flush level for the individual logger
+        logger->flush_on(to_spdlog_level(flush_level));
+    });
 }
 
 } // namespace Log
