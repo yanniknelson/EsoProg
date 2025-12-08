@@ -2,7 +2,6 @@
 
 #include <memory>
 #include <mutex>
-#include <unordered_map>
 #include <string>
 
 #include "LogLevel.h"
@@ -86,16 +85,18 @@ public:
 
 private:
 
-    /**
-     * @brief Private ctor to enforce singleton pattern.
-     */
-    CLogManager() = default;
+    /// Private ctor & dtor to enforce singleton pattern.
+    CLogManager()  = default;
+    ~CLogManager() = default;
+
+    /// Delete move/copy ctor and assignment op
+    CLogManager(const CLogManager& other) = delete;
+    CLogManager(CLogManager&& other) = delete;
+    CLogManager& operator=(const CLogManager& other) = delete;
+    CLogManager& operator=(CLogManager&& other) = delete;
     
     /// Whether the logger manager is initialized or not.
     static bool m_isInitialized;
-
-    /// Holds all initialized loggers, mapping name to the spdlog object.
-    static std::unordered_map<std::string, std::shared_ptr<spdlog::logger>> m_loggers;
 
     /// A pointer to the console sink.
     static spdlog::sinks::TSinkPtr m_sharedConsoleSink;
