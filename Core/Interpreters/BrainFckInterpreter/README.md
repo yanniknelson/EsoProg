@@ -45,7 +45,7 @@ Brain F*ck operates on an array of memory cells (all intially zero) with a point
 	</tr>
 	<tr>
 		<th>]</th>
-        <td>If the value of the current cell is not, jump back to the matching [</td>
+        <td>If the value of the current cell is not 0, jump to the matching [</td>
 	</tr>
 </table>
 

@@ -5,6 +5,7 @@
 #include "BrainFckToken.h"
 #include "BrainFckTokeniser.h"
 #include "BrainFckParser.h"
+#include "BrainFckAstVisitor.h"
 
 #include "ELanguages.h"
 
@@ -15,7 +16,7 @@
 #include <string>
 #include <vector>
 
-class BrainFckRuntime : public CRuntime<BrainFckToken>
+class BrainFckRuntime : public CRuntime<BrainFckOperationTypes::Enum>
 {
 public:
 	BrainFckRuntime(RuntimeSyncronisationStruct& rSync, std::ostringstream& rOutputStream, std::ostringstream& rExecutionhistoryStream)
@@ -41,6 +42,7 @@ private:
 	BrainFckTokeniser m_tokeniser;
 	BrainFckParser m_parser;
 	std::shared_ptr<BrainFckProgram> m_pProgramAST{ nullptr };
+	BrainFckRuntimeVisitor m_runtimeVisitor;
 
 	int m_currentIndex{ 0 };
 	IMemoryArray<uint8_t> m_array;
@@ -51,5 +53,7 @@ private:
 
 	virtual void OnInput(int val) override;
 
-	virtual BrainFckToken StepExecution_Internal() override;
+	virtual BrainFckOperationTypes::Enum GetEnd() override;
+
+	virtual BrainFckOperationTypes::Enum StepExecution_Internal() override;
 };

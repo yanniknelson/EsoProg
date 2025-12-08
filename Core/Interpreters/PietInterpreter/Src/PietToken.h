@@ -32,7 +32,8 @@ public:
 	x(Input_Val)\
 	x(Output_Char)\
 	x(Output_Val)\
-	x(NOP)\
+	x(EnterSlide)\
+	x(ExitSlide)\
 	x(End)\
 	x(Unrecognised_Token)
 
@@ -60,5 +61,15 @@ public:
 			os << " " << tk.m_value;
 		}
 		return os;
+	}
+	
+	friend bool operator==(const PietToken& tk1, const PietToken& tk2)
+	{
+		return tk1.m_type == tk2.m_type && tk1.m_value == tk1.m_value;
+	}
+	
+	friend bool operator!=(const PietToken& tk1, const PietToken& tk2)
+	{
+		return !(tk1==tk2);
 	}
 };

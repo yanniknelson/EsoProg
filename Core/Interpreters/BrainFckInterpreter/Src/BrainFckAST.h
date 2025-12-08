@@ -12,6 +12,7 @@
 	x(OutOp)\
 	x(InOp)\
 	x(Loop)\
+	x(End)\
 	x(Error)\
 
 CreateSmartEnum(BrainFckOperationTypes, BRAINFCKOPERATIONS);
@@ -20,6 +21,7 @@ CreateSmartEnum(BrainFckOperationTypes, BRAINFCKOPERATIONS);
 
 using TBrainFckOperation = IOperation<BrainFckOperationTypes>;
 using TBrainFckOperationPtr = std::shared_ptr<TBrainFckOperation>;
+using TBrainFckOperationWkPtr = std::weak_ptr<TBrainFckOperation>;
 using TBrainFckRegion = IRegion<BrainFckOperationTypes>;
 using TBrainFckRegionPtr = std::shared_ptr<TBrainFckRegion>;
 

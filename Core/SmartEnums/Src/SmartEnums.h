@@ -40,6 +40,11 @@ public:\
         enumValues(MacroListTofromString)\
         return Enum::COUNT;\
     };\
+    friend std::ostream& operator<<(std::ostream& os, const Enum& e)\
+    {\
+        os << ToString(e);\
+        return os;\
+    }\
 }
 
 #define CreateSmartEnum(enumName, enumValues, ...)  CreateSmartEnumOfType(enumName, uint8_t, enumValues, ...)

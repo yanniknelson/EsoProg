@@ -18,7 +18,6 @@ public:
 	x(Input_Char)\
 	x(Loop_Start)\
 	x(Loop_End)\
-	x(NOP)\
 	x(End)\
 	x(Unrecognised_Token)
 

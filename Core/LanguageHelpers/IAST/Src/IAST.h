@@ -66,6 +66,7 @@ public:
 	
 	void AddOperation(typename TOperationPtr pOperation) { m_contents.push_back(pOperation); m_contents.back()->SetIndex(m_contents.size() - 1); }
 
+	TOperationPtr front() { return m_contents.front(); }
 	TRegionIterator begin() { return m_contents.begin(); }
 	TRegionIterator end() { return m_contents.end(); }
 
