@@ -1,7 +1,7 @@
 #include "BrainFckParser.h"
 #include "BrainFckAST.h"
 
-TBrainFckOperationPtr BrainFckParser::Parse()
+TBrainFckOperationPtr BrainFckParser::Parse_Internal()
 {
 	std::shared_ptr<BrainFckProgram> pProgram = std::make_shared<BrainFckProgram>();
 
