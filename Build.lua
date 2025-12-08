@@ -1,3 +1,15 @@
+-- Define option to enable profiler
+newoption
+{
+    trigger = "ENABLE_PROFILER",
+    description = "Enable the profiler integration.",
+    allowed = {
+      { "ON",  "Enable Profiler" },
+      { "OFF", "Disable Profiler" }
+    },
+    default = "OFF"
+}
+
 workspace "EsoProg"
    architecture "x64"
    configurations { "Debug", "Release", "Dist" }
@@ -59,6 +71,7 @@ group "Core/Common/ILanguageParser"
 	include "Core/IStack/Build-IStack.lua"
 group "Core/Common"
 	include "Core/Logger/Build-Logger.lua"
+	include "Core/Profiler/Build-Profiler.lua"
 	include "Core/SmartEnums/Build-SmartEnums.lua"
 group "Core"
 	include "Core/ELanguages/Build-ELanguages.lua"
@@ -67,5 +80,4 @@ group "Core"
 group "App"
 	include "App/Build-EsoProg.lua"
 group ""
-
 
