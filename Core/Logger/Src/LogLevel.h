@@ -39,7 +39,7 @@ namespace Log {
 /**
  * @brief Enum class to hold log levels.
  */
-enum class LogLevel : std::uint8_t
+enum class ELogLevel : std::uint8_t
 {
     /**
      * @brief Trace log level.
@@ -84,7 +84,7 @@ enum class LogLevel : std::uint8_t
      */
     UNKNOWN = 0xFF
         
-}; // enum class LogLogLevel
+}; // enum class LogELogLevel
 
 /**
  * @brief Function to convert std::string into log level.
@@ -95,103 +95,103 @@ enum class LogLevel : std::uint8_t
  *
  * @returns Corresponding log level.
  */
-[[nodiscard]] inline LogLevel from_string(const std::string& str)
+[[nodiscard]] inline ELogLevel from_string(const std::string& str)
 {
     // Convert to lowercase for case-agnostic comparision.
     std::string str_lower = to_lowercase(str);
 
     if (str_lower == "trace")
     {
-        return LogLevel::TRACE;
+        return ELogLevel::TRACE;
     }
     else if (str_lower == "debug")
     {
-        return LogLevel::DEBUG;
+        return ELogLevel::DEBUG;
     }
     else if (str_lower == "info")
     {
-        return LogLevel::INFO;
+        return ELogLevel::INFO;
     }
     else if (str_lower == "warn")
     {
-        return LogLevel::WARN;
+        return ELogLevel::WARN;
     }
     else if (str_lower == "error")
     {
-        return LogLevel::ERROR;
+        return ELogLevel::ERROR;
     }
     else if (str_lower == "fatal")
     {
-        return LogLevel::FATAL;
+        return ELogLevel::FATAL;
     }
     else
     {
-        return LogLevel::UNKNOWN;
+        return ELogLevel::UNKNOWN;
     }
 }
 
 /**
  * @brief Function to convert log level into string.
- * This function performs simple look-up to convert LogLevel into
+ * This function performs simple look-up to convert ELogLevel into
  * corresponding string.
  *
  * @param[in] log_level The given log level.
  *
  * @returns Corresponding string.
  */
-[[nodiscard]] inline std::string to_string(const LogLevel& log_level)
+[[nodiscard]] inline std::string to_string(const ELogLevel& log_level)
 {
     switch (log_level)
     {
-        case LogLevel::TRACE: return "TRACE";
-        case LogLevel::DEBUG: return "DEBUG";
-        case LogLevel::INFO:  return "INFO";
-        case LogLevel::WARN:  return "WARN";
-        case LogLevel::ERROR: return "ERROR";
-        case LogLevel::FATAL: return "FATAL";
+        case ELogLevel::TRACE: return "TRACE";
+        case ELogLevel::DEBUG: return "DEBUG";
+        case ELogLevel::INFO:  return "INFO";
+        case ELogLevel::WARN:  return "WARN";
+        case ELogLevel::ERROR: return "ERROR";
+        case ELogLevel::FATAL: return "FATAL";
         default:           return "UNKNOWN";
     }
 }
 
 /**
- * @brief Maps LogLevel to spdlog levels.
+ * @brief Maps ELogLevel to spdlog levels.
  *
  * @param[in] log_level The log level.
  *
  * @returns Corresponding spdlog level.
  */
-[[nodiscard]] inline spdlog::level::level_enum to_spdlog_level(const LogLevel& log_level)
+[[nodiscard]] inline spdlog::level::level_enum to_spdlog_level(const ELogLevel& log_level)
 {
     switch (log_level)
     {
-        case LogLevel::TRACE: return spdlog::level::trace;
-        case LogLevel::DEBUG: return spdlog::level::debug;
-        case LogLevel::INFO:  return spdlog::level::info;
-        case LogLevel::WARN:  return spdlog::level::warn;
-        case LogLevel::ERROR: return spdlog::level::err;
-        case LogLevel::FATAL: return spdlog::level::critical;
+        case ELogLevel::TRACE: return spdlog::level::trace;
+        case ELogLevel::DEBUG: return spdlog::level::debug;
+        case ELogLevel::INFO:  return spdlog::level::info;
+        case ELogLevel::WARN:  return spdlog::level::warn;
+        case ELogLevel::ERROR: return spdlog::level::err;
+        case ELogLevel::FATAL: return spdlog::level::critical;
         default:           return spdlog::level::info; // Optionated default
     }
 }
 
 /**
- * @brief Maps spdlog levels to LogLevel.
+ * @brief Maps spdlog levels to ELogLevel.
  *
  * @param[in] spd_level The spdlog level.
  *
- * @returns Corresponding LogLevel.
+ * @returns Corresponding ELogLevel.
  */
-[[nodiscard]] inline LogLevel to_level(const spdlog::level::level_enum& spd_level)
+[[nodiscard]] inline ELogLevel to_level(const spdlog::level::level_enum& spd_level)
 {
     switch (spd_level)
     {
-        case spdlog::level::trace:    return LogLevel::TRACE;
-        case spdlog::level::debug:    return LogLevel::DEBUG;
-        case spdlog::level::info:     return LogLevel::INFO;
-        case spdlog::level::warn:     return LogLevel::WARN;
-        case spdlog::level::err:      return LogLevel::ERROR;
-        case spdlog::level::critical: return LogLevel::FATAL;
-        default:                      return LogLevel::UNKNOWN;
+        case spdlog::level::trace:    return ELogLevel::TRACE;
+        case spdlog::level::debug:    return ELogLevel::DEBUG;
+        case spdlog::level::info:     return ELogLevel::INFO;
+        case spdlog::level::warn:     return ELogLevel::WARN;
+        case spdlog::level::err:      return ELogLevel::ERROR;
+        case spdlog::level::critical: return ELogLevel::FATAL;
+        default:                      return ELogLevel::UNKNOWN;
     }
 }
 
