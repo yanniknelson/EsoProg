@@ -12,9 +12,15 @@ class IParser
 public:
 	IParser(ITokeniser<TokenClass>* pTokeniser) : m_pTokeniser(pTokeniser) {}
 
-	virtual std::shared_ptr<IOperation<LanguageOperations>> Parse() = 0;
+	std::shared_ptr<IOperation<LanguageOperations>> Parse()
+	{
+		Reset();
+		return Parse_Internal();
+	}
 
 protected:
+	virtual std::shared_ptr<IOperation<LanguageOperations>> Parse_Internal() = 0;
+
 	bool Check(const TokenClass::TokenType::Enum expected)
 	{
 		return m_pTokeniser->Peek().m_type == expected;
@@ -47,6 +53,11 @@ protected:
 	TokenClass Error(const char* errorStr)
 	{
 		return TokenClass(TokenClass::TokenType::Unrecognised_Token);
+	}
+
+	void Reset()
+	{
+		m_pTokeniser->Reset();
 	}
 
 	ITokeniser<TokenClass>* m_pTokeniser{ nullptr };
