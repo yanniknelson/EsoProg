@@ -209,9 +209,9 @@ void PietRuntime::OnInput(int val)
 	m_stack.Push(val);
 }
 
-PietToken PietRuntime::GetEnd()
+bool PietRuntime::ShouldEnd(const PietToken& token)
 {
-	return PietToken(PietToken::TokenType::End, 0);
+	return token.m_type == PietToken::TokenType::End;
 }
 
 void PietRuntime::RenderImageDisplay()

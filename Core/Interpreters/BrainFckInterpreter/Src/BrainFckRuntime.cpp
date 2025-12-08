@@ -77,9 +77,9 @@ void BrainFckRuntime::OnInput(int val)
 	m_array.Set(m_currentIndex, val);
 }
 
-BrainFckOperationTypes::Enum BrainFckRuntime::GetEnd()
+bool BrainFckRuntime::ShouldEnd(const BrainFckOperationTypes::Enum& token)
 {
-	return BrainFckOperationTypes::End;
+	return token == BrainFckOperationTypes::End || token == BrainFckOperationTypes::Error;
 }
 
 void BrainFckRuntime::RenderWindows()

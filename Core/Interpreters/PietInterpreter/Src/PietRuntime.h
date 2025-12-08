@@ -95,7 +95,7 @@ private:
 
 	virtual void OnInput(int val) override;
 
-	virtual PietToken GetEnd() override;
+	virtual bool ShouldEnd(const PietToken& token) override;
 
 	virtual PietToken StepExecution_Internal() override;
 };

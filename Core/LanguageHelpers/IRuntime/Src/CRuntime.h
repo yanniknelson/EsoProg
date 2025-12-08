@@ -41,7 +41,7 @@ public:
 		const TokenClass token = StepExecution_Internal();
 		m_rExecutionHistoryStream << token << std::endl;
 
-		return token != GetEnd();
+		return !ShouldEnd(token);
 	}
 
 	virtual void ResetImplementation() = 0;
@@ -62,7 +62,7 @@ protected:
 
 	virtual void OnSourceSet() = 0;
 	virtual void OnInput(int val) = 0;
-	virtual TokenClass GetEnd() = 0;
+	virtual bool ShouldEnd(const TokenClass& token) = 0;
 
 	virtual TokenClass StepExecution_Internal() = 0;
 };
