@@ -17,9 +17,8 @@ namespace Log
 
 // Define static members
 bool CLogManager::m_isInitialized = false;
-spdlog::sink_ptr CLogManager::m_sharedConsoleSink;
-spdlog::sink_ptr CLogManager::m_sharedFileSink;
-std::unordered_map<std::string, std::shared_ptr<spdlog::logger>> CLogManager::m_loggers;
+spdlog::sinks::TSinkPtr CLogManager::m_sharedConsoleSink;
+spdlog::sinks::TSinkPtr CLogManager::m_sharedFileSink;
 LogLevel CLogManager::m_defaultLogLevel = LogLevel::TRACE;
 LogLevel CLogManager::m_defaultFlushLevel = LogLevel::INFO;
 
@@ -46,12 +45,12 @@ void CLogManager::Init()
         });
 
         // --- Instantiate the Console Sink (using colored sink) ---
-        auto console_sink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
+        spdlog::sinks::TSinkPtr console_sink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
         console_sink->set_pattern(DEFAULT_LOG_PATTERN);
         m_sharedConsoleSink = console_sink;
 
         // --- Instantiate the File Sink (using rotating file) ---
-        auto file_sink = std::make_shared<spdlog::sinks::rotating_file_sink_mt>(
+        spdlog::sinks::TSinkPtr file_sink = std::make_shared<spdlog::sinks::rotating_file_sink_mt>(
             "logs/Mixed_Logs.txt", 
             MAX_LOG_FILE_SIZE_BYTES,
             MAX_LOG_FILES
@@ -89,14 +88,15 @@ std::shared_ptr<spdlog::logger> CLogManager::Get(const std::string name, bool is
 {
     const std::string logger_name = name.empty() ? "DEFAULT" : name; // Use "DEFAULT" constant
 
-    auto it = m_loggers.find(logger_name);
-    if (it != m_loggers.end())
+    // Retrive pre-existing logger
+    spdlog::TLoggerPtr logger = spdlog::get(logger_name);
+    if (!logger)
     {
-        return it->second;
+        return logger;
     }
 
     // Create Sinks for the New Logger
-    std::vector<spdlog::sink_ptr> sinks;
+    std::vector<spdlog::sinks::TSinkPtr> sinks;
 
     // Console sink
     if (is_console_output && m_sharedConsoleSink)
@@ -114,7 +114,7 @@ std::shared_ptr<spdlog::logger> CLogManager::Get(const std::string name, bool is
     if (is_unique_file)
     {
         std::string unique_file_name = spdlog::fmt_lib::format("logs/{}_Logs.txt", logger_name);
-        auto unique_file_sink = std::make_shared<spdlog::sinks::rotating_file_sink_mt>(
+        spdlog::sinks::TSinkPtr unique_file_sink = std::make_shared<spdlog::sinks::rotating_file_sink_mt>(
             unique_file_name,
             MAX_LOG_FILE_SIZE_BYTES,
             MAX_LOG_FILES
@@ -137,10 +137,6 @@ std::shared_ptr<spdlog::logger> CLogManager::Get(const std::string name, bool is
         // Default levels
         new_logger->flush_on(to_spdlog_level(m_defaultFlushLevel));
         new_logger->set_level(to_spdlog_level(m_defaultLogLevel));
-
-        // Cache and Register
-        m_loggers[logger_name] = new_logger;
-        spdlog::register_logger(new_logger);
 
         return new_logger;
     }
