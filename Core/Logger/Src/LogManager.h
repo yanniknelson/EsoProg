@@ -12,11 +12,12 @@ namespace spdlog
 {
 
 class logger;
+using TLoggerPtr = std::shared_ptr<logger>;
 
 namespace sinks
 {
     template<typename Mutex> class base_sink;
-    using sink_ptr = std::shared_ptr<base_sink<std::mutex>>;
+    using TSinkPtr = std::shared_ptr<base_sink<std::mutex>>;
 }
 }
 
@@ -58,7 +59,7 @@ public:
      *
      * @returns A shared pointer to the requested spdlog logger.
      */
-    static std::shared_ptr<spdlog::logger> Get(const std::string& name = "", bool is_console_output = true, bool is_file_output = true, bool is_unique_file = false);
+    static TLoggerPtr Get(const std::string& name = "", bool is_console_output = true, bool is_file_output = true, bool is_unique_file = false);
 
     /**
      * @brief Drops a logger instance.
@@ -97,10 +98,10 @@ private:
     static std::unordered_map<std::string, std::shared_ptr<spdlog::logger>> m_loggers;
 
     /// A pointer to the console sink.
-    static spdlog::sinks::sink_ptr m_sharedConsoleSink;
+    static spdlog::sinks::TSinkPtr m_sharedConsoleSink;
 
     /// A pointer to the file sink.
-    static spdlog::sinks::sink_ptr m_sharedFileSink;
+    static spdlog::sinks::TSinkPtr m_sharedFileSink;
 
     /// Default Log LogLevel
     static LogLevel m_defaultLogLevel;
