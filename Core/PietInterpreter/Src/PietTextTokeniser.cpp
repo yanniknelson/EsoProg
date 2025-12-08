@@ -1,5 +1,6 @@
 #include "PietTextTokeniser.h"
 
+#include <cstdlib>
 #include <iostream>
 #include <sstream>
 
@@ -89,7 +90,7 @@ PietToken PietTextTokeniser::Pop_Internal()
 		PietToken value = Pop_Internal();
 		if (value.m_type != PietToken::TokenType::Value)
 		{
-			__debugbreak();
+            std::abort();
 		}
 		token.m_value = value.m_value;
 	}
