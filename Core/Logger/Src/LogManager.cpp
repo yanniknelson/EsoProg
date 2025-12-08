@@ -16,12 +16,12 @@ namespace Log
 {
 
 // Define static members
-bool LogManager::m_isInitialized = false;
-spdlog::sink_ptr LogManager::m_sharedConsoleSink;
-spdlog::sink_ptr LogManager::m_sharedFileSink;
-std::unordered_map<std::string, std::shared_ptr<spdlog::logger>> LogManager::m_loggers;
-LogLevel LogManager::m_defaultLogLevel = LogLevel::TRACE;
-LogLevel LogManager::m_defaultFlushLevel = LogLevel::INFO;
+bool CLogManager::m_isInitialized = false;
+spdlog::sink_ptr CLogManager::m_sharedConsoleSink;
+spdlog::sink_ptr CLogManager::m_sharedFileSink;
+std::unordered_map<std::string, std::shared_ptr<spdlog::logger>> CLogManager::m_loggers;
+LogLevel CLogManager::m_defaultLogLevel = LogLevel::TRACE;
+LogLevel CLogManager::m_defaultFlushLevel = LogLevel::INFO;
 
 // Constants
 const std::string DEFAULT_LOG_PATTERN = "[%n] [%d-%m-%Y %X.%e (%z)] [thread %t] [%s:%# %!] [%^%l%$] %v";
@@ -31,7 +31,7 @@ constexpr size_t MAX_LOG_FILE_SIZE_BYTES = 1048576 * 10; // 10 MiB
 constexpr size_t MAX_LOG_FILES = 5;
 
 // Init function
-void LogManager::Init()
+void CLogManager::Init()
 {
     if (!m_isInitialized)
     {
@@ -64,7 +64,7 @@ void LogManager::Init()
         spdlog::set_level(to_spdlog_level(m_defaultLogLevel));
 
         // --- Initialize Default Logger ---
-        LogManager::Get("DEFAULT", true, true);
+        CLogManager::Get("DEFAULT", true, true);
         
         // Mark initialization complete
         m_isInitialized = true;
@@ -72,7 +72,7 @@ void LogManager::Init()
 }
 
 // Shutdown function.
-void LogManager::Shutdown()
+void CLogManager::Shutdown()
 {
     // Drop all loggers
     spdlog::drop_all();
@@ -85,7 +85,7 @@ void LogManager::Shutdown()
 }
 
 // Get function.
-std::shared_ptr<spdlog::logger> LogManager::Get(const std::string name, bool is_console_output, bool is_file_output, bool is_unqiue_file)
+std::shared_ptr<spdlog::logger> CLogManager::Get(const std::string name, bool is_console_output, bool is_file_output, bool is_unqiue_file)
 {
     const std::string logger_name = name.empty() ? "DEFAULT" : name; // Use "DEFAULT" constant
 
@@ -150,7 +150,7 @@ std::shared_ptr<spdlog::logger> LogManager::Get(const std::string name, bool is_
 }
 
 // Drop function.
-void LogManager::Drop(const std::string& name)
+void CLogManager::Drop(const std::string& name)
 {
     if (spdlog::get(name))
     {
@@ -159,12 +159,12 @@ void LogManager::Drop(const std::string& name)
 }
 
 // Setter functions.
-void LogManager::SetDefaultLogLevel(const LogLevel& log_level)
+void CLogManager::SetDefaultLogLevel(const LogLevel& log_level)
 {
     m_defaultLogLevel = log_level;
 }
 
-void LogManager::SetDefaultFlushLevel(const LogLevel& flush_level)
+void CLogManager::SetDefaultFlushLevel(const LogLevel& flush_level)
 {
     m_defaultFlushLevel = flush_level;
 }

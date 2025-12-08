@@ -30,7 +30,7 @@ namespace Log
 /**
  * @brief Log manager class.
  */
-class LogManager
+class CLogManager
 {
 public:
     /// Routine Functions.
@@ -88,7 +88,7 @@ private:
     /**
      * @brief Private ctor to enforce singleton pattern.
      */
-    LogManager() = default;
+    CLogManager() = default;
     
     /// Whether the logger manager is initialized or not.
     static bool m_isInitialized;
