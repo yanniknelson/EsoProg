@@ -29,13 +29,12 @@ public:
 	virtual ELanguages::Enum GetRuntimeLanguage() const override { return ELanguages::Brainfck; }
 	virtual std::vector<std::string> GetSupportedFileTypes() const override { return { ".txt" }; }
 
-	void Reset()
+	void ResetImplementation()
 	{
-		ResetTokenisers();
 		m_array.Clear();
 	}
 
-	virtual void RenderWindows(RuntimeSyncronisationStruct& rSync) override;
+	virtual void RenderWindows() override;
 	virtual void CacheState() override;
 
 private:
