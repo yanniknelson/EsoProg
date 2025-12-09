@@ -16,3 +16,7 @@ Ensure you get this repository recursively as the vendors have been added as sub
 Once you have the source, go into the Scripts folder and run the setup script for your OS.<br><br>
 Now you have your solution, there should be a Premake Project inside it, to update your solution, you can rebuild that project.
 From here you should be able to build using visual studio.
+
+# Contributing
+If you would like to contribute to this project please fork the repository, make a branch for your work and make a pull request when you are ready.
+The style guide for this project can be found here [Style Guide](https://github.com/yanniknelson/EsoProg/wiki/Style-Guide)
