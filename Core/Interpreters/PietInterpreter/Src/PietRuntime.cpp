@@ -231,7 +231,7 @@ void PietRuntime::RenderImageDisplay()
 
 		if (ImGui::Button("Run"))
 		{
-			Reset();
+			RequestReset();
 			m_bForceImage = true;
 			m_currentSourceType = SourceType::Image;
 			m_activeTokeniser = (TPietTokeniser*)&m_imageTokeniser;
@@ -261,7 +261,7 @@ void PietRuntime::RenderImageDisplay()
 			if (m_currentSourceType != SourceType::Image)
 			{
 				m_bForceImage = true;
-				Reset();
+				RequestReset();
 				m_currentSourceType = SourceType::Image;
 				m_activeTokeniser = (TPietTokeniser*)&m_imageTokeniser;
 			}

@@ -86,7 +86,7 @@ class EsoProg {
 	IRuntime* m_pRuntime{nullptr};
 	NullRuntime m_nullRuntime{ m_sync, m_outputStream, m_executionHistoryStream};
 	PietRuntime m_pietRuntime{ m_sync, m_outputStream, m_executionHistoryStream};
-	BrainFckRuntime m_brainFckRuntime{m_sync, m_outputStream, m_executionHistoryStream};
+	BrainFckRuntime m_brainFckRuntime{ m_sync, m_outputStream, m_executionHistoryStream};
 
 	ImGuiInputTextFlags m_codeEditorFlags = ImGuiInputTextFlags_CallbackCharFilter | ImGuiInputTextFlags_EnterReturnsTrue;
 	std::string m_code{ "" };
@@ -117,7 +117,7 @@ public:
 		io.Fonts->AddFontFromFileTTF("../Vendor/Font-Awesome/otfs/Font Awesome 7 Free-Solid-900.otf", 16.0f, &icons_config, icons_ranges);
 	}
 
-	void ResetImplementation();
+	void Reset();
 	bool UpdateRuntime();
 	void Render();
 	bool IsRuntimeWaitingOnInput();

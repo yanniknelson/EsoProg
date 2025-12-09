@@ -28,7 +28,7 @@ public:
 	{
 		m_codeStr = str;
 		m_rSync.resetCodeSource = true;
-		Reset();
+		RequestReset();
 	}
 
 	virtual bool StepExecution() override

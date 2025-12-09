@@ -40,7 +40,7 @@ public:
 
 	virtual bool StepExecution() = 0;
 
-	void Reset()
+	void RequestReset()
 	{
 		m_rSync.wantsReset = true;
 		// If we were waiting for input then we need to update the condition variable to re-enable execution
@@ -51,15 +51,13 @@ public:
 		}
 	}
 
-	void ResetOutput()
+	void Reset()
 	{
-		m_rOutputStream.str(std::string());
-		m_rExecutionHistoryStream.str(std::string());
+		ResetCodeStream();
+		ResetImplementation();
+		ResetOutput();
 	}
-
-	virtual void ResetImplementation() = 0;
-	virtual void ResetCodeStream() = 0;
-
+	
 	void InputChar(int val)
 	{
 		OnInput(val);
@@ -92,6 +90,15 @@ public:
 
 protected:
 	virtual void OnInput(int val) = 0;
+
+	void ResetOutput()
+	{
+		m_rOutputStream.str(std::string());
+		m_rExecutionHistoryStream.str(std::string());
+	}
+
+	virtual void ResetCodeStream() = 0;
+	virtual void ResetImplementation() = 0;
 
 	RuntimeSyncronisationStruct& m_rSync;
 

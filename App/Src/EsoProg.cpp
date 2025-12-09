@@ -184,7 +184,7 @@ void EsoProg::PreFileLoad(const std::filesystem::path path)
 	}
 	m_outputStream.str(std::string());
 	m_executionHistoryStream.str(std::string());
-	m_pRuntime->Reset();
+	m_pRuntime->RequestReset();
 }
 
 EsoProg::EFileType::Enum EsoProg::LoadFile(const std::filesystem::path path)
@@ -273,16 +273,14 @@ void EsoProg::SetCurrentLanugage(ELanguages::Enum language)
 		m_pRuntime = &m_nullRuntime;
 	}
 	}
-	m_pRuntime->Reset();
+	m_pRuntime->RequestReset();
 	FileDialogBox::Set_Allowed_Type(m_pRuntime->GetSupportedFileTypes());
 	glfwSetWindowTitle(i_pWindow, newName.c_str());
 }
 
-void EsoProg::ResetImplementation()
+void EsoProg::Reset()
 {
-	m_pRuntime->ResetCodeStream();
-	m_pRuntime->ResetImplementation();
-	m_pRuntime->ResetOutput();
+	m_pRuntime->Reset();
 }
 
 bool EsoProg::UpdateRuntime()
@@ -434,7 +432,7 @@ void EsoProg::Render()
 			ImGui::SameLine();
 			if (ImGui::Button("Reset"))
 			{
-				m_pRuntime->Reset();
+				m_pRuntime->RequestReset();
 			}
 		}
 	}

@@ -98,7 +98,7 @@ int main(int, char**)
                 {
                     if (rSync.wantsReset)
                     {
-                        pProgramInstance->ResetImplementation();
+                        pProgramInstance->Reset();
                         rSync.wantsReset = false;
                     }
 
