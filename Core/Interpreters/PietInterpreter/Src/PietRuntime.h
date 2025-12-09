@@ -65,7 +65,6 @@ public:
 		m_stack.Clear();
 		m_textTokeniser.SetTextStream(m_code);
 		m_imageTokeniser.Reset();
-		ResetOutput();
 	};
 
 	virtual void RenderWindows() override;

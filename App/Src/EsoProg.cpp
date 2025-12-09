@@ -282,6 +282,7 @@ void EsoProg::ResetImplementation()
 {
 	m_pRuntime->ResetCodeStream();
 	m_pRuntime->ResetImplementation();
+	m_pRuntime->ResetOutput();
 }
 
 bool EsoProg::UpdateRuntime()
@@ -289,6 +290,7 @@ bool EsoProg::UpdateRuntime()
 	if (m_bCodeChangedSinceLastStep)
 	{
 		m_pRuntime->SetSourceCode(m_code);
+		ResetImplementation();
 		m_bCodeChangedSinceLastStep = false;
 	}
 	return m_pRuntime->StepExecution();
@@ -399,6 +401,7 @@ void EsoProg::Render()
 
 		if (ImGui::Button("Run"))
 		{
+			m_pRuntime->Reset();
 			m_pRuntime->SetSourceCode(m_code);
 			m_sync.iterations = -1; // add a run speed
 		}

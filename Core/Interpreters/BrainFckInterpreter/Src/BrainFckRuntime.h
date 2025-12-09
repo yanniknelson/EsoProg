@@ -29,7 +29,7 @@ public:
 	virtual ELanguages::Enum GetRuntimeLanguage() const override { return ELanguages::Brainfck; }
 	virtual std::vector<std::string> GetSupportedFileTypes() const override { return { ".txt" }; }
 
-	void ResetImplementation()
+	virtual void ResetImplementation() override
 	{
 		m_array.Clear();
 	}
