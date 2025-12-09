@@ -288,7 +288,6 @@ bool EsoProg::UpdateRuntime()
 	if (m_bCodeChangedSinceLastStep)
 	{
 		m_pRuntime->SetSourceCode(m_code);
-		ResetImplementation();
 		m_bCodeChangedSinceLastStep = false;
 	}
 	return m_pRuntime->StepExecution();

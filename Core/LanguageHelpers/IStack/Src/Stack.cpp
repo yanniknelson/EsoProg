@@ -32,7 +32,6 @@ int Stack::Pop()
 
 void Stack::Roll(int depth, int rotations)
 {
-
 	int size = GetSize();
 	depth = (size < depth) ? size : depth;
 	rotations %= depth;
