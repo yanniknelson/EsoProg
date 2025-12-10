@@ -53,26 +53,27 @@ std::string CPrettyPrinter::FormatBrainFck(const std::string& code)
     {
         char current = code[i];
         
+        // Handle indentation changes for ']' before the character
         if (current == ']' && indentLevel > 0)
         {
             --indentLevel;
+            newLinePending = true;
         }
         
+        // Add newline and indentation if needed
         if (newLinePending)
         {
             output << '\n';
-            if (current != ']')
+            for (int j = 0; j < indentLevel; ++j)
             {
-                for (int j = 0; j < indentLevel; ++j)
-                {
-                    output << INDENT;
-                }
+                output << INDENT;
             }
             newLinePending = false;
         }
         
         output << current;
         
+        // Handle indentation for '[' and newline changes
         if (current == '[')
         {
             ++indentLevel;
