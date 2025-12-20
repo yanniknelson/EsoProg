@@ -3,7 +3,7 @@
 #include "EsoProg.h"
 
 #include <ELanguages.h>                 // for ELanguages::Enum
-#include <FileDialogBox.h>              // for FileDialogBox
+#include <FileDialogBox.h>              // for CFileDialogBox
 #include <ImGuiSetStyles.h>             // for SetImGuiDarkStyle, SetImGuiLightStyle
 #include <ImGuiValueChangeCallbacks.h>  // for TextInputCallback, ValueInputChanged
 #include <PietRuntime.h>                // for PietRuntime
@@ -30,7 +30,7 @@ CEsoProg::CEsoProg(GLFWwindow* pWindow)
 {
     s_pWindow = pWindow;
     //setup the current directory as the initial path in the file dialog box
-    FileDialogBox::Init_Path(fs::current_path());
+    CFileDialogBox::Init_Path(fs::current_path());
     //SetCurrentLanugage(ELanguages::Piet);
 
     glGenTextures(1, &m_texture);
@@ -62,17 +62,17 @@ void CEsoProg::Render()
         //set the nobring to front on focus flag for all other elements to ensure
         //the file dialog is always on top
         m_fileDialogOnTop = ImGuiWindowFlags_NoBringToFrontOnFocus;
-        FileDialogBox::FileDialogReturn ret = FileDialogBox::Create_File_Dialog(m_bEnableFileDialog, m_dialogType);
+        CFileDialogBox::SFileDialogReturn ret = CFileDialogBox::Create_File_Dialog(m_bEnableFileDialog, m_dialogType);
         if (ret.selected)
         {
             switch (m_dialogType)
             {
-            case FileDialogBox::Open:
+            case CFileDialogBox::Open:
             {
                 const EFileType::Enum fileType = LoadFile(ret.path);
                 break;
             }
-            case FileDialogBox::Save_As:
+            case CFileDialogBox::Save_As:
             {
                 m_fileStream.open(ret.path.string(), m_fileStream.out);
                 m_fileStream << m_code;
@@ -335,7 +335,7 @@ void CEsoProg::SetCurrentLanugage(ELanguages::Enum language)
     }
     }
     m_pRuntime->RequestReset();
-    FileDialogBox::Set_Allowed_Type(m_pRuntime->GetSupportedFileTypes());
+    CFileDialogBox::Set_Allowed_Type(m_pRuntime->GetSupportedFileTypes());
     glfwSetWindowTitle(s_pWindow, newName.c_str());
 }
 
@@ -396,7 +396,7 @@ void CEsoProg::HandleNew()
 void CEsoProg::HandleOpen()
 {
     m_bEnableFileDialog = true;
-    m_dialogType = FileDialogBox::FileDialogType::Open;
+    m_dialogType = CFileDialogBox::FileDialogType::Open;
 }
 
 //////////////////////////////////////////////////////////////
@@ -419,7 +419,7 @@ void CEsoProg::HandleSave()
 void CEsoProg::HandelSaveAs()
 {
     m_bEnableFileDialog = true;
-    m_dialogType = FileDialogBox::FileDialogType::Save_As;
+    m_dialogType = CFileDialogBox::FileDialogType::Save_As;
 }
 
 //////////////////////////////////////////////////////////////

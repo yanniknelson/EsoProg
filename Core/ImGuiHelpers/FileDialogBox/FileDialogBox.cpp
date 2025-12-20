@@ -6,16 +6,37 @@
 
 #include <algorithm>            // for std::find
 #include <filesystem>           // for std::filesystem::path
+#include <iostream>
 #include <string>
 #include <vector>
 
-const char* FileDialogBox::DialogBoxTypes[] = { "Open", "Save As" };
-fs::path FileDialogBox::currentPath = fs::path();
-fs::path FileDialogBox::selectedFilePath = fs::path();
-std::string FileDialogBox::currentFileName = "";
-std::vector<std::string> FileDialogBox::allowed_types = {};
+const char* CFileDialogBox::DialogBoxTypes[] = { "Open", "Save As" };
+fs::path CFileDialogBox::currentPath = fs::path();
+fs::path CFileDialogBox::selectedFilePath = fs::path();
+std::string CFileDialogBox::currentFileName = "";
+std::vector<std::string> CFileDialogBox::allowed_types = {};
 
-FileDialogBox::FileDialogReturn FileDialogBox::Create_File_Dialog(bool& open, FileDialogBox::FileDialogType type)
+//////////////////////////////////////////////////////////////
+void CFileDialogBox::Init_Path(fs::path p)
+{
+    currentPath = p;
+    std::cout << currentPath.string() << "\n";
+}
+
+//////////////////////////////////////////////////////////////
+void CFileDialogBox::Set_Allowed_Type(std::vector<std::string> types)
+{
+    allowed_types = types;
+}
+
+//////////////////////////////////////////////////////////////
+void CFileDialogBox::Add_Allowed_Type(std::string type)
+{
+    allowed_types.push_back(type);
+}
+
+//////////////////////////////////////////////////////////////
+CFileDialogBox::SFileDialogReturn CFileDialogBox::Create_File_Dialog(bool& open, CFileDialogBox::FileDialogType type)
 {
     bool submitted = false;
     ImGui::Begin("File Explorer", &open, ImGuiWindowFlags_NoCollapse); //| ImGuiWindowFlags_NoDocking);

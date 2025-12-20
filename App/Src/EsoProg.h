@@ -2,7 +2,7 @@
 
 #include <BrainFckRuntime.h>    // for BrainFckRuntime
 #include <ELanguages.h>         // for ELanguages::Enum
-#include <FileDialogBox.h>      // for FileDialogBox::FileDialogType, FileDialogBox::Init_Path
+#include <FileDialogBox.h>      // for CFileDialogBox::FileDialogType, CFileDialogBox::Init_Path
 #include <IRuntime.h>           // for IRuntime
 #include <NullRuntime.h>        // for NullRuntime
 #include <PietRuntime.h>        // for PietRuntime
@@ -66,7 +66,7 @@ private:
 
     //file dialog box flags
     bool m_bEnableFileDialog = false;
-    FileDialogBox::FileDialogType m_dialogType = FileDialogBox::FileDialogType::Open;
+    CFileDialogBox::FileDialogType m_dialogType = CFileDialogBox::FileDialogType::Open;
     ImGuiWindowFlags_ m_fileDialogOnTop = ImGuiWindowFlags_None;
     std::fstream m_fileStream;
 

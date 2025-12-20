@@ -1,42 +1,25 @@
 #pragma once
 
 #include <filesystem>  // for std::filesystem::path
-#include <iostream>
 #include <string>
 #include <vector>
 
 namespace fs = std::filesystem;
 
-class FileDialogBox
+//////////////////////////////////////////////////////////////
+class CFileDialogBox
 {
-
-    static fs::path currentPath;
-    static fs::path selectedFilePath;
-    static std::string currentFileName;
-    static std::vector<std::string> allowed_types;
-
   public:
-    struct FileDialogReturn
+    //////////////////////////////////////////////////////////////
+    struct SFileDialogReturn
     {
         bool selected = false;
         fs::path path;
     };
 
-    static void Init_Path(fs::path p)
-    {
-        currentPath = p;
-        std::cout << currentPath.string() << "\n";
-    }
-
-    static void Set_Allowed_Type(std::vector<std::string> types)
-    {
-        allowed_types = types;
-    }
-
-    static void Add_Allowed_Type(std::string type)
-    {
-        allowed_types.push_back(type);
-    }
+    static void Init_Path(fs::path p);
+    static void Set_Allowed_Type(std::vector<std::string> types);
+    static void Add_Allowed_Type(std::string type);
 
     enum FileDialogType
     {
@@ -45,7 +28,12 @@ class FileDialogBox
         Num_of_Types
     };
 
-    static const char* DialogBoxTypes[];
+    static SFileDialogReturn Create_File_Dialog(bool& open, FileDialogType type);
 
-    static FileDialogReturn Create_File_Dialog(bool& open, FileDialogType type);
+  private:
+    static const char* DialogBoxTypes[];
+    static fs::path currentPath;
+    static fs::path selectedFilePath;
+    static std::string currentFileName;
+    static std::vector<std::string> allowed_types;
 };
