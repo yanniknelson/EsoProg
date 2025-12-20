@@ -7,29 +7,35 @@
 
 #include <CRuntime.h>
 
-
 class NullRuntime : public IRuntime
 {
-public:
-	NullRuntime(RuntimeSyncronisationStruct& rSync, std::ostringstream& rOutputStream, std::ostringstream& rExecutionhistoryStream) : IRuntime(rSync, rOutputStream, rExecutionhistoryStream) {};
+  public:
+    NullRuntime(RuntimeSyncronisationStruct& rSync, std::ostringstream& rOutputStream, std::ostringstream& rExecutionhistoryStream) : IRuntime(rSync, rOutputStream, rExecutionhistoryStream) {};
 
-	virtual ELanguages::Enum GetRuntimeLanguage() const override { return ELanguages::COUNT; }
-	virtual std::vector<std::string> GetSupportedFileTypes() const override { return {}; }
+    virtual ELanguages::Enum GetRuntimeLanguage() const override
+    {
+        return ELanguages::COUNT;
+    }
+    virtual std::vector<std::string> GetSupportedFileTypes() const override
+    {
+        return {};
+    }
 
-	virtual void SetSourceCode(std::string str) {};
+    virtual void SetSourceCode(std::string str) {};
 
-	virtual bool StepExecution() { return false;  };
+    virtual bool StepExecution()
+    {
+        return false;
+    };
 
-	virtual void ResetImplementation() override {};
-	virtual void ResetCodeStream() override {};
+    virtual void ResetImplementation() override {};
+    virtual void ResetCodeStream() override {};
 
-	virtual void RenderWindows() override {};
-	virtual void CacheState() override {};
+    virtual void RenderWindows() override {};
+    virtual void CacheState() override {};
 
-private:
-	void RenderImageDisplay(RuntimeSyncronisationStruct& rSync);
+  private:
+    void RenderImageDisplay(RuntimeSyncronisationStruct& rSync);
 
-	virtual void OnInput(int val) override {};
-
-	
+    virtual void OnInput(int val) override {};
 };

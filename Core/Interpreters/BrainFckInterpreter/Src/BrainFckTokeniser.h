@@ -3,26 +3,23 @@
 #include "BrainFckToken.h"
 
 #include <ITextTokeniser.h>
-#include <strstream>
 #include <iostream>
-
+#include <strstream>
 
 class BrainFckTokeniser : public ITextTokeniser<BrainFckToken>
 {
-public:
+  public:
+    BrainFckTokeniser() {};
+    virtual void ResetImplementation() override {};
 
-	BrainFckTokeniser() {};
-	virtual void ResetImplementation() override {};
+  private:
+    /// <summary>
+    /// Convert from char to TokenType enum
+    /// </summary>
+    /// <param name="chr - "> char to be converted </param>
+    /// <returns> TokenType enum corresponding to input char </returns>
+    inline BrainFckToken::TokenType::Enum CharToToken(const char chr) const;
 
-private:
-
-	/// <summary>
-	/// Convert from char to TokenType enum
-	/// </summary>
-	/// <param name="chr - "> char to be converted </param>
-	/// <returns> TokenType enum corresponding to input char </returns>
-	inline BrainFckToken::TokenType::Enum CharToToken(const char chr) const;
-
-	BrainFckToken GetNextToken();
-	virtual BrainFckToken Pop_Internal() override;
+    BrainFckToken GetNextToken();
+    virtual BrainFckToken Pop_Internal() override;
 };

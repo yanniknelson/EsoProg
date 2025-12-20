@@ -2,28 +2,28 @@
 
 #include "ITokeniser.h"
 
-#include <strstream>
 #include <iostream>
+#include <strstream>
 
-template<typename TokenClass>
+template <typename TokenClass>
 class ITextTokeniser : public ITokeniser<TokenClass>
 {
-public:
-	ITextTokeniser() {};
+  public:
+    ITextTokeniser() {};
 
-	void SetTextStream(std::stringstream& m_code)
-	{
-		m_pStrStream = &m_code;
-		ITokeniser<TokenClass>::Reset();
-		m_lineNumber = 1;
-	}
+    void SetTextStream(std::stringstream& m_code)
+    {
+        m_pStrStream = &m_code;
+        ITokeniser<TokenClass>::Reset();
+        m_lineNumber = 1;
+    }
 
-	int GetLineNumber()
-	{
-		return m_lineNumber;
-	}
+    int GetLineNumber()
+    {
+        return m_lineNumber;
+    }
 
-protected:
-	std::stringstream* m_pStrStream{ nullptr };
-	int m_lineNumber = 1;
+  protected:
+    std::stringstream* m_pStrStream{ nullptr };
+    int m_lineNumber = 1;
 };

@@ -11,9 +11,9 @@
 #include <imgui_impl_opengl3.h>
 
 //Other imports
-#include <stdio.h>
 #include <iostream>
-#include <thread>
 #include <mutex>
+#include <stdio.h>
+#include <thread>
 
 #define SHOWCONSOLE 0

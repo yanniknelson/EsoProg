@@ -1,11 +1,11 @@
 #pragma once
 
-#include <cstdint>
 #include <SmartEnums.h>
+#include <cstdint>
 
-#define ELANGUAGES(x)\
-    x(Piet)\
-    x(Brainfck)\
+#define ELANGUAGES(x) \
+    x(Piet)           \
+        x(Brainfck)
 
 CreateSmartEnum(ELanguages, ELANGUAGES);
 
