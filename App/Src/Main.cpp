@@ -63,19 +63,19 @@ int main(int, char**)
 
     // Create window with graphics context
     float main_scale = ImGui_ImplGlfw_GetContentScaleForMonitor(glfwGetPrimaryMonitor()); // Valid on GLFW 3.3+ only
-    GLFWwindow* window = glfwCreateWindow((int)(1280 * main_scale), (int)(800 * main_scale), CEsoProg::s_ProgramName, nullptr, nullptr);
-    if (window == nullptr)
+    GLFWwindow* pWindow = glfwCreateWindow((int)(1280 * main_scale), (int)(800 * main_scale), CEsoProg::s_programName, nullptr, nullptr);
+    if (pWindow == nullptr)
         return 1;
-    glfwMakeContextCurrent(window);
+    glfwMakeContextCurrent(pWindow);
     glfwSwapInterval(1); // Enable vsync
 
     // Setup Dear ImGui context
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
-    ImGuiIO& io = ImGui::GetIO();
-    (void)io;
-    io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard; // Enable Keyboard Controls
-    io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;  // Enable Gamepad Controls
+    ImGuiIO& rIO = ImGui::GetIO();
+    (void)rIO;
+    rIO.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard; // Enable Keyboard Controls
+    rIO.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;  // Enable Gamepad Controls
 
     // Setup Dear ImGui style
     ImGui::StyleColorsDark();
@@ -84,10 +84,10 @@ int main(int, char**)
     // Setup scaling
     ImGuiStyle& style = ImGui::GetStyle();
     style.ScaleAllSizes(main_scale); // Bake a fixed style scale. (until we have a solution for dynamic style scaling, changing this requires resetting Style + calling this again)
-    style.FontScaleDpi = main_scale; // Set initial font scale. (using io.ConfigDpiScaleFonts=true makes this unnecessary. We leave both here for documentation purpose)
+    style.FontScaleDpi = main_scale; // Set initial font scale. (using rIO.ConfigDpiScaleFonts=true makes this unnecessary. We leave both here for documentation purpose)
 
     // Setup Platform/Renderer backends
-    ImGui_ImplGlfw_InitForOpenGL(window, true);
+    ImGui_ImplGlfw_InitForOpenGL(pWindow, true);
     ImGui_ImplOpenGL3_Init(glsl_version);
 
     ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
@@ -95,8 +95,8 @@ int main(int, char**)
     SetImGuiShapingStyle();
     SetImGuiDarkStyle();
 
-    CEsoProg* pProgramInstance = new CEsoProg(window);
-    pProgramInstance->s_ProgramName;
+    CEsoProg* pProgramInstance = new CEsoProg(pWindow);
+    pProgramInstance->s_programName;
 
     std::thread runtimeWorker([&]()
         {
@@ -160,13 +160,13 @@ int main(int, char**)
         });
 
     // Main loop
-    while (!glfwWindowShouldClose(window))
+    while (!glfwWindowShouldClose(pWindow))
     {
         pProgramInstance->CopyState();
         // Poll and handle events (inputs, window resize, etc.)
-        // You can read the io.WantCaptureMouse, io.WantCaptureKeyboard flags to tell if dear imgui wants to use your inputs.
-        // - When io.WantCaptureMouse is true, do not dispatch mouse input data to your main application, or clear/overwrite your copy of the mouse data.
-        // - When io.WantCaptureKeyboard is true, do not dispatch keyboard input data to your main application, or clear/overwrite your copy of the keyboard data.
+        // You can read the rIO.WantCaptureMouse, rIO.WantCaptureKeyboard flags to tell if dear imgui wants to use your inputs.
+        // - When rIO.WantCaptureMouse is true, do not dispatch mouse input data to your main application, or clear/overwrite your copy of the mouse data.
+        // - When rIO.WantCaptureKeyboard is true, do not dispatch keyboard input data to your main application, or clear/overwrite your copy of the keyboard data.
         // Generally you may always pass all inputs to dear imgui, and hide them from your application based on those two flags.
         glfwPollEvents();
 
@@ -180,7 +180,7 @@ int main(int, char**)
         // Rendering
         ImGui::Render();
         int display_w, display_h;
-        glfwGetFramebufferSize(window, &display_w, &display_h);
+        glfwGetFramebufferSize(pWindow, &display_w, &display_h);
         glViewport(0, 0, display_w, display_h);
         glClearColor(clear_color.x * clear_color.w, clear_color.y * clear_color.w, clear_color.z * clear_color.w, clear_color.w);
         glClear(GL_COLOR_BUFFER_BIT);
@@ -189,7 +189,7 @@ int main(int, char**)
         // Update and Render additional Platform Windows
         // (Platform functions may change the current OpenGL context, so we save/restore it to make it easier to paste this code elsewhere.
         //  For this specific demo app we could also call glfwMakeContextCurrent(window) directly)
-        if (io.ConfigFlags) //& ImGuiConfigFlags_ViewportsEnable)
+        if (rIO.ConfigFlags) //& ImGuiConfigFlags_ViewportsEnable)
         {
             GLFWwindow* backup_current_context = glfwGetCurrentContext();
             //ImGui::UpdatePlatformWindows();
@@ -197,7 +197,7 @@ int main(int, char**)
             glfwMakeContextCurrent(backup_current_context);
         }
 
-        glfwSwapBuffers(window);
+        glfwSwapBuffers(pWindow);
     }
     pProgramInstance->m_sync.iterations = 0;
     pProgramInstance->m_sync.exit = true;
@@ -216,7 +216,7 @@ int main(int, char**)
     ImGui_ImplGlfw_Shutdown();
     ImGui::DestroyContext();
 
-    glfwDestroyWindow(window);
+    glfwDestroyWindow(pWindow);
     glfwTerminate();
 
     return 0;

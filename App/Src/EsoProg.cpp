@@ -22,7 +22,7 @@
 #include <iostream>
 #include <string>
 
-const char* CEsoProg::s_ProgramName = "EsoProg";
+const char* CEsoProg::s_programName = "EsoProg";
 GLFWwindow* CEsoProg::s_pWindow = nullptr;
 
 //////////////////////////////////////////////////////////////
@@ -38,13 +38,13 @@ CEsoProg::CEsoProg(GLFWwindow* pWindow)
     m_pRuntime = &m_nullRuntime;
 
     //Merge font awesome into the default font
-    ImGuiIO io = ImGui::GetIO();
-    io.Fonts->AddFontDefault();
+    ImGuiIO rIO = ImGui::GetIO();
+    rIO.Fonts->AddFontDefault();
     static const ImWchar icons_ranges[] = { ICON_MIN_FA, ICON_MAX_16_FA, 0 };
     ImFontConfig icons_config;
     icons_config.MergeMode = true;
     icons_config.PixelSnapH = true;
-    io.Fonts->AddFontFromFileTTF("../Vendor/Font-Awesome/otfs/Font Awesome 7 Free-Solid-900.otf", 16.0f, &icons_config, icons_ranges);
+    rIO.Fonts->AddFontFromFileTTF("../Vendor/Font-Awesome/otfs/Font Awesome 7 Free-Solid-900.otf", 16.0f, &icons_config, icons_ranges);
 }
 
 //////////////////////////////////////////////////////////////
@@ -313,7 +313,7 @@ void CEsoProg::CreateMenuBar()
 //////////////////////////////////////////////////////////////
 void CEsoProg::SetCurrentLanugage(ELanguages::Enum language)
 {
-    std::string newName = s_ProgramName;
+    std::string newName = s_programName;
     m_currentLanguage = language;
     switch (m_currentLanguage)
     {
@@ -342,9 +342,9 @@ void CEsoProg::SetCurrentLanugage(ELanguages::Enum language)
 //////////////////////////////////////////////////////////////
 void CEsoProg::CheckShortCuts()
 {
-    const ImGuiIO& io = ImGui::GetIO();
+    const ImGuiIO& rIo = ImGui::GetIO();
     //if a shortcut has just been used and either ctrl or the alpha key is up then enable the triggering of a new shortcut
-    if (m_bShortcutUsed && (!io.KeyCtrl || !io.KeysData[m_lastShortcutUsed].Down))
+    if (m_bShortcutUsed && (!rIo.KeyCtrl || !rIo.KeysData[m_lastShortcutUsed].Down))
     {
         m_bShortcutUsed = false;
     }
@@ -356,27 +356,27 @@ void CEsoProg::CheckShortCuts()
     }
 
     //check the combo for a shortcut, disable new shortcuts, store the used alpha key and handle the shortcut
-    if (io.KeyCtrl)
+    if (rIo.KeyCtrl)
     {
-        if (io.KeysData[ImGuiKey_N].Down)
+        if (rIo.KeysData[ImGuiKey_N].Down)
         {
             m_bShortcutUsed = true;
             m_lastShortcutUsed = ImGuiKey_N;
             HandleNew();
         }
-        else if (io.KeysData[ImGuiKey_O].Down)
+        else if (rIo.KeysData[ImGuiKey_O].Down)
         {
             m_bShortcutUsed = true;
             m_lastShortcutUsed = ImGuiKey_O;
             HandleOpen();
         }
-        else if (io.KeyShift && io.KeysData[ImGuiKey_S].Down)
+        else if (rIo.KeyShift && rIo.KeysData[ImGuiKey_S].Down)
         {
             m_bShortcutUsed = true;
             m_lastShortcutUsed = ImGuiKey_S;
             HandelSaveAs();
         }
-        else if (io.KeysData[ImGuiKey_S].Down)
+        else if (rIo.KeysData[ImGuiKey_S].Down)
         {
             m_bShortcutUsed = true;
             m_lastShortcutUsed = ImGuiKey_S;
@@ -437,7 +437,7 @@ void CEsoProg::PreFileLoad(const std::filesystem::path path)
                 static_cast<PietRuntime*>(m_pRuntime)->UnsetImage();
                 if (m_bImageLoaded)
                 {
-                    stbi_image_free(m_imageData);
+                    stbi_image_free(m_pImageData);
                     m_bImageLoaded = false;
                 }
             }
@@ -483,11 +483,11 @@ CEsoProg::EFileType::Enum CEsoProg::LoadFile(const std::filesystem::path path)
 
             if (m_bImageLoaded)
             {
-                stbi_image_free(m_imageData);
+                stbi_image_free(m_pImageData);
             }
 
-            m_imageData = stbi_load(path.string().c_str(), &m_imageWidth, &m_imageHeight, &m_NumComponents, 4);
-            if (m_imageData)
+            m_pImageData = stbi_load(path.string().c_str(), &m_imageWidth, &m_imageHeight, &m_numComponents, 4);
+            if (m_pImageData)
             {
                 glBindTexture(GL_TEXTURE_2D, m_texture);
                 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
@@ -498,14 +498,14 @@ CEsoProg::EFileType::Enum CEsoProg::LoadFile(const std::filesystem::path path)
 #if defined(GL_UNPACK_ROW_LENGTH) && !defined(__EMSCRIPTEN__)
                 glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);
 #endif
-                glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, m_imageWidth, m_imageHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, m_imageData);
+                glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, m_imageWidth, m_imageHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, m_pImageData);
                 //glGenerateMipmap(GL_TEXTURE_2D);
                 m_bImageLoaded = true;
             }
             m_sync.renderWantsState = true;
             m_sync.runtimeStateMtx.lock();
 
-            static_cast<PietRuntime*>(m_pRuntime)->SetImage(&m_texture, m_imageData, m_imageWidth, m_imageHeight);
+            static_cast<PietRuntime*>(m_pRuntime)->SetImage(&m_texture, m_pImageData, m_imageWidth, m_imageHeight);
             m_sync.renderWantsState = false;
             m_sync.runtimeStateMtx.unlock();
             m_sync.finishedStateWithCv.notify_one();

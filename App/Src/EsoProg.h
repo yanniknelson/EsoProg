@@ -21,7 +21,7 @@
 class CEsoProg
 {
 public:
-    static const char* s_ProgramName;
+    static const char* s_programName;
     static GLFWwindow* s_pWindow;
 
     RuntimeSyncronisationStruct m_sync;
@@ -79,10 +79,10 @@ private:
     fs::path m_currentFilePath = "";
 
     //Image
-    unsigned char* m_imageData{ nullptr };
+    unsigned char* m_pImageData{ nullptr };
     int m_imageWidth = 0;
     int m_imageHeight = 0;
-    int m_NumComponents = 0;
+    int m_numComponents = 0;
     bool m_bImageLoaded = false;
     float m_aspectRatio = 1.f;
 
