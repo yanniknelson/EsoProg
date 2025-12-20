@@ -5,84 +5,83 @@
 #include <iostream>
 #include <sstream>
 
+#include <string>
+#include <mutex>
 #include <atomic>
 #include <condition_variable>
-#include <mutex>
-#include <string>
 
 struct RuntimeSyncronisationStruct
 {
-    std::atomic<int> iterations = 0;
-    std::atomic<int> instructionWaitTime = 0;
-    std::atomic<bool> exit = false;
-    std::atomic<bool> renderWantsState = false;
-    std::condition_variable finishedStateWithCv;
-    std::mutex finishedWithStateMtx;
-    std::mutex runtimeStateMtx;
+	std::atomic<int> iterations = 0;
+	std::atomic<int> instructionWaitTime = 0;
+	std::atomic<bool> exit = false;
+	std::atomic<bool> renderWantsState = false;
+	std::condition_variable finishedStateWithCv;
+	std::mutex finishedWithStateMtx;
+	std::mutex runtimeStateMtx;
 
-    std::condition_variable waitingOnInputCV;
-    std::mutex waitingOnInputMtx;
+	std::condition_variable waitingOnInputCV;
+	std::mutex waitingOnInputMtx;
 };
 
 class IRuntime
 {
-  public:
-    IRuntime(std::ostringstream& rOutputStream, std::ostringstream& rExecutionhistoryStream) : m_rOutputStream(rOutputStream), m_rExecutionHistoryStream(rExecutionhistoryStream)
-    {
-    }
+public:
 
-    virtual ELanguages::Enum GetRuntimeLanguage() const = 0;
-    virtual std::vector<std::string> GetSupportedFileTypes() const = 0;
+	IRuntime(std::ostringstream& rOutputStream, std::ostringstream& rExecutionhistoryStream) : m_rOutputStream(rOutputStream), m_rExecutionHistoryStream(rExecutionhistoryStream) {}
 
-    virtual void SetSourceCode(std::string str) = 0;
+	virtual ELanguages::Enum GetRuntimeLanguage() const = 0;
+	virtual std::vector<std::string> GetSupportedFileTypes() const = 0;
 
-    virtual bool StepExecution() = 0;
+	virtual void SetSourceCode(std::string str) = 0;
 
-    void Reset()
-    {
-        m_rOutputStream.str(std::string());
-        m_rExecutionHistoryStream.str(std::string());
-        ResetTokenisers();
-    }
+	virtual bool StepExecution() = 0;
 
-    void InputChar(int val)
-    {
-        OnInput(val);
-        m_waitingForCharInput = false;
-    }
+	void Reset()
+	{
+		m_rOutputStream.str(std::string());
+		m_rExecutionHistoryStream.str(std::string());
+		ResetTokenisers();
+	}
 
-    void InputVal(int val)
-    {
-        OnInput(val);
-        m_waitingForValInput = false;
-    }
+	void InputChar(int val)
+	{
+		OnInput(val);
+		m_waitingForCharInput = false;
+	}
 
-    bool IsRunning() const
-    {
-        return m_bIsRunning;
-    }
+	void InputVal(int val)
+	{
+		OnInput(val);
+		m_waitingForValInput = false;
+	}
 
-    bool IsWaitingForValInput() const
-    {
-        return m_waitingForValInput;
-    }
+	bool IsRunning() const
+	{
+		return m_bIsRunning;
+	}
 
-    bool IsWaitingForCharInput() const
-    {
-        return m_waitingForCharInput;
-    }
+	bool IsWaitingForValInput() const
+	{
+		return m_waitingForValInput;
+	}
 
-    virtual void RenderWindows(RuntimeSyncronisationStruct& rSync) = 0;
-    virtual void CacheState() = 0;
+	bool IsWaitingForCharInput() const
+	{
+		return m_waitingForCharInput;
+	}
 
-  protected:
-    virtual void OnInput(int val) = 0;
-    virtual void ResetTokenisers() = 0;
+	virtual void RenderWindows(RuntimeSyncronisationStruct& rSync) = 0;
+	virtual void CacheState() = 0;
 
-    std::ostringstream& m_rOutputStream;
-    std::ostringstream& m_rExecutionHistoryStream;
+protected:
+	virtual void OnInput(int val) = 0;
+	virtual void ResetTokenisers() = 0;
 
-    bool m_waitingForCharInput = false;
-    bool m_waitingForValInput = false;
-    bool m_bIsRunning = false;
+	std::ostringstream& m_rOutputStream;
+	std::ostringstream& m_rExecutionHistoryStream;
+
+	bool m_waitingForCharInput = false;
+	bool m_waitingForValInput = false;
+	bool m_bIsRunning = false;
 };

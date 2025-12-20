@@ -1,9 +1,9 @@
 #pragma once
 
-#include <SmartEnums.h>
 #include <cstdint>
+#include <SmartEnums.h>
 
-#define ELANGUAGES(x) \
+#define ELANGUAGES(x)\
     x(Piet)
 
 CreateSmartEnum(ELanguages, ELANGUAGES);

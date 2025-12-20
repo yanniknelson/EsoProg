@@ -4,10 +4,10 @@
 
 class IToken
 {
-  public:
-    friend std::ostream& operator<<(std::ostream& os, const IToken& tk)
-    {
-        os << "Unimplemented";
-        return os;
-    }
+public:
+	friend std::ostream& operator<<(std::ostream& os, const IToken& tk)
+	{
+		os << "Unimplemented";
+		return os;
+	}
 };
