@@ -4,14 +4,23 @@
 #define STB_IMAGE_IMPLEMENTATION
 
 #include <ELanguages.h>
+#include <FileDialogBox.h>
 #include <IRuntime.h>
 #include <ImGuiSetStyles.h>
 #include <ImGuiValueChangeCallbacks.h>
 #include <PietRuntime.h>
 
+#include <GLFW/glfw3.h>
+#include <IconsFontAwesome7.h>
+#include <gl/GL.h>
+#include <imgui.h>
 #include <imgui_stdlib.h>
 #include <stb_image.h>
 
+#include <cfloat>
+#include <filesystem>
+#include <fstream>
+#include <iostream>
 #include <sstream>
 #include <string>
 
