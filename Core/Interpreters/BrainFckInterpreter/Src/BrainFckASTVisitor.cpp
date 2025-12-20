@@ -1,11 +1,10 @@
 #include "BrainFckASTVisitor.h"
 
-#include "BrainFckAST.h"
+#include "BrainFckAST.h"  // for TBrainFckOperationPtr, BrainFckOperationTypes
 
-#include <cstdint>
+#include <cstdint>        // for uint8_t
 #include <iostream>
 #include <memory>
-#include <ostream>
 
 void BrainFckPrintingVisitor::Traverse(TProgramPtr pProgram)
 {

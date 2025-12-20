@@ -1,18 +1,18 @@
 #pragma once
 
-#include "BrainFckAST.h"
-#include "BrainFckAstVisitor.h"
-#include "BrainFckParser.h"
-#include "BrainFckTokeniser.h"
+#include "BrainFckAST.h"         // for BrainFckProgram
+#include "BrainFckAstVisitor.h"  // for BrainFckRuntimeVisitor
+#include "BrainFckParser.h"      // for BrainFckParser
+#include "BrainFckTokeniser.h"   // for BrainFckTokeniser
 
-#include <CRuntime.h>
-#include <ELanguages.h>
-#include <IMemoryArray.h>
-#include <IRuntime.h>
+#include <CRuntime.h>            // for CRuntime
+#include <ELanguages.h>          // for ELanguages::Enum
+#include <IMemoryArray.h>        // for IMemoryArray
+#include <IRuntime.h>            // for RuntimeSyncronisationStruct
 
-#include <cstdint>
+#include <cstdint>               // for uint8_t
 #include <memory>
-#include <sstream>
+#include <sstream>               // for std::ostringstream
 #include <string>
 #include <vector>
 

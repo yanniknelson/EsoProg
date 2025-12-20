@@ -1,9 +1,9 @@
 #pragma once
 
-#include <BrainFckAST.h>
-#include <IASTVisitor.h>
+#include <BrainFckAST.h>  // for BrainFckOperationTypes, BrainFckProgram, TBrainFckOperationPtr, Loop
+#include <IASTVisitor.h>  // for IASTVisitor
 
-#include <cstdint>
+#include <cstdint>        // for uint8_t
 #include <memory>
 
 class BrainFckPrintingVisitor : public IASTVisitor<BrainFckProgram>

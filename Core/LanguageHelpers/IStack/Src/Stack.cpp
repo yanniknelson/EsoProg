@@ -1,6 +1,6 @@
 #include "Stack.h"
 
-#include <imgui.h>
+#include <imgui.h>  // for ImGui structs and functions
 
 #include <string>
 #include <vector>

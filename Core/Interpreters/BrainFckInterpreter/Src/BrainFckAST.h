@@ -1,7 +1,7 @@
 #pragma once
 
-#include <IAST.h>
-#include <SmartEnums.h>
+#include <IAST.h>        // for IOperation, IProgram, IRegion
+#include <SmartEnums.h>  // for CreateSmartEnums
 
 #include <memory>
 

@@ -1,9 +1,8 @@
 #include "BrainFckTokeniser.h"
 
-#include "BrainFckToken.h"
+#include "BrainFckToken.h"  // for BrainFckToken
 
-#include <cctype>
-#include <sstream>
+#include <cctype>           // for isspace
 #include <string>
 
 BrainFckToken BrainFckTokeniser::Pop_Internal()

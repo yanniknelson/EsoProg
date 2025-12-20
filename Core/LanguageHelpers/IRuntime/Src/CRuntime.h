@@ -1,14 +1,15 @@
 #pragma once
 
-#include "IRuntime.h"
+#include "IRuntime.h"    // for IRuntime, RuntimeSyncronisationStruct
 
-#include <ELanguages.h>
+#include <ELanguages.h>  // for ELanguages::Enum
 
 #include <iostream>
-#include <sstream>
+#include <sstream>       // for std::ostringstream
 
 #include <atomic>
 #include <string>
+#include <vector>
 
 template<typename TokenClass>
 class CRuntime : public IRuntime

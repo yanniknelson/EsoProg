@@ -1,10 +1,10 @@
 #pragma once
 
-#include "BrainFckAST.h"
-#include "BrainFckToken.h"
+#include "BrainFckAST.h"    // for BrainFckOperationTypes, TBrainFckOperationPtr, TBrainFckRegionPtr
+#include "BrainFckToken.h"  // for BrainFckToken
 
-#include <IParser.h>
-#include <ITokeniser.h>
+#include <IParser.h>        // for IParser
+#include <ITokeniser.h>     // for ITokeniser
 
 class BrainFckParser : public IParser<BrainFckToken, BrainFckOperationTypes>
 {

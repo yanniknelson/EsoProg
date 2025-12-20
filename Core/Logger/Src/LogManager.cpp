@@ -1,13 +1,13 @@
 #include "LogManager.h"
 
-#include <log.h>
-#include <spdlog/async.h>
-#include <spdlog/async_logger.h>
-#include <spdlog/common.h>
-#include <spdlog/fmt/bundled/format.h>
-#include <spdlog/sinks/basic_file_sink.h>
-#include <spdlog/sinks/stdout_color_sinks.h>
-#include <spdlog/spdlog-inl.h>
+#include <log.h>                              // for DEFAULT_LOGGER_PATTERN
+#include <spdlog/async.h>                     // for spdlog::init_thread_pool
+#include <spdlog/async_logger.h>              // for spdlog::async_logger
+#include <spdlog/common.h>                    // for spdlog::sink_ptr
+#include <spdlog/fmt/bundled/format.h>        // for spdlog::fmt_lib::format
+#include <spdlog/sinks/basic_file_sink.h>     // for spdlog::sinks::basic_file_sink_mt
+#include <spdlog/sinks/stdout_color_sinks.h>  // for spdlog::sinks::stderr_color_sink_mt
+#include <spdlog/spdlog-inl.h>                // for spdlog::get
 
 #include <atomic>
 #include <memory>

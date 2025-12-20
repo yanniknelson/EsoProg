@@ -1,8 +1,8 @@
 #pragma once
 
-#include "ITokeniser.h"
+#include "ITokeniser.h"  // for ITokeniser
 
-#include <sstream>
+#include <sstream>       // for std::stringstream
 
 template<typename TokenClass>
 class ITextTokeniser : public ITokeniser<TokenClass>

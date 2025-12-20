@@ -1,9 +1,7 @@
-#pragma once
-
 #include "BrainFckRuntime.h"
 
-#include "BrainFckAST.h"
-#include "BrainFckAstVisitor.h"
+#include "BrainFckAST.h"         // for BrainFckOperationTypes, BrainFckProgram
+#include "BrainFckAstVisitor.h"  // for BrainFckPrintingVisitor
 
 #include <iostream>
 #include <memory>

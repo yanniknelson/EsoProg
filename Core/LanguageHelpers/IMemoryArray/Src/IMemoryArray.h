@@ -1,9 +1,9 @@
 #pragma once
 
-#include <imgui.h>
+#include <imgui.h>   // for ImGui structs and functions
 
-#include <climits>
-#include <iostream>
+#include <climits>   // for INT_MIN, INT_MAX
+#include <iostream>  
 #include <map>
 #include <string>
 

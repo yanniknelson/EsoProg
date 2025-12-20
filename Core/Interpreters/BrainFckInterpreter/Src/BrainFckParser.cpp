@@ -1,7 +1,7 @@
 #include "BrainFckParser.h"
 
-#include "BrainFckAST.h"
-#include "BrainFckToken.h"
+#include "BrainFckAST.h"    // for TBrainFckOperationPtr, TBrainFckRegionPtr, BrainFckProgram, BrainFckError
+#include "BrainFckToken.h"  // for BrainFckToken
 
 #include <memory>
 

@@ -1,7 +1,7 @@
 #pragma once
 
-#include <IAST.h>
-#include <ITokeniser.h>
+#include <IAST.h>        // for IOperation
+#include <ITokeniser.h>  // for ITokeniser
 
 #include <memory>
 #include <string>

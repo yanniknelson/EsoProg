@@ -1,17 +1,16 @@
 #pragma once
 
 #include "PietRuntime.h"
-#include "PietImageTokeniser.h"
-#include "PietToken.h"
 
-#include <ImGuiValueChangeCallbacks.h>
+#include "PietImageTokeniser.h"         // for PietImageTokeniser
+#include "PietToken.h"                  // for PietToken
 
-//ImGui imports
-#include <imgui.h>
-#include <imgui_stdlib.h>
+#include <ImGuiValueChangeCallbacks.h>  // for ValueInputChanged
 
-#include <iostream>
-#include <string>
+#include <imgui.h>                      // for ImGui structs and functions
+#include <imgui_stdlib.h>               // for InputText and others with std::string input
+
+#include <string>                       // std::to_string
 
 PietToken PietRuntime::StepExecution_Internal()
 {

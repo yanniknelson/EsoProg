@@ -1,8 +1,8 @@
 #pragma once
 
-#include "BrainFckToken.h"
+#include "BrainFckToken.h"   // for BrainFckToken
 
-#include <ITextTokeniser.h>
+#include <ITextTokeniser.h>  // for ITextTokeniser
 
 class BrainFckTokeniser : public ITextTokeniser<BrainFckToken>
 {

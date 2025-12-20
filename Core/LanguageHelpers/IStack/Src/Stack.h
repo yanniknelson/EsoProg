@@ -1,7 +1,7 @@
 #pragma once
 
 #include <deque>
-#include <iostream>
+#include <iostream>  // for std::ostream
 
 class Stack
 {

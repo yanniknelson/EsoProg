@@ -1,11 +1,11 @@
 #pragma once
 
-#include <ELanguages.h>
+#include <ELanguages.h>        // for ELangauges::Enum
 
 #include <atomic>
 #include <condition_variable>
 #include <mutex>
-#include <sstream>
+#include <sstream>             // for ostringstream
 #include <string>
 #include <vector>
 

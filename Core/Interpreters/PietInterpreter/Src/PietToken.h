@@ -1,9 +1,9 @@
 #pragma once
 
-#include <IToken.h>
-#include <SmartEnums.h>
+#include <IToken.h>      // for IToken
+#include <SmartEnums.h>  // for CreateSmartEnum
 
-#include <iostream>
+#include <iostream>      // for std::ostream
 
 class PietToken : public IToken
 {

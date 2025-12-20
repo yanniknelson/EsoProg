@@ -1,18 +1,18 @@
 #pragma once
 
-#include "PietImageTokeniser.h"
-#include "PietTextTokeniser.h"
-#include "PietToken.h"
+#include "PietImageTokeniser.h"  // for PietImageTokeniser
+#include "PietTextTokeniser.h"   // for PietTextTokeniser
+#include "PietToken.h"           // for PietToken
 
-#include <CRuntime.h>
-#include <ELanguages.h>
-#include <IRuntime.h>
-#include <ITokeniser.h>
-#include <Stack.h>
+#include <CRuntime.h>            // for CRuntime
+#include <ELanguages.h>          // for ELanguages::Enum
+#include <IRuntime.h>            // for RuntimeSyncronisationStruct
+#include <ITokeniser.h>          // for ITokeniser
+#include <Stack.h>               // for Stack
 
-#include <GLFW/glfw3.h>
+#include <GLFW/glfw3.h>          // for GLuint
 
-#include <sstream>
+#include <sstream>               // for std::ostringstream
 #include <string>
 #include <vector>
 

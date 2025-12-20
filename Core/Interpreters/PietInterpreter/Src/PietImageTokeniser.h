@@ -1,11 +1,11 @@
 #pragma once
 
-#include "PietToken.h"
+#include "PietToken.h"   // for PietToken
 
-#include <ITokeniser.h>
+#include <ITokeniser.h>  // for ITokeniser
 
-#include <cstdint>
-#include <ios>
+#include <cstdint>       // for uint8_t
+#include <ios>           // for std::hex
 #include <iostream>
 #include <string>
 #include <vector>

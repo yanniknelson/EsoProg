@@ -1,8 +1,8 @@
 #include "PietImageTokeniser.h"
 
-#include "PietToken.h"
+#include "PietToken.h"          // for PietToken
 
-#include <IconsFontAwesome7.h>
+#include <IconsFontAwesome7.h>  // for CON_FA_ARROW_UP, ICON_FA_ARROW_DOWN, ICON_FA_ARROW_LEFT, ICON_FA_ARROW_RIGHT,
 
 #include <deque>
 #include <map>

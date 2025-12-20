@@ -1,8 +1,8 @@
 #pragma once
 
-#include "PietToken.h"
+#include "PietToken.h"        // for PietToken
 
-#include <ITextTokeniser.h>
+#include <ITextTokeniser.h>   // ITextTokeniser
 
 #include <string>
 

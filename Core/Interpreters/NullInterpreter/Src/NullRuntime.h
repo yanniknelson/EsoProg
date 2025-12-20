@@ -1,10 +1,10 @@
 #pragma once
 
-#include "ELanguages.h"
+#include "ELanguages.h"  // for ELanguages::Enum
 
-#include <IRuntime.h>
+#include <IRuntime.h>    // for IRuntime
 
-#include <sstream>
+#include <sstream>       // for std::ostringstream
 #include <string>
 #include <vector>
 

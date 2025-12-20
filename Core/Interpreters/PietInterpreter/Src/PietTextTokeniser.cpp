@@ -1,10 +1,9 @@
 #include "PietTextTokeniser.h"
 
-#include "PietToken.h"
+#include "PietToken.h"  // for PietToken
 
-#include <cctype>
-#include <cstdlib>
-#include <sstream>
+#include <cctype>       // for isspace()
+#include <cstdlib>      // for std::abort()
 #include <string>
 
 PietToken PietTextTokeniser::GetNextToken()
