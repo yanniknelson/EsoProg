@@ -2,46 +2,47 @@
 
 #include <IToken.h>
 #include <SmartEnums.h>
+
 #include <iostream>
 
 class PietToken : public IToken
 {
   public:
-#define ETOKENTYPE(x)                                                                                            \
-    x(Start)                                                                                                     \
-        x(Value)                                                                                                 \
-            x(Push)                                                                                              \
-                x(Pop)                                                                                           \
-                    x(Add)                                                                                       \
-                        x(Subtract)                                                                              \
-                            x(Multiply)                                                                          \
-                                x(Divide)                                                                        \
-                                    x(Modulo)                                                                    \
-                                        x(Not)                                                                   \
-                                            x(Greater)                                                           \
-                                                x(Pointer)                                                       \
-                                                    x(Switch)                                                    \
-                                                        x(Duplicate)                                             \
-                                                            x(Roll)                                              \
-                                                                x(Input)                                         \
-                                                                    x(Output)                                    \
-                                                                        x(INT)                                   \
-                                                                            x(CHAR)                              \
-                                                                                x(Input_Char)                    \
-                                                                                    x(Input_Val)                 \
-                                                                                        x(Output_Char)           \
-                                                                                            x(Output_Val)        \
-                                                                                                x(EnterSlide)    \
-                                                                                                    x(ExitSlide) \
-                                                                                                        x(End)   \
-                                                                                                            x(Unrecognised_Token)
+#define ETOKENTYPE(x)    \
+    x(Start)             \
+    x(Value)             \
+    x(Push)              \
+    x(Pop)               \
+    x(Add)               \
+    x(Subtract)          \
+    x(Multiply)          \
+    x(Divide)            \
+    x(Modulo)            \
+    x(Not)               \
+    x(Greater)           \
+    x(Pointer)           \
+    x(Switch)            \
+    x(Duplicate)         \
+    x(Roll)              \
+    x(Input)             \
+    x(Output)            \
+    x(INT)               \
+    x(CHAR)              \
+    x(Input_Char)        \
+    x(Input_Val)         \
+    x(Output_Char)       \
+    x(Output_Val)        \
+    x(EnterSlide)        \
+    x(ExitSlide)         \
+    x(End)               \
+    x(Unrecognised_Token)
 
     CreateSmartEnum(TokenType, ETOKENTYPE);
 
 #undef ETOKENTYPE
 
     PietToken(const TokenType::Enum type, const int value) : m_type(type), m_value(value) {};
-    PietToken(const TokenType::Enum type) : m_type(type), m_value(NAN) {};
+    PietToken(const TokenType::Enum type) : m_type(type), m_value(0) {};
 
     TokenType::Enum m_type = TokenType::Start;
     int m_value;

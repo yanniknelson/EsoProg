@@ -1,7 +1,10 @@
 #include "BrainFckTokeniser.h"
 
-#include <iostream>
+#include "BrainFckToken.h"
+
+#include <cctype>
 #include <sstream>
+#include <string>
 
 BrainFckToken BrainFckTokeniser::Pop_Internal()
 {

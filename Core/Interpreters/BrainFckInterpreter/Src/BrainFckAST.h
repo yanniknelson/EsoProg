@@ -3,17 +3,19 @@
 #include <IAST.h>
 #include <SmartEnums.h>
 
-#define BRAINFCKOPERATIONS(x)              \
-    x(Program)                             \
-        x(LeftOp)                          \
-            x(RightOp)                     \
-                x(IncOp)                   \
-                    x(DecOp)               \
-                        x(OutOp)           \
-                            x(InOp)        \
-                                x(Loop)    \
-                                    x(End) \
-                                        x(Error)
+#include <memory>
+
+#define BRAINFCKOPERATIONS(x)\
+    x(Program)               \
+    x(LeftOp)                \
+    x(RightOp)               \
+    x(IncOp)                 \
+    x(DecOp)                 \
+    x(OutOp)                 \
+    x(InOp)                  \
+    x(Loop)                  \
+    x(End)                   \
+    x(Error)
 
 CreateSmartEnum(BrainFckOperationTypes, BRAINFCKOPERATIONS);
 
