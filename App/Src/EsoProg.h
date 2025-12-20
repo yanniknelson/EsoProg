@@ -14,9 +14,9 @@
 #include <imgui.h>              // for ImGuiKey, ImGuiWindowFlags_, ImGuiInputTextFlags, ImGuiIO, ImWchar, ImFontConfig
 
 #include <filesystem>           // for std::filesystem::path
-#include <fstream>              // for std::fstrean
+#include <fstream>
 #include <sstream>              // for std::ostringstream
-#include <string>               // for std::string
+#include <string>
 
 class EsoProg
 {

@@ -1,6 +1,6 @@
 #pragma once
 
-#include <imgui.h>
+#include <imgui.h>  // for ImGuiInputTextCallbackData
 
 int TextInputCallback(ImGuiInputTextCallbackData* data);
 

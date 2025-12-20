@@ -1,6 +1,6 @@
 #include "ImGuiValueChangeCallbacks.h"
 
-#include <imgui.h>
+#include <imgui.h>  // for ImGuiInputTextCallbackData
 
 #include <string>
 

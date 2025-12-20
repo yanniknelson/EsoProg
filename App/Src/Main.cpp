@@ -17,8 +17,8 @@
 
 #include <chrono>                // for std::chrono::milliseconds
 #include <cstdio>                // for stderr
-#include <mutex>                 // for std::mutex
-#include <thread>                // for std::thread, std::this_thread
+#include <mutex>
+#include <thread>
 
 static void glfw_error_callback(int error, const char* description)
 {

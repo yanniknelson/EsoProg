@@ -1,10 +1,11 @@
 #include "FileDialogBox.h"
 
-#include <IconsFontAwesome7.h>
-#include <imgui.h>
-#include <imgui_stdlib.h>
+#include <IconsFontAwesome7.h>  // for ICON_FA_FOLDER, ICON_FA_FILE
+#include <imgui.h>              // for all imgui functions
+#include <imgui_stdlib.h>       // for InputText and others with std::string input
 
-#include <filesystem>
+#include <algorithm>            // for std::find
+#include <filesystem>           // for std::filesystem::path
 #include <string>
 #include <vector>
 

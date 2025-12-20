@@ -19,8 +19,8 @@
 #include <cfloat>                       // for FLT_MIN
 #include <filesystem>                   // for std::filesystem::path
 #include <fstream>                      // for std::ofstream
-#include <iostream>                     // for std::cout, std::endl
-#include <string>                       // for std::string
+#include <iostream>
+#include <string>
 
 const char* EsoProg::i_ProgramName = "EsoProg";
 GLFWwindow* EsoProg::i_pWindow = nullptr;

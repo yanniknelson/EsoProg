@@ -2,7 +2,7 @@
 
 #include "ImGuiSetStyles.h"
 
-#include <imgui.h>
+#include <imgui.h>  // for ImGuiStyle, ImGui::GetStyle, ImVec2, ImGuiDir_..., ImGuiCol_....
 
 void SetImGuiShapingStyle()
 {
