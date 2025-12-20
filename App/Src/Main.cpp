@@ -63,7 +63,7 @@ int main(int, char**)
 
     // Create window with graphics context
     float main_scale = ImGui_ImplGlfw_GetContentScaleForMonitor(glfwGetPrimaryMonitor()); // Valid on GLFW 3.3+ only
-    GLFWwindow* window = glfwCreateWindow((int)(1280 * main_scale), (int)(800 * main_scale), CEsoProg::i_ProgramName, nullptr, nullptr);
+    GLFWwindow* window = glfwCreateWindow((int)(1280 * main_scale), (int)(800 * main_scale), CEsoProg::s_ProgramName, nullptr, nullptr);
     if (window == nullptr)
         return 1;
     glfwMakeContextCurrent(window);
@@ -96,7 +96,7 @@ int main(int, char**)
     SetImGuiDarkStyle();
 
     CEsoProg* pProgramInstance = new CEsoProg(window);
-    pProgramInstance->i_ProgramName;
+    pProgramInstance->s_ProgramName;
 
     std::thread runtimeWorker([&]()
         {

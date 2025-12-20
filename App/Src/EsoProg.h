@@ -4,7 +4,6 @@
 #include <ELanguages.h>         // for ELanguages::Enum
 #include <FileDialogBox.h>      // for FileDialogBox::FileDialogType, FileDialogBox::Init_Path
 #include <IRuntime.h>           // for IRuntime
-#include <IconsFontAwesome7.h>  // for ICON_MIN_FA, ICON_MAX_16_FA
 #include <NullRuntime.h>        // for NullRuntime
 #include <PietRuntime.h>        // for PietRuntime
 #include <SmartEnums.h>         // for CreateSmartEnum
@@ -18,8 +17,24 @@
 #include <sstream>              // for std::ostringstream
 #include <string>
 
+//////////////////////////////////////////////////////////////
 class CEsoProg
 {
+public:
+    static const char* s_ProgramName;
+    static GLFWwindow* s_pWindow;
+
+    RuntimeSyncronisationStruct m_sync;
+
+    CEsoProg(GLFWwindow* pWindow);
+
+    void Render();
+    bool UpdateRuntime();
+    bool IsRuntimeWaitingOnInput();
+    void CopyState();
+    void Reset();
+
+private:
     // clang-format off
 #define EFILETYPES(x) \
     x(Text)           \
@@ -30,6 +45,10 @@ class CEsoProg
 #undef EFILETYPES
     // clang-format on
 
+    void CreateMenuBar();
+
+    void SetCurrentLanugage(ELanguages::Enum language);
+
     void CheckShortCuts();
 
     void HandleNew();
@@ -37,7 +56,9 @@ class CEsoProg
     void HandelSaveAs();
     void HandleSave();
 
-    void CreateMenuBar();
+    void PreFileLoad(const std::filesystem::path path);
+    EFileType::Enum LoadFile(const std::filesystem::path path);
+    void PostFileLoad(const EFileType::Enum fileType, const std::filesystem::path path);
 
     //shortcut flags
     bool m_bShortcutUsed = false;
@@ -51,13 +72,7 @@ class CEsoProg
 
     EFileType::Enum m_currentFileType = EFileType::COUNT;
 
-    void PreFileLoad(const std::filesystem::path path);
-    EFileType::Enum LoadFile(const std::filesystem::path path);
-    void PostFileLoad(const EFileType::Enum fileType, const std::filesystem::path path);
-
     ELanguages::Enum m_currentLanguage = ELanguages::COUNT;
-
-    void SetCurrentLanugage(ELanguages::Enum languag);
 
     //file management
     bool m_bFileIsNew = true;
@@ -90,37 +105,4 @@ class CEsoProg
     ImGuiInputTextFlags m_codeEditorFlags = ImGuiInputTextFlags_CallbackCharFilter | ImGuiInputTextFlags_EnterReturnsTrue;
     std::string m_code{ "" };
     std::string m_programInput{ "" };
-
-  public:
-    static const char* i_ProgramName;
-    static GLFWwindow* i_pWindow;
-
-    RuntimeSyncronisationStruct m_sync;
-
-    CEsoProg(GLFWwindow* pWindow)
-    {
-        i_pWindow = pWindow;
-        //setup the current directory as the initial path in the file dialog box
-        FileDialogBox::Init_Path(fs::current_path());
-        //SetCurrentLanugage(ELanguages::Piet);
-
-        glGenTextures(1, &m_texture);
-
-        m_pRuntime = &m_nullRuntime;
-
-        //Merge font awesome into the default font
-        ImGuiIO io = ImGui::GetIO();
-        io.Fonts->AddFontDefault();
-        static const ImWchar icons_ranges[] = { ICON_MIN_FA, ICON_MAX_16_FA, 0 };
-        ImFontConfig icons_config;
-        icons_config.MergeMode = true;
-        icons_config.PixelSnapH = true;
-        io.Fonts->AddFontFromFileTTF("../Vendor/Font-Awesome/otfs/Font Awesome 7 Free-Solid-900.otf", 16.0f, &icons_config, icons_ranges);
-    }
-
-    void Reset();
-    bool UpdateRuntime();
-    void Render();
-    bool IsRuntimeWaitingOnInput();
-    void CopyState();
 };
