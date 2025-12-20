@@ -1,25 +1,24 @@
 ﻿// Main.cpp : Defines the entry point for the application.
 
-#include "EsoProg.h"
+#include "EsoProg.h"             // for EsoProg
 
-#include <IRuntime.h>
-#include <ImGuiSetStyles.h>
+#include <IRuntime.h>            // for RuntimeSyncronisationStruct
+#include <ImGuiSetStyles.h>      // for StyleColorsDark
 
-#include <GLFW/glfw3.h> // Will drag system OpenGL headers
-#include <gl/GL.h>
-#include <imgui.h>
-#include <imgui_impl_glfw.h>
-#include <imgui_impl_opengl3.h>
+#include <GLFW/glfw3.h>          // glfwGetFramebufferSize, glfwPollEvents, glfwWindowShouldClose
+#include <gl/GL.h>               // for glViewport, glClearColor, gl....
+#include <imgui.h>               // for ImGui drawing functions
+#include <imgui_impl_glfw.h>     // for ImGui_ImplGlfw_GetContentScaleForMonitor, ImGui_ImplGlfw_...
+#include <imgui_impl_opengl3.h>  // for ImGui_ImplOpenGL3_Init, ImGui_ImplOpenGL3_....
 #define GL_SILENCE_DEPRECATION
 #if defined(IMGUI_IMPL_OPENGL_ES2)
-#include <GLES2/gl2.h>
+#include <GLES2/gl2.h>           
 #endif
 
-//Other imports
-#include <chrono>
-#include <cstdio>
-#include <mutex>
-#include <thread>
+#include <chrono>                // for std::chrono::milliseconds
+#include <cstdio>                // for stderr
+#include <mutex>                 // for std::mutex
+#include <thread>                // for std::thread, std::this_thread
 
 static void glfw_error_callback(int error, const char* description)
 {

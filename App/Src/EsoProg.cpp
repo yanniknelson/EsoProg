@@ -1,28 +1,26 @@
 #pragma once
 
 #include "EsoProg.h"
+
+#include <ELanguages.h>                 // for ELanguages::Enum
+#include <FileDialogBox.h>              // for FileDialogBox
+#include <ImGuiSetStyles.h>             // for SetImGuiDarkStyle, SetImGuiLightStyle
+#include <ImGuiValueChangeCallbacks.h>  // for TextInputCallback, ValueInputChanged
+#include <PietRuntime.h>                // for PietRuntime
+
+#include <GLFW/glfw3.h>                 // for GLFWwindow
+#include <IconsFontAwesome7.h>          // for ICON_FA_FILE_CIRCLE_PLUS, ICON_FA_FOLDER_OPEN, ICON_FA_FLOPPY_DISK
+#include <gl/GL.h>                      // for glBindTexture, glTexParameteri, glPixelStorei, glTexImage2D
+#include <imgui.h>                      // for all imgui functions
+#include <imgui_stdlib.h>               // for InputText and others with std::string input
 #define STB_IMAGE_IMPLEMENTATION
+#include <stb_image.h>                  // for stbi_load, stbi_image_free
 
-#include <ELanguages.h>
-#include <FileDialogBox.h>
-#include <IRuntime.h>
-#include <ImGuiSetStyles.h>
-#include <ImGuiValueChangeCallbacks.h>
-#include <PietRuntime.h>
-
-#include <GLFW/glfw3.h>
-#include <IconsFontAwesome7.h>
-#include <gl/GL.h>
-#include <imgui.h>
-#include <imgui_stdlib.h>
-#include <stb_image.h>
-
-#include <cfloat>
-#include <filesystem>
-#include <fstream>
-#include <iostream>
-#include <sstream>
-#include <string>
+#include <cfloat>                       // for FLT_MIN
+#include <filesystem>                   // for std::filesystem::path
+#include <fstream>                      // for std::ofstream
+#include <iostream>                     // for std::cout, std::endl
+#include <string>                       // for std::string
 
 const char* EsoProg::i_ProgramName = "EsoProg";
 GLFWwindow* EsoProg::i_pWindow = nullptr;

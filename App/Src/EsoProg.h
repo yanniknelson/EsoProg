@@ -1,22 +1,22 @@
 #pragma once
 
-#include <BrainFckRuntime.h>
-#include <ELanguages.h>
-#include <FileDialogBox.h>
-#include <IRuntime.h>
-#include <IconsFontAwesome7.h>
-#include <NullRuntime.h>
-#include <PietRuntime.h>
-#include <SmartEnums.h>
+#include <BrainFckRuntime.h>    // for BrainFckRuntime
+#include <ELanguages.h>         // for ELanguages::Enum
+#include <FileDialogBox.h>      // for FileDialogBox::FileDialogType, FileDialogBox::Init_Path
+#include <IRuntime.h>           // for IRuntime
+#include <IconsFontAwesome7.h>  // for ICON_MIN_FA, ICON_MAX_16_FA
+#include <NullRuntime.h>        // for NullRuntime
+#include <PietRuntime.h>        // for PietRuntime
+#include <SmartEnums.h>         // for CreateSmartEnum
 
-#include <GLFW/glfw3.h>
-#include <gl/GL.h>
-#include <imgui.h>
+#include <GLFW/glfw3.h>         // for GLFWwindow
+#include <gl/GL.h>              // for GLuint
+#include <imgui.h>              // for ImGuiKey, ImGuiWindowFlags_, ImGuiInputTextFlags, ImGuiIO, ImWchar, ImFontConfig
 
-#include <filesystem>
-#include <fstream>
-#include <sstream>
-#include <string>
+#include <filesystem>           // for std::filesystem::path
+#include <fstream>              // for std::fstrean
+#include <sstream>              // for std::ostringstream
+#include <string>               // for std::string
 
 class EsoProg
 {
