@@ -10,74 +10,78 @@
 #include <string>
 #include <vector>
 
-const char* CFileDialogBox::DialogBoxTypes[] = { "Open", "Save As" };
-fs::path CFileDialogBox::currentPath = fs::path();
-fs::path CFileDialogBox::selectedFilePath = fs::path();
-std::string CFileDialogBox::currentFileName = "";
-std::vector<std::string> CFileDialogBox::allowed_types = {};
+const char* CFileDialogBox::s_dialogBoxTypes[] = { "Open", "Save As" };
+fs::path CFileDialogBox::s_currentPath = fs::path();
+fs::path CFileDialogBox::s_selectedFilePath = fs::path();
+std::string CFileDialogBox::s_currentFileName = "";
+std::vector<std::string> CFileDialogBox::s_allowed_types = {};
 
 //////////////////////////////////////////////////////////////
-void CFileDialogBox::Init_Path(fs::path p)
+void CFileDialogBox::Init_Path(fs::path path)
 {
-    currentPath = p;
-    std::cout << currentPath.string() << "\n";
+    s_currentPath = path;
+    std::cout << s_currentPath.string() << "\n";
 }
 
 //////////////////////////////////////////////////////////////
 void CFileDialogBox::Set_Allowed_Type(std::vector<std::string> types)
 {
-    allowed_types = types;
+    s_allowed_types = types;
 }
 
 //////////////////////////////////////////////////////////////
 void CFileDialogBox::Add_Allowed_Type(std::string type)
 {
-    allowed_types.push_back(type);
+    s_allowed_types.push_back(type);
 }
 
 //////////////////////////////////////////////////////////////
-CFileDialogBox::SFileDialogReturn CFileDialogBox::Create_File_Dialog(bool& open, CFileDialogBox::FileDialogType type)
+CFileDialogBox::SFileDialogReturn CFileDialogBox::Create_File_Dialog(bool& rbOpen, CFileDialogBox::FileDialogType type)
 {
-    bool submitted = false;
-    ImGui::Begin("File Explorer", &open, ImGuiWindowFlags_NoCollapse); //| ImGuiWindowFlags_NoDocking);
+    bool bSubmitted = false;
+    ImGui::Begin("File Explorer", &rbOpen, ImGuiWindowFlags_NoCollapse); //| ImGuiWindowFlags_NoDocking);
     //decompose the current Path
-    fs::path p = currentPath;
+    fs::path workingPath = s_currentPath;
     std::vector<fs::path> breakdown = {};
-    while (p != p.root_path())
+    while (workingPath != workingPath.root_path())
     {
-        breakdown.push_back(p);
-        p = p.parent_path();
+        breakdown.push_back(workingPath);
+        workingPath = workingPath.parent_path();
     }
+
     //in reverse of the decomposed path, create buttons pointing the the file of each decomposition
-    if (ImGui::Button(p.root_name().string().c_str()))
+    if (ImGui::Button(workingPath.root_name().string().c_str()))
     {
-        currentPath = p.root_path();
+        s_currentPath = workingPath.root_path();
     }
-    for (auto pth = breakdown.rbegin(); pth != breakdown.rend(); pth++)
+
+    for (auto itSubpath = breakdown.rbegin(); itSubpath != breakdown.rend(); itSubpath++)
     {
         ImGui::SameLine();
-        if (ImGui::Button((pth->filename().string() + "##" + pth->string()).c_str()))
+        if (ImGui::Button((itSubpath->filename().string() + "##" + itSubpath->string()).c_str()))
         {
-            currentPath = *pth;
+            s_currentPath = *itSubpath;
         }
     }
+
     //create a button for each entry in the current directory with the text on the button being the entry's type + name
     if (ImGui::BeginChild("Files", ImVec2(0, ImGui::GetContentRegionAvail().y - (ImGui::GetTextLineHeight() * 2)), true))
     {
         if (ImGui::Button(".."))
         {
-            currentPath = currentPath.parent_path();
+            s_currentPath = s_currentPath.parent_path();
         }
-        for (const fs::directory_entry& entry : fs::directory_iterator(currentPath))
+
+        for (const fs::directory_entry& rEntry : fs::directory_iterator(s_currentPath))
         {
             //filter files for text files only
-            if (!entry.is_directory() && std::find(allowed_types.begin(), allowed_types.end(), entry.path().extension()) == allowed_types.end())
+            if (!rEntry.is_directory() && std::find(s_allowed_types.begin(), s_allowed_types.end(), rEntry.path().extension()) == s_allowed_types.end())
             {
                 continue;
             }
 
             std::string buttonName;
-            if (entry.is_directory())
+            if (rEntry.is_directory())
             {
                 buttonName = ICON_FA_FOLDER;
             }
@@ -86,18 +90,18 @@ CFileDialogBox::SFileDialogReturn CFileDialogBox::Create_File_Dialog(bool& open,
                 buttonName = ICON_FA_FILE;
             }
 
-            buttonName += " " + entry.path().filename().string();
+            buttonName += " " + rEntry.path().filename().string();
             if (ImGui::Button(buttonName.c_str()))
             {
                 //if the entry is a directory, then when we click it update the current path
-                if (entry.is_directory())
+                if (rEntry.is_directory())
                 {
-                    currentPath = entry.path();
+                    s_currentPath = rEntry.path();
                 }
                 else
                 {
-                    selectedFilePath = entry.path();
-                    currentFileName = selectedFilePath.filename().string();
+                    s_selectedFilePath = rEntry.path();
+                    s_currentFileName = s_selectedFilePath.filename().string();
                 }
             }
         }
@@ -106,28 +110,28 @@ CFileDialogBox::SFileDialogReturn CFileDialogBox::Create_File_Dialog(bool& open,
 
     if (type == FileDialogType::Save_As)
     {
-        ImGui::InputText("##file_name", &currentFileName);
+        ImGui::InputText("##file_name", &s_currentFileName);
     }
     else
     {
-        ImGui::Text(selectedFilePath.filename().string().c_str());
+        ImGui::Text(s_selectedFilePath.filename().string().c_str());
     }
 
     ImGui::SameLine();
-    if (ImGui::Button(DialogBoxTypes[type]) && (type != FileDialogType::Save_As || !currentFileName.empty()))
+    if (ImGui::Button(s_dialogBoxTypes[type]) && (type != FileDialogType::Save_As || !s_currentFileName.empty()))
     {
-        submitted = true;
-        open = false;
+        bSubmitted = true;
+        rbOpen = false;
     }
 
     ImGui::End();
     if (type != FileDialogType::Save_As)
     {
-        return { submitted && !selectedFilePath.empty(), selectedFilePath };
+        return { bSubmitted && !s_selectedFilePath.empty(), s_selectedFilePath };
     }
     else
     {
-        fs::path save_as_path = currentPath / (currentFileName);
-        return { submitted, save_as_path.replace_extension(".txt") };
+        fs::path save_as_path = s_currentPath / (s_currentFileName);
+        return { bSubmitted, save_as_path.replace_extension(".txt") };
     }
 }

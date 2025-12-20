@@ -63,22 +63,22 @@ void CEsoProg::Render()
         //the file dialog is always on top
         m_fileDialogOnTop = ImGuiWindowFlags_NoBringToFrontOnFocus;
         CFileDialogBox::SFileDialogReturn ret = CFileDialogBox::Create_File_Dialog(m_bEnableFileDialog, m_dialogType);
-        if (ret.selected)
+        if (ret.m_bSelected)
         {
             switch (m_dialogType)
             {
             case CFileDialogBox::Open:
             {
-                const EFileType::Enum fileType = LoadFile(ret.path);
+                const EFileType::Enum fileType = LoadFile(ret.m_path);
                 break;
             }
             case CFileDialogBox::Save_As:
             {
-                m_fileStream.open(ret.path.string(), m_fileStream.out);
+                m_fileStream.open(ret.m_path.string(), m_fileStream.out);
                 m_fileStream << m_code;
                 m_fileStream.close();
                 m_bFileIsNew = false;
-                m_currentFilePath = ret.path;
+                m_currentFilePath = ret.m_path;
                 break;
             }
             default:

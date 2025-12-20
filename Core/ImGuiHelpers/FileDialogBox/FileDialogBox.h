@@ -13,11 +13,11 @@ class CFileDialogBox
     //////////////////////////////////////////////////////////////
     struct SFileDialogReturn
     {
-        bool selected = false;
-        fs::path path;
+        bool m_bSelected = false;
+        fs::path m_path;
     };
 
-    static void Init_Path(fs::path p);
+    static void Init_Path(fs::path path);
     static void Set_Allowed_Type(std::vector<std::string> types);
     static void Add_Allowed_Type(std::string type);
 
@@ -28,12 +28,12 @@ class CFileDialogBox
         Num_of_Types
     };
 
-    static SFileDialogReturn Create_File_Dialog(bool& open, FileDialogType type);
+    static SFileDialogReturn Create_File_Dialog(bool& rbOpen, FileDialogType type);
 
   private:
-    static const char* DialogBoxTypes[];
-    static fs::path currentPath;
-    static fs::path selectedFilePath;
-    static std::string currentFileName;
-    static std::vector<std::string> allowed_types;
+    static const char* s_dialogBoxTypes[];
+    static fs::path s_currentPath;
+    static fs::path s_selectedFilePath;
+    static std::string s_currentFileName;
+    static std::vector<std::string> s_allowed_types;
 };
