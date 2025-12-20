@@ -5,7 +5,7 @@
 #include <iostream>
 #include <memory>
 
-template <typename Operation>
+template<typename Operation>
 class IASTVisitor
 {
     using TOperationPtr = std::shared_ptr<Operation>;
@@ -17,7 +17,7 @@ class IASTVisitor
 
 // This is an example visitor implementation only, each visitor needs to be implemented like this uniquely
 // with traverse and potentially visit functions for all operation types.
-template <typename OperationType>
+template<typename OperationType>
 class IProgramPrintVisitor : public IASTVisitor<IProgram<OperationType>>
 {
     using TProgram = IProgram<OperationType>;

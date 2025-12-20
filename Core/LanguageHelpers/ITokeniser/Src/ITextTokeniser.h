@@ -5,7 +5,7 @@
 #include <iostream>
 #include <strstream>
 
-template <typename TokenClass>
+template<typename TokenClass>
 class ITextTokeniser : public ITokeniser<TokenClass>
 {
   public:

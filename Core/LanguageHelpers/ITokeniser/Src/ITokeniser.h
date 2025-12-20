@@ -3,7 +3,7 @@
 #include <deque>
 #include <vector>
 
-template <typename TokenClass>
+template<typename TokenClass>
 class ITokeniser
 {
   public:

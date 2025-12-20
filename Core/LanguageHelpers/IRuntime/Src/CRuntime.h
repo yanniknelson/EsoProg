@@ -15,7 +15,7 @@
 #include <string>
 #include <thread>
 
-template <typename TokenClass>
+template<typename TokenClass>
 class CRuntime : public IRuntime
 {
   public:

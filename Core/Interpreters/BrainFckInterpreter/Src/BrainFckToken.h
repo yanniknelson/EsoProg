@@ -7,7 +7,7 @@
 class BrainFckToken : public IToken
 {
   public:
-// clang-format off
+    // clang-format off
 #define ETOKENTYPE(x)     \
     x(Start)              \
     x(Move_Left)          \
@@ -24,7 +24,7 @@ class BrainFckToken : public IToken
     CreateSmartEnum(TokenType, ETOKENTYPE);
 
 #undef ETOKENTYPE
-// clang-format on
+    // clang-format on
 
     BrainFckToken(const TokenType::Enum type) : m_type(type) {};
 

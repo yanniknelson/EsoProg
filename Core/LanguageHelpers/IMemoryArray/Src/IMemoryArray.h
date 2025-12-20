@@ -8,7 +8,7 @@
 
 #include <imgui.h>
 
-template <typename memType>
+template<typename memType>
 class IMemoryArray
 {
 

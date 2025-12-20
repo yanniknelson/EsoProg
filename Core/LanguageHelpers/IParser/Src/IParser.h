@@ -6,7 +6,7 @@
 #include <string>
 #include <vector>
 
-template <typename TokenClass, typename LanguageOperations>
+template<typename TokenClass, typename LanguageOperations>
 class IParser
 {
   public:

@@ -3,10 +3,10 @@
 #include <memory>
 #include <vector>
 
-template <typename OperationTypes>
+template<typename OperationTypes>
 class IRegion;
 
-template <typename OperationTypes>
+template<typename OperationTypes>
 class IOperation
 {
   protected:
@@ -18,7 +18,7 @@ class IOperation
   public:
     IOperation(typename TOperationShrdPtr pParent, typename TRegionShrdPtr pRegion)
         : m_pParent(pParent), m_pParentRegion(pRegion) {
-          };
+        };
 
     virtual ~IOperation() = default;
     virtual OperationTypes::Enum GetType() const = 0;
@@ -52,7 +52,7 @@ class IOperation
     typename TRegionWkPtr m_pParentRegion;
 };
 
-template <typename OperationTypes>
+template<typename OperationTypes>
 class IRegion
 {
     using TOperation = typename IOperation<OperationTypes>;
@@ -88,7 +88,7 @@ class IRegion
     TRegion m_contents;
 };
 
-template <typename OperationTypes>
+template<typename OperationTypes>
 class IError : public IOperation<OperationTypes>
 {
   public:
@@ -99,7 +99,7 @@ class IError : public IOperation<OperationTypes>
     };
 };
 
-template <typename OperationTypes>
+template<typename OperationTypes>
 class IProgram : public IOperation<OperationTypes>
 {
   public:
