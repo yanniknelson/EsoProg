@@ -23,14 +23,15 @@
 
 class EsoProg
 {
-
+// clang-format off
 #define EFILETYPES(x) \
     x(Text)           \
-        x(Image)
+    x(Image)
 
     CreateSmartEnum(EFileType, EFILETYPES);
 
 #undef EFILETYPES
+// clang-format on
 
     void CheckShortCuts();
 

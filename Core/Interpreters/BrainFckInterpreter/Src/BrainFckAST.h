@@ -5,6 +5,7 @@
 
 #include <memory>
 
+// clang-format off
 #define BRAINFCKOPERATIONS(x)\
     x(Program)               \
     x(LeftOp)                \
@@ -20,6 +21,7 @@
 CreateSmartEnum(BrainFckOperationTypes, BRAINFCKOPERATIONS);
 
 #undef BRAINFCKOPERATIONS
+// clang-format on
 
 using TBrainFckOperation = IOperation<BrainFckOperationTypes>;
 using TBrainFckOperationPtr = std::shared_ptr<TBrainFckOperation>;

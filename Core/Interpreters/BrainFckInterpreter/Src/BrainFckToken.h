@@ -7,22 +7,24 @@
 class BrainFckToken : public IToken
 {
   public:
-#define ETOKENTYPE(x)                           \
-    x(Start)                                    \
-        x(Move_Left)                            \
-            x(Move_Right)                       \
-                x(Increment)                    \
-                    x(Decrement)                \
-                        x(Output_Char)          \
-                            x(Input_Char)       \
-                                x(Loop_Start)   \
-                                    x(Loop_End) \
-                                        x(End)  \
-                                            x(Unrecognised_Token)
+// clang-format off
+#define ETOKENTYPE(x)     \
+    x(Start)              \
+    x(Move_Left)          \
+    x(Move_Right)         \
+    x(Increment)          \
+    x(Decrement)          \
+    x(Output_Char)        \
+    x(Input_Char)         \
+    x(Loop_Start)         \
+    x(Loop_End)           \
+    x(End)                \
+    x(Unrecognised_Token)
 
     CreateSmartEnum(TokenType, ETOKENTYPE);
 
 #undef ETOKENTYPE
+// clang-format on
 
     BrainFckToken(const TokenType::Enum type) : m_type(type) {};
 

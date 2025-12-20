@@ -8,6 +8,7 @@
 class PietToken : public IToken
 {
   public:
+// clang-format off
 #define ETOKENTYPE(x)    \
     x(Start)             \
     x(Value)             \
@@ -40,6 +41,7 @@ class PietToken : public IToken
     CreateSmartEnum(TokenType, ETOKENTYPE);
 
 #undef ETOKENTYPE
+// clang-format on
 
     PietToken(const TokenType::Enum type, const int value) : m_type(type), m_value(value) {};
     PietToken(const TokenType::Enum type) : m_type(type), m_value(0) {};
