@@ -1,18 +1,18 @@
 #pragma once
 
+#include "BrainFckAST.h"
 #include "BrainFckAstVisitor.h"
 #include "BrainFckParser.h"
-#include "BrainFckToken.h"
 #include "BrainFckTokeniser.h"
-#include "IMemoryArray.h"
-#include "ITokeniser.h"
-
-#include "ELanguages.h"
-
-#include <iostream>
-#include <sstream>
 
 #include <CRuntime.h>
+#include <ELanguages.h>
+#include <IMemoryArray.h>
+#include <IRuntime.h>
+
+#include <cstdint>
+#include <memory>
+#include <sstream>
 #include <string>
 #include <vector>
 

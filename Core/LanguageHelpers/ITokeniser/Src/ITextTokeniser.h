@@ -2,8 +2,7 @@
 
 #include "ITokeniser.h"
 
-#include <iostream>
-#include <strstream>
+#include <sstream>
 
 template<typename TokenClass>
 class ITextTokeniser : public ITokeniser<TokenClass>

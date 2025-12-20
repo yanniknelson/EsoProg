@@ -3,8 +3,6 @@
 #include "BrainFckToken.h"
 
 #include <ITextTokeniser.h>
-#include <iostream>
-#include <strstream>
 
 class BrainFckTokeniser : public ITextTokeniser<BrainFckToken>
 {

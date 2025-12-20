@@ -3,8 +3,8 @@
 #include "PietToken.h"
 
 #include <ITextTokeniser.h>
-#include <iostream>
-#include <strstream>
+
+#include <string>
 
 class PietTextTokeniser : public ITextTokeniser<PietToken>
 {

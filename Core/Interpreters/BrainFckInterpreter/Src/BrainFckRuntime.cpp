@@ -1,22 +1,12 @@
 #pragma once
 
 #include "BrainFckRuntime.h"
+
+#include "BrainFckAST.h"
 #include "BrainFckAstVisitor.h"
-#include "BrainFckToken.h"
 
-//ImGui imports
-#include <imgui.h>
-#include <imgui_stdlib.h>
-
-//OpenGL imports
-#include "GLFW/glfw3.h"
-
-//Other imports
-#include <fstream>
 #include <iostream>
-#include <stdio.h>
-
-#include <ImGuiValueChangeCallbacks.h>
+#include <memory>
 
 BrainFckOperationTypes::Enum BrainFckRuntime::StepExecution_Internal()
 {

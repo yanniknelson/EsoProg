@@ -1,21 +1,17 @@
 #pragma once
 
 #include "PietRuntime.h"
+#include "PietImageTokeniser.h"
 #include "PietToken.h"
+
+#include <ImGuiValueChangeCallbacks.h>
 
 //ImGui imports
 #include <imgui.h>
 #include <imgui_stdlib.h>
 
-//OpenGL imports
-#include "GLFW/glfw3.h"
-
-//Other imports
-#include <fstream>
 #include <iostream>
-#include <stdio.h>
-
-#include <ImGuiValueChangeCallbacks.h>
+#include <string>
 
 PietToken PietRuntime::StepExecution_Internal()
 {

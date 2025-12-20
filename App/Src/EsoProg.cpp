@@ -3,12 +3,17 @@
 #include "EsoProg.h"
 #define STB_IMAGE_IMPLEMENTATION
 
+#include <ELanguages.h>
+#include <IRuntime.h>
 #include <ImGuiSetStyles.h>
 #include <ImGuiValueChangeCallbacks.h>
-
-#include <BrainFckRuntime.h>
 #include <PietRuntime.h>
+
+#include <imgui_stdlib.h>
 #include <stb_image.h>
+
+#include <sstream>
+#include <string>
 
 const char* EsoProg::i_ProgramName = "EsoProg";
 GLFWwindow* EsoProg::i_pWindow = nullptr;

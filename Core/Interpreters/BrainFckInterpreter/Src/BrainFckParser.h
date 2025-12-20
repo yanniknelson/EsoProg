@@ -1,8 +1,10 @@
 #pragma once
 
 #include "BrainFckAST.h"
-#include <BrainFckToken.h>
+#include "BrainFckToken.h"
+
 #include <IParser.h>
+#include <ITokeniser.h>
 
 class BrainFckParser : public IParser<BrainFckToken, BrainFckOperationTypes>
 {

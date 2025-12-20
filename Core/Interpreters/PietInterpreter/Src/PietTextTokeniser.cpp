@@ -1,8 +1,11 @@
 #include "PietTextTokeniser.h"
 
+#include "PietToken.h"
+
+#include <cctype>
 #include <cstdlib>
-#include <iostream>
 #include <sstream>
+#include <string>
 
 PietToken PietTextTokeniser::GetNextToken()
 {

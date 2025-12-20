@@ -1,5 +1,12 @@
 #include "BrainFckASTVisitor.h"
 
+#include "BrainFckAST.h"
+
+#include <cstdint>
+#include <iostream>
+#include <memory>
+#include <ostream>
+
 void BrainFckPrintingVisitor::Traverse(TProgramPtr pProgram)
 {
     Print("Program");

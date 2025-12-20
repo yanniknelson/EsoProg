@@ -1,25 +1,22 @@
 #pragma once
 
-//ImGui imports
-#include <imgui.h>
-#include <imgui_stdlib.h>
-
-//OpenGL imports
-#include "GLFW/glfw3.h"
-
-//Other imports
-#include <fstream>
-#include <iostream>
-#include <stdio.h>
-
-//Custom classes
 #include <BrainFckRuntime.h>
+#include <ELanguages.h>
 #include <FileDialogBox.h>
 #include <IRuntime.h>
 #include <IconsFontAwesome7.h>
 #include <NullRuntime.h>
 #include <PietRuntime.h>
 #include <SmartEnums.h>
+
+#include <GLFW/glfw3.h>
+#include <gl/GL.h>
+#include <imgui.h>
+
+#include <filesystem>
+#include <fstream>
+#include <sstream>
+#include <string>
 
 class EsoProg
 {

@@ -3,7 +3,6 @@
 #include "ImGuiSetStyles.h"
 
 #include <imgui.h>
-#include <imgui_stdlib.h>
 
 void SetImGuiShapingStyle()
 {

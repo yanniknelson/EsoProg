@@ -1,13 +1,17 @@
 #include "LogManager.h"
 
-#include "log.h"
-#include "spdlog/async.h"
-#include "spdlog/sinks/basic_file_sink.h"
-#include "spdlog/sinks/stdout_color_sinks.h"
-#include "spdlog/spdlog.h"
+#include <log.h>
+#include <spdlog/async.h>
+#include <spdlog/async_logger.h>
+#include <spdlog/common.h>
+#include <spdlog/fmt/bundled/format.h>
+#include <spdlog/sinks/basic_file_sink.h>
+#include <spdlog/sinks/stdout_color_sinks.h>
+#include <spdlog/spdlog-inl.h>
 
-#include <iostream>
+#include <atomic>
 #include <memory>
+#include <vector>
 
 bool CLogManager::m_bInitialized = false;
 std::atomic<int> CLogManager::m_nLoggers = 0;

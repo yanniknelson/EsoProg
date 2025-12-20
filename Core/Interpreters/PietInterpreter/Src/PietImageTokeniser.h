@@ -3,10 +3,11 @@
 #include "PietToken.h"
 
 #include <ITokeniser.h>
-#include <iomanip>
+
+#include <cstdint>
+#include <ios>
 #include <iostream>
 #include <string>
-#include <strstream>
 #include <vector>
 
 class PietImageTokeniser : public ITokeniser<PietToken>

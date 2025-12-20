@@ -1,5 +1,9 @@
 #include "ImGuiValueChangeCallbacks.h"
 
+#include <imgui.h>
+
+#include <string>
+
 int TextInputCallback(ImGuiInputTextCallbackData* data)
 {
     *((bool*)data->UserData) = true;

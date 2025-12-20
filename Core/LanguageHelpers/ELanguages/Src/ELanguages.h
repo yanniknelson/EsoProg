@@ -1,7 +1,6 @@
 #pragma once
 
 #include <SmartEnums.h>
-#include <cstdint>
 
 // clang-format off
 #define ELANGUAGES(x) \

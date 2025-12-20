@@ -1,15 +1,25 @@
 ﻿// Main.cpp : Defines the entry point for the application.
 
-#include "Main.h"
+#include "EsoProg.h"
 
-#include <stdio.h>
+#include <IRuntime.h>
+#include <ImGuiSetStyles.h>
+
+#include <GLFW/glfw3.h> // Will drag system OpenGL headers
+#include <gl/GL.h>
+#include <imgui.h>
+#include <imgui_impl_glfw.h>
+#include <imgui_impl_opengl3.h>
 #define GL_SILENCE_DEPRECATION
 #if defined(IMGUI_IMPL_OPENGL_ES2)
 #include <GLES2/gl2.h>
 #endif
-#include <GLFW/glfw3.h> // Will drag system OpenGL headers
 
-#include <ImGuiSetStyles.h>
+//Other imports
+#include <chrono>
+#include <cstdio>
+#include <mutex>
+#include <thread>
 
 static void glfw_error_callback(int error, const char* description)
 {

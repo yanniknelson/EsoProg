@@ -4,6 +4,10 @@
 #include <imgui.h>
 #include <imgui_stdlib.h>
 
+#include <filesystem>
+#include <string>
+#include <vector>
+
 const char* FileDialogBox::DialogBoxTypes[] = { "Open", "Save As" };
 fs::path FileDialogBox::currentPath = fs::path();
 fs::path FileDialogBox::selectedFilePath = fs::path();

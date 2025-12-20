@@ -2,6 +2,7 @@
 
 #include <IToken.h>
 #include <SmartEnums.h>
+
 #include <iostream>
 
 class BrainFckToken : public IToken

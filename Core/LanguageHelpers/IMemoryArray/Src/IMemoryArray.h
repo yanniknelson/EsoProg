@@ -1,12 +1,12 @@
 #pragma once
 
-#include <cmath>
+#include <imgui.h>
+
+#include <climits>
 #include <iostream>
-#include <limits>
 #include <map>
 #include <string>
 
-#include <imgui.h>
 
 template<typename memType>
 class IMemoryArray

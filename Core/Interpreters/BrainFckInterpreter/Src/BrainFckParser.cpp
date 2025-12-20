@@ -1,5 +1,9 @@
 #include "BrainFckParser.h"
+
 #include "BrainFckAST.h"
+#include "BrainFckToken.h"
+
+#include <memory>
 
 TBrainFckOperationPtr BrainFckParser::Parse_Internal()
 {

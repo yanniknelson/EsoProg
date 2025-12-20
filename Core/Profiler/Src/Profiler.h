@@ -1,7 +1,5 @@
 #pragma once
 
-#include <string>
-
 /// If profiling is enabled
 #if defined(ENABLE_PROFILER)
 

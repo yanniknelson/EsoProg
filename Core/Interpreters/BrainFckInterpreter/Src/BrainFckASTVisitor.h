@@ -2,7 +2,8 @@
 
 #include <BrainFckAST.h>
 #include <IASTVisitor.h>
-#include <iostream>
+
+#include <cstdint>
 #include <memory>
 
 class BrainFckPrintingVisitor : public IASTVisitor<BrainFckProgram>

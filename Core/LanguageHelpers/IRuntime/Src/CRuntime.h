@@ -3,17 +3,12 @@
 #include "IRuntime.h"
 
 #include <ELanguages.h>
-#include <ITokeniser.h>
 
 #include <iostream>
 #include <sstream>
 
 #include <atomic>
-#include <chrono>
-#include <condition_variable>
-#include <mutex>
 #include <string>
-#include <thread>
 
 template<typename TokenClass>
 class CRuntime : public IRuntime

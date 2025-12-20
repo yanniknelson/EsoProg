@@ -1,4 +1,6 @@
+#include <cstdint>
 #include <iostream>
+#include <string.h>
 
 #define BIT(x) (1 << (x))
 

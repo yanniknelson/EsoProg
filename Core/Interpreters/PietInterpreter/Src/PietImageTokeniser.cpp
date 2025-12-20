@@ -1,6 +1,9 @@
 #include "PietImageTokeniser.h"
 
+#include "PietToken.h"
+
 #include <IconsFontAwesome7.h>
+
 #include <deque>
 #include <map>
 #include <vector>

@@ -1,25 +1,20 @@
 #pragma once
 
-#include "ITokeniser.h"
 #include "PietImageTokeniser.h"
 #include "PietTextTokeniser.h"
 #include "PietToken.h"
 
-#include "ELanguages.h"
-
-#include <iostream>
-#include <sstream>
-
 #include <CRuntime.h>
+#include <ELanguages.h>
+#include <IRuntime.h>
+#include <ITokeniser.h>
 #include <Stack.h>
-#include <atomic>
-#include <chrono>
-#include <condition_variable>
-#include <mutex>
-#include <string>
-#include <thread>
 
-#include "GLFW/glfw3.h"
+#include <GLFW/glfw3.h>
+
+#include <sstream>
+#include <string>
+#include <vector>
 
 class PietRuntime : public CRuntime<PietToken>
 {
