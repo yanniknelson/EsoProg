@@ -18,7 +18,7 @@
 #include <sstream>              // for std::ostringstream
 #include <string>
 
-class EsoProg
+class CEsoProg
 {
     // clang-format off
 #define EFILETYPES(x) \
@@ -97,7 +97,7 @@ class EsoProg
 
     RuntimeSyncronisationStruct m_sync;
 
-    EsoProg(GLFWwindow* pWindow)
+    CEsoProg(GLFWwindow* pWindow)
     {
         i_pWindow = pWindow;
         //setup the current directory as the initial path in the file dialog box

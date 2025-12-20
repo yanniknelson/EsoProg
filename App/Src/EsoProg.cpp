@@ -22,22 +22,22 @@
 #include <iostream>
 #include <string>
 
-const char* EsoProg::i_ProgramName = "EsoProg";
-GLFWwindow* EsoProg::i_pWindow = nullptr;
+const char* CEsoProg::i_ProgramName = "EsoProg";
+GLFWwindow* CEsoProg::i_pWindow = nullptr;
 
-void EsoProg::HandleNew()
+void CEsoProg::HandleNew()
 {
     m_bFileIsNew = true;
     m_code = "";
 }
 
-void EsoProg::HandleOpen()
+void CEsoProg::HandleOpen()
 {
     m_bEnableFileDialog = true;
     m_dialogType = FileDialogBox::FileDialogType::Open;
 }
 
-void EsoProg::HandleSave()
+void CEsoProg::HandleSave()
 {
     if (m_bFileIsNew)
     {
@@ -52,13 +52,13 @@ void EsoProg::HandleSave()
     }
 }
 
-void EsoProg::HandelSaveAs()
+void CEsoProg::HandelSaveAs()
 {
     m_bEnableFileDialog = true;
     m_dialogType = FileDialogBox::FileDialogType::Save_As;
 }
 
-void EsoProg::CheckShortCuts()
+void CEsoProg::CheckShortCuts()
 {
     const ImGuiIO& io = ImGui::GetIO();
     //if a shortcut has just been used and either ctrl or the alpha key is up then enable the triggering of a new shortcut
@@ -103,7 +103,7 @@ void EsoProg::CheckShortCuts()
     }
 }
 
-void EsoProg::CreateMenuBar()
+void CEsoProg::CreateMenuBar()
 {
     if (ImGui::BeginMainMenuBar())
     {
@@ -163,7 +163,7 @@ void EsoProg::CreateMenuBar()
     ImGui::EndMainMenuBar();
 }
 
-void EsoProg::PreFileLoad(const std::filesystem::path path)
+void CEsoProg::PreFileLoad(const std::filesystem::path path)
 {
     const EFileType::Enum fileType = path.extension() == ".txt" ? EFileType::Text : EFileType::Image;
     switch (fileType)
@@ -198,7 +198,7 @@ void EsoProg::PreFileLoad(const std::filesystem::path path)
     m_pRuntime->RequestReset();
 }
 
-EsoProg::EFileType::Enum EsoProg::LoadFile(const std::filesystem::path path)
+CEsoProg::EFileType::Enum CEsoProg::LoadFile(const std::filesystem::path path)
 {
     const EFileType::Enum fileType = path.extension() == ".txt" ? EFileType::Text : EFileType::Image;
     PreFileLoad(path);
@@ -256,12 +256,12 @@ EsoProg::EFileType::Enum EsoProg::LoadFile(const std::filesystem::path path)
     return fileType;
 }
 
-void EsoProg::PostFileLoad(const EsoProg::EFileType::Enum fileType, const std::filesystem::path path)
+void CEsoProg::PostFileLoad(const CEsoProg::EFileType::Enum fileType, const std::filesystem::path path)
 {
     m_currentFileType = fileType;
 }
 
-void EsoProg::SetCurrentLanugage(ELanguages::Enum language)
+void CEsoProg::SetCurrentLanugage(ELanguages::Enum language)
 {
     std::string newName = i_ProgramName;
     m_currentLanguage = language;
@@ -289,12 +289,12 @@ void EsoProg::SetCurrentLanugage(ELanguages::Enum language)
     glfwSetWindowTitle(i_pWindow, newName.c_str());
 }
 
-void EsoProg::Reset()
+void CEsoProg::Reset()
 {
     m_pRuntime->Reset();
 }
 
-bool EsoProg::UpdateRuntime()
+bool CEsoProg::UpdateRuntime()
 {
     if (m_bCodeChangedSinceLastStep)
     {
@@ -304,7 +304,7 @@ bool EsoProg::UpdateRuntime()
     return m_pRuntime->StepExecution();
 }
 
-void EsoProg::Render()
+void CEsoProg::Render()
 {
     m_fileDialogOnTop = ImGuiWindowFlags_None;
     //check if any shortcut is active and handle it
@@ -467,12 +467,12 @@ void EsoProg::Render()
     ImGui::End();
 }
 
-bool EsoProg::IsRuntimeWaitingOnInput()
+bool CEsoProg::IsRuntimeWaitingOnInput()
 {
     return m_pRuntime->IsWaitingForCharInput() || m_pRuntime->IsWaitingForValInput();
 }
 
-void EsoProg::CopyState()
+void CEsoProg::CopyState()
 {
     m_sync.renderWantsState = true;
     m_sync.runtimeStateMtx.lock();
