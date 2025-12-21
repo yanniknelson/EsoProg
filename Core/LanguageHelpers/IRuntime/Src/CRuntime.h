@@ -20,9 +20,6 @@ class CRuntime : public IRuntime
     {
     }
 
-    virtual ELanguages::Enum GetRuntimeLanguage() const = 0;
-    virtual std::vector<std::string> GetSupportedFileTypes() const = 0;
-
     //////////////////////////////////////////////////////////////
     virtual void SetSourceCode(std::string str) override
     {
@@ -45,8 +42,6 @@ class CRuntime : public IRuntime
         return !ShouldEnd(token);
     }
 
-    virtual void ResetImplementation() = 0;
-
     //////////////////////////////////////////////////////////////
     virtual void ResetCodeStream() override
     {
@@ -55,15 +50,11 @@ class CRuntime : public IRuntime
         OnSourceSet();
     }
 
-    virtual void RenderWindows() = 0;
-    virtual void CacheState() = 0;
-
   protected:
     std::string m_codeStr = "";
     std::stringstream m_code;
 
     virtual void OnSourceSet() = 0;
-    virtual void OnInput(int val) = 0;
     virtual bool ShouldEnd(const TokenClass& token) = 0;
 
     virtual TokenClass StepExecution_Internal() = 0;

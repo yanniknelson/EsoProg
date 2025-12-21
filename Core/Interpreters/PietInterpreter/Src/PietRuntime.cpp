@@ -39,6 +39,28 @@ std::vector<std::string> PietRuntime::GetSupportedFileTypes() const
 }
 
 //////////////////////////////////////////////////////////////
+void PietRuntime::ResetImplementation()
+{
+    m_stack.Clear();
+    m_textTokeniser.SetTextStream(m_code);
+    m_imageTokeniser.Reset();
+};
+
+//////////////////////////////////////////////////////////////
+void PietRuntime::RenderWindows()
+{
+    m_cachedStack.DisplayStack();
+    RenderImageDisplay();
+}
+
+//////////////////////////////////////////////////////////////
+void PietRuntime::CacheState()
+{
+    m_cachedStack = m_stack;
+    m_imageTokeniser.CopyState();
+}
+
+//////////////////////////////////////////////////////////////
 void PietRuntime::SetImage(GLuint* pTexture, const unsigned char* imageData, const int imageWidth, const int imageHeight)
 {
     m_currentSourceType = ESourceType::Image;
@@ -65,105 +87,9 @@ void PietRuntime::SetCodelSize(const int size)
 }
 
 //////////////////////////////////////////////////////////////
-void PietRuntime::ResetImplementation()
+void PietRuntime::OnInput(int val)
 {
-    m_stack.Clear();
-    m_textTokeniser.SetTextStream(m_code);
-    m_imageTokeniser.Reset();
-};
-
-//////////////////////////////////////////////////////////////
-void PietRuntime::RenderWindows()
-{
-    m_cachedStack.DisplayStack();
-    RenderImageDisplay();
-}
-
-//////////////////////////////////////////////////////////////
-void PietRuntime::CacheState()
-{
-    m_cachedStack = m_stack;
-    m_imageTokeniser.CopyState();
-}
-
-//////////////////////////////////////////////////////////////
-void PietRuntime::RenderImageDisplay()
-{
-    if (ImGui::Begin("Piet Image"))
-    {
-        if (m_pTexture)
-        {
-            const ImVec2 area = ImGui::GetContentRegionAvail();
-            ImVec2 desired = ImVec2(area.x, (int)area.x * m_aspectRatio);
-            if (desired.y > area.y)
-            {
-                desired = ImVec2((int)area.y * (1 / m_aspectRatio), area.y);
-            }
-            ImGui::Image((ImTextureID)(intptr_t)(*m_pTexture), desired);
-        }
-
-        if (ImGui::Button("Run"))
-        {
-            RequestReset();
-            m_bForceImage = true;
-            m_currentSourceType = ESourceType::Image;
-            m_activeTokeniser = (TPietTokeniser*)&m_imageTokeniser;
-            m_rSync.m_iterations = -1;
-        }
-
-        ImGui::SameLine();
-        {
-            int currentinstructionWaitTime = m_rSync.m_instructionWaitTime.load();
-            float newInstructionWaitTime = currentinstructionWaitTime / 1000.f;
-            ImGui::SliderFloat("##ExecutionSpeed", &newInstructionWaitTime, 0, 3);
-            m_rSync.m_instructionWaitTime.compare_exchange_strong(currentinstructionWaitTime, static_cast<int>(newInstructionWaitTime * 1000.f));
-        }
-
-        if (m_rSync.m_iterations == -1)
-        {
-            ImGui::SameLine();
-            if (ImGui::Button("Pause"))
-            {
-                m_rSync.m_iterations = 0;
-            }
-        }
-
-        ImGui::SameLine();
-        if (ImGui::Button("Step"))
-        {
-            if (m_currentSourceType != ESourceType::Image)
-            {
-                m_bForceImage = true;
-                RequestReset();
-                m_currentSourceType = ESourceType::Image;
-                m_activeTokeniser = (TPietTokeniser*)&m_imageTokeniser;
-            }
-            ++m_rSync.m_iterations;
-        }
-
-        ImGui::SameLine();
-        {
-            int newCodelSize = m_codelSize;
-            ImGui::InputText("##codelSize", &m_codelSizeStr, ImGuiInputTextFlags_CharsDecimal | ImGuiInputTextFlags_CallbackEdit, ValueInputChanged, &newCodelSize);
-            if (newCodelSize != m_codelSize)
-            {
-                m_codelSize = newCodelSize;
-                SetCodelSize(m_codelSize);
-            }
-        }
-
-        ImGui::Text("Current Block Start Location: %s - End Location: %s",
-            m_imageTokeniser.GetCachedBlockStartLocation().toString().c_str(),
-            m_imageTokeniser.GetCachedBlockEndLocation().toString().c_str());
-        ImGui::Text("Current Block Start Dir: %s - End Dir: %s",
-            PietImageTokeniser::s_directionIcons[static_cast<int>(m_imageTokeniser.GetCachedBlockStartDirectionPointer())],
-            PietImageTokeniser::s_directionIcons[static_cast<int>(m_imageTokeniser.GetCachedBlockEndDirectionPointer())]);
-        ImGui::Text("Current Block Start CC: %s - End CC: %s",
-            PietImageTokeniser::s_directionIcons[static_cast<int>(m_imageTokeniser.GetCachedBlockStartCodelChoser())],
-            PietImageTokeniser::s_directionIcons[static_cast<int>(m_imageTokeniser.GetCachedBlockEndCodelChoser())]);
-
-        ImGui::End();
-    }
+    m_stack.Push(val);
 }
 
 //////////////////////////////////////////////////////////////
@@ -180,12 +106,6 @@ void PietRuntime::OnSourceSet()
         m_currentSourceType = ESourceType::Text;
         m_activeTokeniser = (TPietTokeniser*)&m_textTokeniser;
     }
-}
-
-//////////////////////////////////////////////////////////////
-void PietRuntime::OnInput(int val)
-{
-    m_stack.Push(val);
 }
 
 //////////////////////////////////////////////////////////////
@@ -369,4 +289,84 @@ PietToken PietRuntime::StepExecution_Internal()
     }
 
     return token;
+}
+
+//////////////////////////////////////////////////////////////
+void PietRuntime::RenderImageDisplay()
+{
+    if (ImGui::Begin("Piet Image"))
+    {
+        if (m_pTexture)
+        {
+            const ImVec2 area = ImGui::GetContentRegionAvail();
+            ImVec2 desired = ImVec2(area.x, (int)area.x * m_aspectRatio);
+            if (desired.y > area.y)
+            {
+                desired = ImVec2((int)area.y * (1 / m_aspectRatio), area.y);
+            }
+            ImGui::Image((ImTextureID)(intptr_t)(*m_pTexture), desired);
+        }
+
+        if (ImGui::Button("Run"))
+        {
+            RequestReset();
+            m_bForceImage = true;
+            m_currentSourceType = ESourceType::Image;
+            m_activeTokeniser = (TPietTokeniser*)&m_imageTokeniser;
+            m_rSync.m_iterations = -1;
+        }
+
+        ImGui::SameLine();
+        {
+            int currentinstructionWaitTime = m_rSync.m_instructionWaitTime.load();
+            float newInstructionWaitTime = currentinstructionWaitTime / 1000.f;
+            ImGui::SliderFloat("##ExecutionSpeed", &newInstructionWaitTime, 0, 3);
+            m_rSync.m_instructionWaitTime.compare_exchange_strong(currentinstructionWaitTime, static_cast<int>(newInstructionWaitTime * 1000.f));
+        }
+
+        if (m_rSync.m_iterations == -1)
+        {
+            ImGui::SameLine();
+            if (ImGui::Button("Pause"))
+            {
+                m_rSync.m_iterations = 0;
+            }
+        }
+
+        ImGui::SameLine();
+        if (ImGui::Button("Step"))
+        {
+            if (m_currentSourceType != ESourceType::Image)
+            {
+                m_bForceImage = true;
+                RequestReset();
+                m_currentSourceType = ESourceType::Image;
+                m_activeTokeniser = (TPietTokeniser*)&m_imageTokeniser;
+            }
+            ++m_rSync.m_iterations;
+        }
+
+        ImGui::SameLine();
+        {
+            int newCodelSize = m_codelSize;
+            ImGui::InputText("##codelSize", &m_codelSizeStr, ImGuiInputTextFlags_CharsDecimal | ImGuiInputTextFlags_CallbackEdit, ValueInputChanged, &newCodelSize);
+            if (newCodelSize != m_codelSize)
+            {
+                m_codelSize = newCodelSize;
+                SetCodelSize(m_codelSize);
+            }
+        }
+
+        ImGui::Text("Current Block Start Location: %s - End Location: %s",
+            m_imageTokeniser.GetCachedBlockStartLocation().toString().c_str(),
+            m_imageTokeniser.GetCachedBlockEndLocation().toString().c_str());
+        ImGui::Text("Current Block Start Dir: %s - End Dir: %s",
+            PietImageTokeniser::s_directionIcons[static_cast<int>(m_imageTokeniser.GetCachedBlockStartDirectionPointer())],
+            PietImageTokeniser::s_directionIcons[static_cast<int>(m_imageTokeniser.GetCachedBlockEndDirectionPointer())]);
+        ImGui::Text("Current Block Start CC: %s - End CC: %s",
+            PietImageTokeniser::s_directionIcons[static_cast<int>(m_imageTokeniser.GetCachedBlockStartCodelChoser())],
+            PietImageTokeniser::s_directionIcons[static_cast<int>(m_imageTokeniser.GetCachedBlockEndCodelChoser())]);
+
+        ImGui::End();
+    }
 }

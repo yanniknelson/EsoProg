@@ -22,13 +22,13 @@ class BrainFckRuntime : public CRuntime<BrainFckOperationTypes::Enum>
   public:
     BrainFckRuntime(SRuntimeSyncronisationStruct& rSync, std::ostringstream& rOutputStream, std::ostringstream& rExecutionhistoryStream);
 
-    // CRuntime
+    // IRuntime
     virtual ELanguages::Enum GetRuntimeLanguage() const override;
     virtual std::vector<std::string> GetSupportedFileTypes() const override;
     virtual void ResetImplementation() override;
     virtual void RenderWindows() override;
     virtual void CacheState() override;
-    // ~CRuntime
+    // ~IRuntime
 
   private:
     BrainFckTokeniser m_tokeniser;
@@ -41,9 +41,12 @@ class BrainFckRuntime : public CRuntime<BrainFckOperationTypes::Enum>
     int m_cachedIndex{ 0 };
     IMemoryArray<uint8_t> m_cachedArray;
 
+    // IRuntime
+    virtual void OnInput(int val) override;
+    // ~IRuntime
+
     // CRuntime
     virtual void OnSourceSet() override;
-    virtual void OnInput(int val) override;
     virtual bool ShouldEnd(const BrainFckOperationTypes::Enum& token) override;
     virtual BrainFckOperationTypes::Enum StepExecution_Internal() override;
     // ~CRuntime
