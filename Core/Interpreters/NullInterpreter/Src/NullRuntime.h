@@ -2,21 +2,25 @@
 
 #include "ELanguages.h"  // for ELanguages::Enum
 
-#include <IRuntime.h>    // for IRuntime
+#include <IRuntime.h>    // for IRuntime, SRuntimeSyncronisationStruct
 
 #include <sstream>       // for std::ostringstream
 #include <string>
 #include <vector>
 
+//////////////////////////////////////////////////////////////
 class NullRuntime : public IRuntime
 {
   public:
     NullRuntime(SRuntimeSyncronisationStruct& rSync, std::ostringstream& rOutputStream, std::ostringstream& rExecutionhistoryStream) : IRuntime(rSync, rOutputStream, rExecutionhistoryStream) {};
 
+    //////////////////////////////////////////////////////////////
     virtual ELanguages::Enum GetRuntimeLanguage() const override
     {
         return ELanguages::COUNT;
     }
+
+    //////////////////////////////////////////////////////////////
     virtual std::vector<std::string> GetSupportedFileTypes() const override
     {
         return {};
@@ -24,6 +28,7 @@ class NullRuntime : public IRuntime
 
     virtual void SetSourceCode(std::string str) {};
 
+    //////////////////////////////////////////////////////////////
     virtual bool StepExecution()
     {
         return false;
@@ -36,6 +41,7 @@ class NullRuntime : public IRuntime
     virtual void CacheState() override {};
 
   private:
+    //////////////////////////////////////////////////////////////
     void RenderImageDisplay(SRuntimeSyncronisationStruct& rSync)
     {
     };
