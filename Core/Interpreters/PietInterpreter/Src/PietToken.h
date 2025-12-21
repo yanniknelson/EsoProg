@@ -5,6 +5,7 @@
 
 #include <iostream>      // for std::ostream
 
+//////////////////////////////////////////////////////////////
 class PietToken : public IToken
 {
   public:
@@ -38,38 +39,35 @@ class PietToken : public IToken
     x(End)               \
     x(Unrecognised_Token)
 
-    CreateSmartEnum(TokenType, ETOKENTYPE);
+    CreateSmartEnum(ETokenType, ETOKENTYPE);
 
 #undef ETOKENTYPE
     // clang-format on
 
-    PietToken(const TokenType::Enum type, const int value) : m_type(type), m_value(value) {};
-    PietToken(const TokenType::Enum type) : m_type(type), m_value(0) {};
+    PietToken(const ETokenType::Enum type, const int value) : m_type(type), m_value(value) {};
+    PietToken(const ETokenType::Enum type) : m_type(type), m_value(0) {};
 
-    TokenType::Enum m_type = TokenType::Start;
+    ETokenType::Enum m_type = ETokenType::Start;
     int m_value;
 
-    /// <summary>
-    /// Format and output the Token of the stack for and output stream
-    /// </summary>
-    /// <param name="os - "> The output stream </param>
-    /// <param name="tk - "> The token to be output </param>
-    /// <returns></returns>
+    //////////////////////////////////////////////////////////////
     friend std::ostream& operator<<(std::ostream& os, const PietToken& tk)
     {
-        os << PietToken::TokenType::ToString(tk.m_type);
-        if (tk.m_type == TokenType::Push)
+        os << PietToken::ETokenType::ToString(tk.m_type);
+        if (tk.m_type == ETokenType::Push)
         {
             os << " " << tk.m_value;
         }
         return os;
     }
 
+    //////////////////////////////////////////////////////////////
     friend bool operator==(const PietToken& tk1, const PietToken& tk2)
     {
         return tk1.m_type == tk2.m_type && tk1.m_value == tk1.m_value;
     }
 
+    //////////////////////////////////////////////////////////////
     friend bool operator!=(const PietToken& tk1, const PietToken& tk2)
     {
         return !(tk1 == tk2);

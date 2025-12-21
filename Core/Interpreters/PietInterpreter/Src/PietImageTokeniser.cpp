@@ -16,19 +16,19 @@ PietToken PietImageTokeniser::Pop_Internal()
 {
     if (m_imageData == nullptr)
     {
-        return PietToken::TokenType::End;
+        return PietToken::ETokenType::End;
     }
 
     m_currentBlock = GetBlockInfo(m_currentBlock.m_endingCodel, m_currentBlock.m_endingDirectionPointer, m_currentBlock.m_endingCodelChooser);
 
     if (m_currentBlock.m_startingCodel == m_currentBlock.m_endingCodel)
     {
-        return PietToken::TokenType::End;
+        return PietToken::ETokenType::End;
     }
 
     PietColour nextCol = GetPietColourFromLocation(m_currentBlock.m_endingCodel);
-    PietToken::TokenType::Enum type = ConvertColoursToInstruction(m_currentBlock.m_pCodelInfo->m_pietColour, nextCol);
-    if (type == PietToken::TokenType::Push)
+    PietToken::ETokenType::Enum type = ConvertColoursToInstruction(m_currentBlock.m_pCodelInfo->m_pietColour, nextCol);
+    if (type == PietToken::ETokenType::Push)
     {
         return PietToken(type, m_currentBlock.m_pCodelInfo->m_size);
     }
@@ -257,26 +257,26 @@ void PietImageTokeniser::RotateDirectionPointer(BlockInfo& blockInfo, const int 
     }
 }
 
-PietToken::TokenType::Enum PietImageTokeniser::ConvertColoursToInstruction(const PietColour colour1, const PietColour colour2)
+PietToken::ETokenType::Enum PietImageTokeniser::ConvertColoursToInstruction(const PietColour colour1, const PietColour colour2)
 {
     // clang-format off
-	static const PietToken::TokenType::Enum conversionTable[6][3] = { {PietToken::TokenType::Unrecognised_Token, PietToken::TokenType::Push, PietToken::TokenType::Pop}
-														, {PietToken::TokenType::Add, PietToken::TokenType::Subtract, PietToken::TokenType::Multiply}
-														, {PietToken::TokenType::Divide, PietToken::TokenType::Modulo, PietToken::TokenType::Not}
-														, {PietToken::TokenType::Greater, PietToken::TokenType::Pointer, PietToken::TokenType::Switch}
-														, {PietToken::TokenType::Duplicate, PietToken::TokenType::Roll, PietToken::TokenType::Input_Val}
-														, {PietToken::TokenType::Input_Char, PietToken::TokenType::Output_Val, PietToken::TokenType::Output_Char} };
+	static const PietToken::ETokenType::Enum conversionTable[6][3] = { {PietToken::ETokenType::Unrecognised_Token, PietToken::ETokenType::Push, PietToken::ETokenType::Pop}
+														, {PietToken::ETokenType::Add, PietToken::ETokenType::Subtract, PietToken::ETokenType::Multiply}
+														, {PietToken::ETokenType::Divide, PietToken::ETokenType::Modulo, PietToken::ETokenType::Not}
+														, {PietToken::ETokenType::Greater, PietToken::ETokenType::Pointer, PietToken::ETokenType::Switch}
+														, {PietToken::ETokenType::Duplicate, PietToken::ETokenType::Roll, PietToken::ETokenType::Input_Val}
+														, {PietToken::ETokenType::Input_Char, PietToken::ETokenType::Output_Val, PietToken::ETokenType::Output_Char} };
     // clang-format on
 
     // White acts as a reset for the colour, moving into it 'clears' the current colour,
     // so we can't execute when we move into or out of it, thus return NOP
     if (colour2.m_hue == Hue::White)
     {
-        return PietToken::TokenType::EnterSlide;
+        return PietToken::ETokenType::EnterSlide;
     }
     if (colour1.m_hue == Hue::White)
     {
-        return PietToken::TokenType::ExitSlide;
+        return PietToken::ETokenType::ExitSlide;
     }
 
     int hueDiffIndx = (int)colour2.m_hue - (int)colour1.m_hue;

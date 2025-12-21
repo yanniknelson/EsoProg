@@ -10,7 +10,7 @@ PietToken PietTextTokeniser::GetNextToken()
 {
     if (!m_pStrStream->rdbuf()->in_avail())
     {
-        return PietToken(PietToken::TokenType::End);
+        return PietToken(PietToken::ETokenType::End);
     }
     char ch = ' ';
     std::string word;
@@ -23,12 +23,12 @@ PietToken PietTextTokeniser::GetNextToken()
         }
     }
 
-    PietToken::TokenType::Enum type = PietToken::TokenType::Unrecognised_Token;
+    PietToken::ETokenType::Enum type = PietToken::ETokenType::Unrecognised_Token;
     int value = 0;
 
     if (isdigit(ch))
     {
-        type = PietToken::TokenType::Value;
+        type = PietToken::ETokenType::Value;
         m_pStrStream->putback(ch);
         *m_pStrStream >> value;
     }
@@ -36,36 +36,36 @@ PietToken PietTextTokeniser::GetNextToken()
     {
         m_pStrStream->putback(ch);
         *m_pStrStream >> word;
-        type = StringToTokenType(word);
+        type = StringToETokenType(word);
 
-        if (type == PietToken::TokenType::Input)
+        if (type == PietToken::ETokenType::Input)
         {
             word = "";
             *m_pStrStream >> word;
-            type = StringToTokenType(word);
+            type = StringToETokenType(word);
 
-            if (type == PietToken::TokenType::CHAR)
+            if (type == PietToken::ETokenType::CHAR)
             {
-                type = PietToken::TokenType::Input_Char;
+                type = PietToken::ETokenType::Input_Char;
             }
-            else if (type == PietToken::TokenType::INT)
+            else if (type == PietToken::ETokenType::INT)
             {
-                type = PietToken::TokenType::Input_Val;
+                type = PietToken::ETokenType::Input_Val;
             }
         }
-        else if (type == PietToken::TokenType::Output)
+        else if (type == PietToken::ETokenType::Output)
         {
             word = "";
             *m_pStrStream >> word;
-            type = StringToTokenType(word);
+            type = StringToETokenType(word);
 
-            if (type == PietToken::TokenType::CHAR)
+            if (type == PietToken::ETokenType::CHAR)
             {
-                type = PietToken::TokenType::Output_Char;
+                type = PietToken::ETokenType::Output_Char;
             }
-            else if (type == PietToken::TokenType::INT)
+            else if (type == PietToken::ETokenType::INT)
             {
-                type = PietToken::TokenType::Output_Val;
+                type = PietToken::ETokenType::Output_Val;
             }
         }
     }
@@ -76,10 +76,10 @@ PietToken PietTextTokeniser::GetNextToken()
 PietToken PietTextTokeniser::Pop_Internal()
 {
     PietToken token = GetNextToken();
-    if (token.m_type == PietToken::TokenType::Push)
+    if (token.m_type == PietToken::ETokenType::Push)
     {
         PietToken value = Pop_Internal();
-        if (value.m_type != PietToken::TokenType::Value)
+        if (value.m_type != PietToken::ETokenType::Value)
         {
             std::abort();
         }
@@ -88,82 +88,82 @@ PietToken PietTextTokeniser::Pop_Internal()
     return token;
 }
 
-PietToken::TokenType::Enum PietTextTokeniser::StringToTokenType(std::string& rString) const
+PietToken::ETokenType::Enum PietTextTokeniser::StringToETokenType(std::string& rString) const
 {
     if (rString == "PUSH")
     {
-        return PietToken::TokenType::Push;
+        return PietToken::ETokenType::Push;
     }
     else if (rString == "POP")
     {
-        return PietToken::TokenType::Pop;
+        return PietToken::ETokenType::Pop;
     }
     else if (rString == "Add")
     {
-        return PietToken::TokenType::Add;
+        return PietToken::ETokenType::Add;
     }
     else if (rString == "SUB")
     {
-        return PietToken::TokenType::Subtract;
+        return PietToken::ETokenType::Subtract;
     }
     else if (rString == "MUL")
     {
-        return PietToken::TokenType::Multiply;
+        return PietToken::ETokenType::Multiply;
     }
     else if (rString == "DIV")
     {
-        return PietToken::TokenType::Divide;
+        return PietToken::ETokenType::Divide;
     }
     else if (rString == "MOD")
     {
-        return PietToken::TokenType::Modulo;
+        return PietToken::ETokenType::Modulo;
     }
     else if (rString == "NOT")
     {
-        return PietToken::TokenType::Not;
+        return PietToken::ETokenType::Not;
     }
     else if (rString == "GR")
     {
-        return PietToken::TokenType::Greater;
+        return PietToken::ETokenType::Greater;
     }
     else if (rString == "PNTR")
     {
-        return PietToken::TokenType::Pointer;
+        return PietToken::ETokenType::Pointer;
     }
     else if (rString == "SWTCH")
     {
-        return PietToken::TokenType::Switch;
+        return PietToken::ETokenType::Switch;
     }
     else if (rString == "DUP")
     {
-        return PietToken::TokenType::Duplicate;
+        return PietToken::ETokenType::Duplicate;
     }
     else if (rString == "ROLL")
     {
-        return PietToken::TokenType::Roll;
+        return PietToken::ETokenType::Roll;
     }
     else if (rString == "END")
     {
-        return PietToken::TokenType::End;
+        return PietToken::ETokenType::End;
     }
     else if (rString == "OUT")
     {
-        return PietToken::TokenType::Output;
+        return PietToken::ETokenType::Output;
     }
     else if (rString == "IN")
     {
-        return PietToken::TokenType::Input;
+        return PietToken::ETokenType::Input;
     }
     else if (rString == "CHAR")
     {
-        return PietToken::TokenType::CHAR;
+        return PietToken::ETokenType::CHAR;
     }
     else if (rString == "INT")
     {
-        return PietToken::TokenType::INT;
+        return PietToken::ETokenType::INT;
     }
     else
     {
-        return PietToken::TokenType::Unrecognised_Token;
+        return PietToken::ETokenType::Unrecognised_Token;
     }
 }

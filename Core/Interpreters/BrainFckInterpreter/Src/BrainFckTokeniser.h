@@ -12,11 +12,11 @@ class BrainFckTokeniser : public ITextTokeniser<BrainFckToken>
 
   private:
     /// <summary>
-    /// Convert from char to TokenType enum
+    /// Convert from char to ETokenType enum
     /// </summary>
     /// <param name="chr - "> char to be converted </param>
-    /// <returns> TokenType enum corresponding to input char </returns>
-    inline BrainFckToken::TokenType::Enum CharToToken(const char chr) const;
+    /// <returns> ETokenType enum corresponding to input char </returns>
+    inline BrainFckToken::ETokenType::Enum CharToToken(const char chr) const;
 
     BrainFckToken GetNextToken();
     virtual BrainFckToken Pop_Internal() override;

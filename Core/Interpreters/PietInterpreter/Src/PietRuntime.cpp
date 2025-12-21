@@ -22,12 +22,12 @@ PietToken PietRuntime::StepExecution_Internal()
 
     switch (token.m_type)
     {
-    case (PietToken::TokenType::Push):
+    case (PietToken::ETokenType::Push):
     {
         m_stack.Push(token.m_value);
         break;
     }
-    case (PietToken::TokenType::Pop):
+    case (PietToken::ETokenType::Pop):
     {
         if (m_stack.GetSize() > 0)
         {
@@ -35,7 +35,7 @@ PietToken PietRuntime::StepExecution_Internal()
         }
         break;
     }
-    case (PietToken::TokenType::Add):
+    case (PietToken::ETokenType::Add):
     {
         if (m_stack.GetSize() >= 2)
         {
@@ -43,7 +43,7 @@ PietToken PietRuntime::StepExecution_Internal()
         }
         break;
     }
-    case (PietToken::TokenType::Subtract):
+    case (PietToken::ETokenType::Subtract):
     {
         if (m_stack.GetSize() >= 2)
         {
@@ -53,7 +53,7 @@ PietToken PietRuntime::StepExecution_Internal()
         }
         break;
     }
-    case (PietToken::TokenType::Multiply):
+    case (PietToken::ETokenType::Multiply):
     {
         if (m_stack.GetSize() >= 2)
         {
@@ -61,7 +61,7 @@ PietToken PietRuntime::StepExecution_Internal()
         }
         break;
     }
-    case (PietToken::TokenType::Divide):
+    case (PietToken::ETokenType::Divide):
     {
         if (m_stack.GetSize() >= 2)
         {
@@ -71,7 +71,7 @@ PietToken PietRuntime::StepExecution_Internal()
         }
         break;
     }
-    case (PietToken::TokenType::Modulo):
+    case (PietToken::ETokenType::Modulo):
     {
         if (m_stack.GetSize() >= 2)
         {
@@ -81,7 +81,7 @@ PietToken PietRuntime::StepExecution_Internal()
         }
         break;
     }
-    case (PietToken::TokenType::Not):
+    case (PietToken::ETokenType::Not):
     {
         if (m_stack.GetSize() > 0)
         {
@@ -90,7 +90,7 @@ PietToken PietRuntime::StepExecution_Internal()
         }
         break;
     }
-    case (PietToken::TokenType::Greater):
+    case (PietToken::ETokenType::Greater):
     {
         if (m_stack.GetSize() >= 2)
         {
@@ -101,7 +101,7 @@ PietToken PietRuntime::StepExecution_Internal()
         }
         break;
     }
-    case (PietToken::TokenType::Pointer):
+    case (PietToken::ETokenType::Pointer):
     {
         if (!m_stack.Empty())
         {
@@ -110,7 +110,7 @@ PietToken PietRuntime::StepExecution_Internal()
         }
         break;
     }
-    case (PietToken::TokenType::Switch):
+    case (PietToken::ETokenType::Switch):
     {
         if (!m_stack.Empty())
         {
@@ -122,7 +122,7 @@ PietToken PietRuntime::StepExecution_Internal()
         }
         break;
     }
-    case (PietToken::TokenType::Duplicate):
+    case (PietToken::ETokenType::Duplicate):
     {
         if (m_stack.GetSize() > 0)
         {
@@ -132,7 +132,7 @@ PietToken PietRuntime::StepExecution_Internal()
         }
         break;
     }
-    case (PietToken::TokenType::Roll):
+    case (PietToken::ETokenType::Roll):
     {
         if (m_stack.GetSize() >= 2)
         {
@@ -142,13 +142,13 @@ PietToken PietRuntime::StepExecution_Internal()
         }
         break;
     }
-    case (PietToken::TokenType::Input_Char):
+    case (PietToken::ETokenType::Input_Char):
         m_waitingForCharInput = true;
         break;
-    case (PietToken::TokenType::Input_Val):
+    case (PietToken::ETokenType::Input_Val):
         m_waitingForValInput = true;
         break;
-    case (PietToken::TokenType::Output_Char):
+    case (PietToken::ETokenType::Output_Char):
     {
         if (m_stack.GetSize() > 0)
         {
@@ -156,7 +156,7 @@ PietToken PietRuntime::StepExecution_Internal()
         }
         break;
     }
-    case (PietToken::TokenType::Output_Val):
+    case (PietToken::ETokenType::Output_Val):
     {
         if (m_stack.GetSize() > 0)
         {
@@ -164,15 +164,15 @@ PietToken PietRuntime::StepExecution_Internal()
         }
         break;
     }
-    case (PietToken::TokenType::EnterSlide):
+    case (PietToken::ETokenType::EnterSlide):
     {
-        return PietToken::TokenType::EnterSlide;
+        return PietToken::ETokenType::EnterSlide;
     }
-    case (PietToken::TokenType::ExitSlide):
+    case (PietToken::ETokenType::ExitSlide):
     {
-        return PietToken::TokenType::ExitSlide;
+        return PietToken::ETokenType::ExitSlide;
     }
-    case (PietToken::TokenType::End):
+    case (PietToken::ETokenType::End):
     {
         m_bIsRunning = false;
         break;
@@ -206,7 +206,7 @@ void PietRuntime::OnInput(int val)
 
 bool PietRuntime::ShouldEnd(const PietToken& token)
 {
-    return token.m_type == PietToken::TokenType::End;
+    return token.m_type == PietToken::ETokenType::End;
 }
 
 void PietRuntime::RenderImageDisplay()

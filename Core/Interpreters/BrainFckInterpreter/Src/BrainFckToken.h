@@ -22,14 +22,14 @@ class BrainFckToken : public IToken
     x(End)                \
     x(Unrecognised_Token)
 
-    CreateSmartEnum(TokenType, ETOKENTYPE);
+    CreateSmartEnum(ETokenType, ETOKENTYPE);
 
 #undef ETOKENTYPE
     // clang-format on
 
-    BrainFckToken(const TokenType::Enum type) : m_type(type) {};
+    BrainFckToken(const ETokenType::Enum type) : m_type(type) {};
 
-    TokenType::Enum m_type = TokenType::Start;
+    ETokenType::Enum m_type = ETokenType::Start;
 
     /// <summary>
     /// Format and output the Token of the stack for and output stream
@@ -39,7 +39,7 @@ class BrainFckToken : public IToken
     /// <returns></returns>
     friend std::ostream& operator<<(std::ostream& os, const BrainFckToken& tk)
     {
-        os << BrainFckToken::TokenType::ToString(tk.m_type);
+        os << BrainFckToken::ETokenType::ToString(tk.m_type);
         return os;
     }
 };

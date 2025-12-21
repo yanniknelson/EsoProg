@@ -14,11 +14,11 @@ class PietTextTokeniser : public ITextTokeniser<PietToken>
 
   private:
     /// <summary>
-    /// Convert from string to TokenType enum
+    /// Convert from string to ETokenType enum
     /// </summary>
     /// <param name="rString - "> string to be converted </param>
-    /// <returns> TokenType enum corresponding to input string </returns>
-    PietToken::TokenType::Enum StringToTokenType(std::string& rString) const;
+    /// <returns> ETokenType enum corresponding to input string </returns>
+    PietToken::ETokenType::Enum StringToETokenType(std::string& rString) const;
 
     PietToken GetNextToken();
     virtual PietToken Pop_Internal() override;

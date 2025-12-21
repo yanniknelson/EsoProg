@@ -9,7 +9,7 @@ TBrainFckOperationPtr BrainFckParser::Parse_Internal()
 {
     std::shared_ptr<BrainFckProgram> pProgram = std::make_shared<BrainFckProgram>();
 
-    if (!Check(BrainFckToken::TokenType::End))
+    if (!Check(BrainFckToken::ETokenType::End))
     {
         pProgram->m_pRegion->AddOperation(ParseExpression(pProgram, pProgram->m_pRegion));
     }
@@ -19,7 +19,7 @@ TBrainFckOperationPtr BrainFckParser::Parse_Internal()
         Error("Empty program can't be run");
     }
 
-    while (!Check(BrainFckToken::TokenType::End))
+    while (!Check(BrainFckToken::ETokenType::End))
     {
         pProgram->m_pRegion->AddOperation(ParseExpression(pProgram, pProgram->m_pRegion));
     }
@@ -28,7 +28,7 @@ TBrainFckOperationPtr BrainFckParser::Parse_Internal()
 
 TBrainFckOperationPtr BrainFckParser::ParseExpression(TBrainFckOperationPtr pParent, TBrainFckRegionPtr pParentRegion)
 {
-    if (Check(BrainFckToken::TokenType::Loop_Start))
+    if (Check(BrainFckToken::ETokenType::Loop_Start))
     {
         return ParseLoop(pParent, pParentRegion);
     }
@@ -37,39 +37,39 @@ TBrainFckOperationPtr BrainFckParser::ParseExpression(TBrainFckOperationPtr pPar
 
 TBrainFckOperationPtr BrainFckParser::ParseOp(TBrainFckOperationPtr pParent, TBrainFckRegionPtr pParentRegion)
 {
-    if (Check(BrainFckToken::TokenType::Move_Left))
+    if (Check(BrainFckToken::ETokenType::Move_Left))
     {
-        Match(BrainFckToken::TokenType::Move_Left);
+        Match(BrainFckToken::ETokenType::Move_Left);
         return std::make_shared<LeftOp>(pParent, pParentRegion);
     }
 
-    if (Check(BrainFckToken::TokenType::Move_Right))
+    if (Check(BrainFckToken::ETokenType::Move_Right))
     {
-        Match(BrainFckToken::TokenType::Move_Right);
+        Match(BrainFckToken::ETokenType::Move_Right);
         return std::make_shared<RightOp>(pParent, pParentRegion);
     }
 
-    if (Check(BrainFckToken::TokenType::Increment))
+    if (Check(BrainFckToken::ETokenType::Increment))
     {
-        Match(BrainFckToken::TokenType::Increment);
+        Match(BrainFckToken::ETokenType::Increment);
         return std::make_shared<IncOp>(pParent, pParentRegion);
     }
 
-    if (Check(BrainFckToken::TokenType::Decrement))
+    if (Check(BrainFckToken::ETokenType::Decrement))
     {
-        Match(BrainFckToken::TokenType::Decrement);
+        Match(BrainFckToken::ETokenType::Decrement);
         return std::make_shared<DecOp>(pParent, pParentRegion);
     }
 
-    if (Check(BrainFckToken::TokenType::Input_Char))
+    if (Check(BrainFckToken::ETokenType::Input_Char))
     {
-        Match(BrainFckToken::TokenType::Input_Char);
+        Match(BrainFckToken::ETokenType::Input_Char);
         return std::make_shared<InOp>(pParent, pParentRegion);
     }
 
-    if (Check(BrainFckToken::TokenType::Output_Char))
+    if (Check(BrainFckToken::ETokenType::Output_Char))
     {
-        Match(BrainFckToken::TokenType::Output_Char);
+        Match(BrainFckToken::ETokenType::Output_Char);
         return std::make_shared<OutOp>(pParent, pParentRegion);
     }
 
@@ -79,10 +79,10 @@ TBrainFckOperationPtr BrainFckParser::ParseOp(TBrainFckOperationPtr pParent, TBr
 
 TBrainFckOperationPtr BrainFckParser::ParseLoop(TBrainFckOperationPtr pParent, TBrainFckRegionPtr pParentRegion)
 {
-    if (Match(BrainFckToken::TokenType::Loop_Start).m_type != BrainFckToken::TokenType::Unrecognised_Token)
+    if (Match(BrainFckToken::ETokenType::Loop_Start).m_type != BrainFckToken::ETokenType::Unrecognised_Token)
     {
         std::shared_ptr<Loop> pLoop = std::make_shared<Loop>(pParent, pParentRegion);
-        if (!Check(BrainFckToken::TokenType::End))
+        if (!Check(BrainFckToken::ETokenType::End))
         {
             pLoop->m_pRegion->AddOperation(ParseExpression(pLoop, pLoop->m_pRegion));
         }
@@ -93,11 +93,11 @@ TBrainFckOperationPtr BrainFckParser::ParseLoop(TBrainFckOperationPtr pParent, T
             return pLoop;
         }
 
-        while (!Check(BrainFckToken::TokenType::End))
+        while (!Check(BrainFckToken::ETokenType::End))
         {
-            if (Check(BrainFckToken::TokenType::Loop_End))
+            if (Check(BrainFckToken::ETokenType::Loop_End))
             {
-                Match(BrainFckToken::TokenType::Loop_End);
+                Match(BrainFckToken::ETokenType::Loop_End);
                 break;
             }
             pLoop->m_pRegion->AddOperation(ParseExpression(pLoop, pLoop->m_pRegion));

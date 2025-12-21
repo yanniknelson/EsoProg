@@ -71,7 +71,7 @@ class ITokeniser
     //////////////////////////////////////////////////////////////
     virtual TokenClass Pop_Internal()
     {
-        return TokenClass::TokenType::End;
+        return TokenClass::ETokenType::End;
     }
 
     std::deque<TokenClass> m_buff;

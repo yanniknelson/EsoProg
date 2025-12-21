@@ -29,13 +29,13 @@ class IParser
     virtual std::shared_ptr<IOperation<LanguageOperations>> Parse_Internal() = 0;
 
     //////////////////////////////////////////////////////////////
-    bool Check(const TokenClass::TokenType::Enum expected)
+    bool Check(const TokenClass::ETokenType::Enum expected)
     {
         return m_pTokeniser->Peek().m_type == expected;
     }
 
     //////////////////////////////////////////////////////////////
-    bool Check(const std::vector<typename TokenClass::TokenType::Enum>& expected)
+    bool Check(const std::vector<typename TokenClass::ETokenType::Enum>& expected)
     {
         const std::vector<TokenClass> nextN = m_pTokeniser->Peek(expected.size());
         for (size_t tokenIdx = 0; tokenIdx < expected.size(); tokenIdx++)
@@ -49,21 +49,21 @@ class IParser
     }
 
     //////////////////////////////////////////////////////////////
-    TokenClass Match(const TokenClass::TokenType::Enum expected)
+    TokenClass Match(const TokenClass::ETokenType::Enum expected)
     {
         if (Check(expected))
         {
             return m_pTokeniser->Pop();
         }
         std::string err = "Expected ";
-        err = err + TokenClass::TokenType::ToString(expected) + " token not found";
+        err = err + TokenClass::ETokenType::ToString(expected) + " token not found";
         return Error(err.c_str());
     }
 
     //////////////////////////////////////////////////////////////
     TokenClass Error(const char* errorStr)
     {
-        return TokenClass(TokenClass::TokenType::Unrecognised_Token);
+        return TokenClass(TokenClass::ETokenType::Unrecognised_Token);
     }
 
     //////////////////////////////////////////////////////////////
