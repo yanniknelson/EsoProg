@@ -97,11 +97,11 @@ void CEsoProg::Render()
             {
                 m_pRuntime->InputVal(std::stoi(m_programInput));
                 m_programInput = "";
-                if (m_sync.iterations != -1)
+                if (m_sync.m_iterations != -1)
                 {
-                    m_sync.iterations = 0;
+                    m_sync.m_iterations = 0;
                 }
-                m_sync.waitingOnInputCV.notify_one();
+                m_sync.m_waitingOnInputCV.notify_one();
             }
         }
         ImGui::End();
@@ -117,21 +117,21 @@ void CEsoProg::Render()
             {
                 m_pRuntime->InputChar((char)m_programInput[0]);
                 m_programInput = "";
-                if (m_sync.iterations != -1)
+                if (m_sync.m_iterations != -1)
                 {
-                    m_sync.iterations = 0;
+                    m_sync.m_iterations = 0;
                 }
-                m_sync.waitingOnInputCV.notify_one();
+                m_sync.m_waitingOnInputCV.notify_one();
             }
             if (ImGui::Button("Submit Enter Char"))
             {
                 m_programInput = "";
                 m_pRuntime->InputChar(10);
-                if (m_sync.iterations != -1)
+                if (m_sync.m_iterations != -1)
                 {
-                    m_sync.iterations = 0;
+                    m_sync.m_iterations = 0;
                 }
-                m_sync.waitingOnInputCV.notify_one();
+                m_sync.m_waitingOnInputCV.notify_one();
             }
         }
         ImGui::End();
@@ -148,40 +148,40 @@ void CEsoProg::Render()
         if (ImGui::InputTextMultiline("##code", &m_code, ImVec2(-FLT_MIN, ImGui::GetContentRegionAvail().y - (ImGui::GetTextLineHeight() * 1.5f)), ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_CallbackEdit, TextInputCallback, &m_bCodeChangedSinceLastStep))
         {
             std::cout << "code changed" << std::endl;
-            m_sync.iterations = 0; // stop execution on code change
+            m_sync.m_iterations = 0; // stop execution on code change
         }
 
         if (ImGui::Button("Run"))
         {
             m_pRuntime->Reset();
             m_pRuntime->SetSourceCode(m_code);
-            m_sync.iterations = -1; // add a run speed
+            m_sync.m_iterations = -1; // add a run speed
         }
 
         ImGui::SameLine();
         {
-            int currentinstructionWaitTime = m_sync.instructionWaitTime.load();
+            int currentinstructionWaitTime = m_sync.m_instructionWaitTime.load();
             float newInstructionWaitTime = currentinstructionWaitTime / 1000.f;
             ImGui::SliderFloat("##ExecutionSpeed", &newInstructionWaitTime, 0, 3);
-            m_sync.instructionWaitTime.compare_exchange_strong(currentinstructionWaitTime, static_cast<int>(newInstructionWaitTime * 1000.f));
+            m_sync.m_instructionWaitTime.compare_exchange_strong(currentinstructionWaitTime, static_cast<int>(newInstructionWaitTime * 1000.f));
         }
 
-        if (m_sync.iterations == -1)
+        if (m_sync.m_iterations == -1)
         {
             ImGui::SameLine();
             if (ImGui::Button("Pause"))
             {
-                m_sync.iterations = 0;
+                m_sync.m_iterations = 0;
             }
         }
 
         ImGui::SameLine();
         if (ImGui::Button("Step"))
         {
-            ++m_sync.iterations;
+            ++m_sync.m_iterations;
         }
 
-        if (m_sync.iterations < 0)
+        if (m_sync.m_iterations < 0)
         {
             ImGui::SameLine();
             if (ImGui::Button("Reset"))
@@ -231,16 +231,16 @@ bool CEsoProg::IsRuntimeWaitingOnInput()
 //////////////////////////////////////////////////////////////
 void CEsoProg::CopyState()
 {
-    m_sync.renderWantsState = true;
-    m_sync.runtimeStateMtx.lock();
+    m_sync.m_bRenderWantsState = true;
+    m_sync.m_runtimeStateMtx.lock();
 
     m_cachedExecutionHistory = m_executionHistoryStream.str();
     m_cachedOutput = m_outputStream.str();
     m_pRuntime->CacheState();
 
-    m_sync.renderWantsState = false;
-    m_sync.runtimeStateMtx.unlock();
-    m_sync.finishedStateWithCv.notify_one();
+    m_sync.m_bRenderWantsState = false;
+    m_sync.m_runtimeStateMtx.unlock();
+    m_sync.m_finishedStateWithCv.notify_one();
 }
 
 //////////////////////////////////////////////////////////////
@@ -502,13 +502,13 @@ CEsoProg::EFileType::Enum CEsoProg::LoadFile(const std::filesystem::path path)
                 //glGenerateMipmap(GL_TEXTURE_2D);
                 m_bImageLoaded = true;
             }
-            m_sync.renderWantsState = true;
-            m_sync.runtimeStateMtx.lock();
+            m_sync.m_bRenderWantsState = true;
+            m_sync.m_runtimeStateMtx.lock();
 
             static_cast<PietRuntime*>(m_pRuntime)->SetImage(&m_texture, m_pImageData, m_imageWidth, m_imageHeight);
-            m_sync.renderWantsState = false;
-            m_sync.runtimeStateMtx.unlock();
-            m_sync.finishedStateWithCv.notify_one();
+            m_sync.m_bRenderWantsState = false;
+            m_sync.m_runtimeStateMtx.unlock();
+            m_sync.m_finishedStateWithCv.notify_one();
         }
         break;
     }

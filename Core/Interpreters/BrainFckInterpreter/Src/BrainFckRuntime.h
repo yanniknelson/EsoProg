@@ -8,7 +8,7 @@
 #include <CRuntime.h>            // for CRuntime
 #include <ELanguages.h>          // for ELanguages::Enum
 #include <IMemoryArray.h>        // for IMemoryArray
-#include <IRuntime.h>            // for RuntimeSyncronisationStruct
+#include <IRuntime.h>            // for SRuntimeSyncronisationStruct
 
 #include <cstdint>               // for uint8_t
 #include <memory>
@@ -19,7 +19,7 @@
 class BrainFckRuntime : public CRuntime<BrainFckOperationTypes::Enum>
 {
   public:
-    BrainFckRuntime(RuntimeSyncronisationStruct& rSync, std::ostringstream& rOutputStream, std::ostringstream& rExecutionhistoryStream)
+    BrainFckRuntime(SRuntimeSyncronisationStruct& rSync, std::ostringstream& rOutputStream, std::ostringstream& rExecutionhistoryStream)
         : CRuntime(rSync, rOutputStream, rExecutionhistoryStream), m_parser(&m_tokeniser)
     {
         m_tokeniser.SetTextStream(m_code);

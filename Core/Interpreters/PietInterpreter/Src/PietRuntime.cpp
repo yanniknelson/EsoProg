@@ -230,23 +230,23 @@ void PietRuntime::RenderImageDisplay()
             m_bForceImage = true;
             m_currentSourceType = SourceType::Image;
             m_activeTokeniser = (TPietTokeniser*)&m_imageTokeniser;
-            m_rSync.iterations = -1;
+            m_rSync.m_iterations = -1;
         }
 
         ImGui::SameLine();
         {
-            int currentinstructionWaitTime = m_rSync.instructionWaitTime.load();
+            int currentinstructionWaitTime = m_rSync.m_instructionWaitTime.load();
             float newInstructionWaitTime = currentinstructionWaitTime / 1000.f;
             ImGui::SliderFloat("##ExecutionSpeed", &newInstructionWaitTime, 0, 3);
-            m_rSync.instructionWaitTime.compare_exchange_strong(currentinstructionWaitTime, static_cast<int>(newInstructionWaitTime * 1000.f));
+            m_rSync.m_instructionWaitTime.compare_exchange_strong(currentinstructionWaitTime, static_cast<int>(newInstructionWaitTime * 1000.f));
         }
 
-        if (m_rSync.iterations == -1)
+        if (m_rSync.m_iterations == -1)
         {
             ImGui::SameLine();
             if (ImGui::Button("Pause"))
             {
-                m_rSync.iterations = 0;
+                m_rSync.m_iterations = 0;
             }
         }
 
@@ -260,7 +260,7 @@ void PietRuntime::RenderImageDisplay()
                 m_currentSourceType = SourceType::Image;
                 m_activeTokeniser = (TPietTokeniser*)&m_imageTokeniser;
             }
-            ++m_rSync.iterations;
+            ++m_rSync.m_iterations;
         }
 
         ImGui::SameLine();

@@ -2,12 +2,14 @@
 
 #include <iostream>  // for std::ostream
 
+//////////////////////////////////////////////////////////////
 class IToken
 {
   public:
-    friend std::ostream& operator<<(std::ostream& os, const IToken& tk)
+    //////////////////////////////////////////////////////////////
+    friend std::ostream& operator<<(std::ostream& rOS, const IToken& rTk)
     {
-        os << "Unimplemented";
-        return os;
+        rOS << "Unimplemented";
+        return rOS;
     }
 };

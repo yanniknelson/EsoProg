@@ -7,14 +7,17 @@
 #include <string>
 #include <vector>
 
+//////////////////////////////////////////////////////////////
 template<typename TokenClass, typename LanguageOperations>
 class IParser
 {
   public:
+    //////////////////////////////////////////////////////////////
     IParser(ITokeniser<TokenClass>* pTokeniser) : m_pTokeniser(pTokeniser)
     {
     }
 
+    //////////////////////////////////////////////////////////////
     std::shared_ptr<IOperation<LanguageOperations>> Parse()
     {
         Reset();
@@ -22,13 +25,16 @@ class IParser
     }
 
   protected:
+    //////////////////////////////////////////////////////////////
     virtual std::shared_ptr<IOperation<LanguageOperations>> Parse_Internal() = 0;
 
+    //////////////////////////////////////////////////////////////
     bool Check(const TokenClass::TokenType::Enum expected)
     {
         return m_pTokeniser->Peek().m_type == expected;
     }
 
+    //////////////////////////////////////////////////////////////
     bool Check(const std::vector<typename TokenClass::TokenType::Enum>& expected)
     {
         const std::vector<TokenClass> nextN = m_pTokeniser->Peek(expected.size());
@@ -42,6 +48,7 @@ class IParser
         return true;
     }
 
+    //////////////////////////////////////////////////////////////
     TokenClass Match(const TokenClass::TokenType::Enum expected)
     {
         if (Check(expected))
@@ -53,11 +60,13 @@ class IParser
         return Error(err.c_str());
     }
 
+    //////////////////////////////////////////////////////////////
     TokenClass Error(const char* errorStr)
     {
         return TokenClass(TokenClass::TokenType::Unrecognised_Token);
     }
 
+    //////////////////////////////////////////////////////////////
     void Reset()
     {
         m_pTokeniser->Reset();

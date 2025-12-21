@@ -9,26 +9,29 @@
 #include <string>
 #include <vector>
 
-struct RuntimeSyncronisationStruct
+//////////////////////////////////////////////////////////////
+struct SRuntimeSyncronisationStruct
 {
-    std::atomic<int> iterations = 0;
-    std::atomic<int> instructionWaitTime = 0;
-    std::atomic<bool> exit = false;
-    std::atomic<bool> renderWantsState = false;
-    std::atomic<bool> wantsReset = false;
-    std::atomic<bool> resetCodeSource = false;
-    std::condition_variable finishedStateWithCv;
-    std::mutex finishedWithStateMtx;
-    std::mutex runtimeStateMtx;
+    std::atomic<int> m_iterations = 0;
+    std::atomic<int> m_instructionWaitTime = 0;
+    std::atomic<bool> m_bExit = false;
+    std::atomic<bool> m_bRenderWantsState = false;
+    std::atomic<bool> m_bWantsReset = false;
+    std::atomic<bool> m_bResetCodeSource = false;
+    std::condition_variable m_finishedStateWithCv;
+    std::mutex m_finishedWithStateMtx;
+    std::mutex m_runtimeStateMtx;
 
-    std::condition_variable waitingOnInputCV;
-    std::mutex waitingOnInputMtx;
+    std::condition_variable m_waitingOnInputCV;
+    std::mutex m_waitingOnInputMtx;
 };
 
+//////////////////////////////////////////////////////////////
 class IRuntime
 {
   public:
-    IRuntime(RuntimeSyncronisationStruct& rSync, std::ostringstream& rOutputStream, std::ostringstream& rExecutionhistoryStream) : m_rSync(rSync), m_rOutputStream(rOutputStream), m_rExecutionHistoryStream(rExecutionhistoryStream)
+    //////////////////////////////////////////////////////////////
+    IRuntime(SRuntimeSyncronisationStruct& rSync, std::ostringstream& rOutputStream, std::ostringstream& rExecutionhistoryStream) : m_rSync(rSync), m_rOutputStream(rOutputStream), m_rExecutionHistoryStream(rExecutionhistoryStream)
     {
     }
 
@@ -39,17 +42,19 @@ class IRuntime
 
     virtual bool StepExecution() = 0;
 
+    //////////////////////////////////////////////////////////////
     void RequestReset()
     {
-        m_rSync.wantsReset = true;
+        m_rSync.m_bWantsReset = true;
         // If we were waiting for input then we need to update the condition variable to re-enable execution
         if (m_waitingForCharInput || m_waitingForValInput)
         {
             m_waitingForCharInput = m_waitingForValInput = false;
-            m_rSync.waitingOnInputCV.notify_one();
+            m_rSync.m_waitingOnInputCV.notify_one();
         }
     }
 
+    //////////////////////////////////////////////////////////////
     void Reset()
     {
         ResetCodeStream();
@@ -57,28 +62,33 @@ class IRuntime
         ResetOutput();
     }
 
+    //////////////////////////////////////////////////////////////
     void InputChar(int val)
     {
         OnInput(val);
         m_waitingForCharInput = false;
     }
 
+    //////////////////////////////////////////////////////////////
     void InputVal(int val)
     {
         OnInput(val);
         m_waitingForValInput = false;
     }
 
+    //////////////////////////////////////////////////////////////
     bool IsRunning() const
     {
         return m_bIsRunning;
     }
 
+    //////////////////////////////////////////////////////////////
     bool IsWaitingForValInput() const
     {
         return m_waitingForValInput;
     }
 
+    //////////////////////////////////////////////////////////////
     bool IsWaitingForCharInput() const
     {
         return m_waitingForCharInput;
@@ -90,6 +100,7 @@ class IRuntime
   protected:
     virtual void OnInput(int val) = 0;
 
+    //////////////////////////////////////////////////////////////
     void ResetOutput()
     {
         m_rOutputStream.str(std::string());
@@ -99,7 +110,7 @@ class IRuntime
     virtual void ResetCodeStream() = 0;
     virtual void ResetImplementation() = 0;
 
-    RuntimeSyncronisationStruct& m_rSync;
+    SRuntimeSyncronisationStruct& m_rSync;
 
     std::ostringstream& m_rOutputStream;
     std::ostringstream& m_rExecutionHistoryStream;

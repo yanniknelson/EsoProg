@@ -6,7 +6,7 @@
 
 #include <CRuntime.h>            // for CRuntime
 #include <ELanguages.h>          // for ELanguages::Enum
-#include <IRuntime.h>            // for RuntimeSyncronisationStruct
+#include <IRuntime.h>            // for SRuntimeSyncronisationStruct
 #include <ITokeniser.h>          // for ITokeniser
 #include <Stack.h>               // for Stack
 
@@ -21,7 +21,7 @@ class PietRuntime : public CRuntime<PietToken>
     using TPietTokeniser = ITokeniser<PietToken>;
 
   public:
-    PietRuntime(RuntimeSyncronisationStruct& rSync, std::ostringstream& rOutputStream, std::ostringstream& rExecutionhistoryStream) : CRuntime(rSync, rOutputStream, rExecutionhistoryStream)
+    PietRuntime(SRuntimeSyncronisationStruct& rSync, std::ostringstream& rOutputStream, std::ostringstream& rExecutionhistoryStream) : CRuntime(rSync, rOutputStream, rExecutionhistoryStream)
     {
         m_activeTokeniser = (TPietTokeniser*)&m_textTokeniser;
     };

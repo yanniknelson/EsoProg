@@ -20,11 +20,11 @@
 //////////////////////////////////////////////////////////////
 class CEsoProg
 {
-public:
+  public:
     static const char* s_programName;
     static GLFWwindow* s_pWindow;
 
-    RuntimeSyncronisationStruct m_sync;
+    SRuntimeSyncronisationStruct m_sync;
 
     CEsoProg(GLFWwindow* pWindow);
 
@@ -34,7 +34,7 @@ public:
     void CopyState();
     void Reset();
 
-private:
+  private:
     // clang-format off
 #define EFILETYPES(x) \
     x(Text)           \

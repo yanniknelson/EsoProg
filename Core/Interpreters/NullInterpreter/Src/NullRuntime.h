@@ -11,7 +11,7 @@
 class NullRuntime : public IRuntime
 {
   public:
-    NullRuntime(RuntimeSyncronisationStruct& rSync, std::ostringstream& rOutputStream, std::ostringstream& rExecutionhistoryStream) : IRuntime(rSync, rOutputStream, rExecutionhistoryStream) {};
+    NullRuntime(SRuntimeSyncronisationStruct& rSync, std::ostringstream& rOutputStream, std::ostringstream& rExecutionhistoryStream) : IRuntime(rSync, rOutputStream, rExecutionhistoryStream) {};
 
     virtual ELanguages::Enum GetRuntimeLanguage() const override
     {
@@ -36,7 +36,9 @@ class NullRuntime : public IRuntime
     virtual void CacheState() override {};
 
   private:
-    void RenderImageDisplay(RuntimeSyncronisationStruct& rSync);
+    void RenderImageDisplay(SRuntimeSyncronisationStruct& rSync)
+    {
+    };
 
     virtual void OnInput(int val) override {};
 };

@@ -6,6 +6,7 @@
 template<typename OperationTypes>
 class IRegion;
 
+//////////////////////////////////////////////////////////////
 template<typename OperationTypes>
 class IOperation
 {
@@ -16,28 +17,37 @@ class IOperation
     using TRegionWkPtr = typename std::weak_ptr<IRegion<OperationTypes>>;
 
   public:
+    //////////////////////////////////////////////////////////////
     IOperation(typename TOperationShrdPtr pParent, typename TRegionShrdPtr pRegion)
-        : m_pParent(pParent), m_pParentRegion(pRegion) {
+        : m_pParent(pParent)
+        , m_pParentRegion(pRegion)
+        {
         };
 
     virtual ~IOperation() = default;
+
     virtual OperationTypes::Enum GetType() const = 0;
+
+    //////////////////////////////////////////////////////////////
     void SetIndex(size_t regionIndex)
     {
         m_regionIndex = regionIndex;
     };
 
+    //////////////////////////////////////////////////////////////
     TOperationShrdPtr GetParent() const
     {
         return m_pParent.lock();
     }
 
+    //////////////////////////////////////////////////////////////
     TOperationShrdPtr GetNextOperation() const
     {
         TRegionShrdPtr pParentRegion = m_pParentRegion.lock();
         if (!pParentRegion)
             return nullptr;
 
+        // this iterator type is highly tied up in templates the cleanest way to use it is with auto
         auto nextOp = pParentRegion->begin() + m_regionIndex + 1;
         if (nextOp != pParentRegion->end())
         {
@@ -52,6 +62,7 @@ class IOperation
     typename TRegionWkPtr m_pParentRegion;
 };
 
+//////////////////////////////////////////////////////////////
 template<typename OperationTypes>
 class IRegion
 {
@@ -65,20 +76,26 @@ class IRegion
     IRegion() {};
     virtual ~IRegion() = default;
 
+    //////////////////////////////////////////////////////////////
     void AddOperation(typename TOperationPtr pOperation)
     {
         m_contents.push_back(pOperation);
         m_contents.back()->SetIndex(m_contents.size() - 1);
     }
 
+    //////////////////////////////////////////////////////////////
     TOperationPtr front()
     {
         return m_contents.front();
     }
+
+    //////////////////////////////////////////////////////////////
     TRegionIterator begin()
     {
         return m_contents.begin();
     }
+
+    //////////////////////////////////////////////////////////////
     TRegionIterator end()
     {
         return m_contents.end();
@@ -88,22 +105,28 @@ class IRegion
     TRegion m_contents;
 };
 
+//////////////////////////////////////////////////////////////
 template<typename OperationTypes>
 class IError : public IOperation<OperationTypes>
 {
   public:
     IError(std::shared_ptr<IOperation<OperationTypes>> pParent, std::shared_ptr<IRegion<OperationTypes>> pRegion) : IOperation<OperationTypes>(pParent, pRegion) {};
+
+    //////////////////////////////////////////////////////////////
     virtual OperationTypes::Enum GetType() const
     {
         return OperationTypes::Error;
     };
 };
 
+//////////////////////////////////////////////////////////////
 template<typename OperationTypes>
 class IProgram : public IOperation<OperationTypes>
 {
   public:
     IProgram(std::shared_ptr<IOperation<OperationTypes>> pParent, std::shared_ptr<IRegion<OperationTypes>> pRegion) : IOperation<OperationTypes>(pParent, pRegion) {};
+
+    //////////////////////////////////////////////////////////////
     virtual OperationTypes::Enum GetType() const
     {
         return OperationTypes::Program;

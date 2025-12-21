@@ -5,6 +5,7 @@
 #include <iostream>
 #include <memory>
 
+//////////////////////////////////////////////////////////////
 template<typename Operation>
 class IASTVisitor
 {
@@ -17,14 +18,17 @@ class IASTVisitor
 
 // This is an example visitor implementation only, each visitor needs to be implemented like this uniquely
 // with traverse and potentially visit functions for all operation types.
+//////////////////////////////////////////////////////////////
 template<typename OperationType>
 class IProgramPrintVisitor : public IASTVisitor<IProgram<OperationType>>
 {
+  private:
     using TProgram = IProgram<OperationType>;
     using TOperationPtr = std::shared_ptr<IOperation<OperationType>>;
     using TProgramPtr = std::shared_ptr<TProgram>;
 
   public:
+    //////////////////////////////////////////////////////////////
     virtual void Traverse(TProgramPtr pProgram) override
     {
         Visit(pProgram);
@@ -34,16 +38,19 @@ class IProgramPrintVisitor : public IASTVisitor<IProgram<OperationType>>
         }
     };
 
+    //////////////////////////////////////////////////////////////
     virtual void Visit(TProgramPtr pOperation) override
     {
         std::cout << "Program" << std::endl;
     };
 
+    //////////////////////////////////////////////////////////////
     void Traverse(TOperationPtr pOperation)
     {
         Visit(pOperation);
     }
 
+    //////////////////////////////////////////////////////////////
     void Visit(TOperationPtr pOperation)
     {
         std::cout << OperationType::ToString(pOperation->GetType()) << std::endl;

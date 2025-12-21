@@ -1,34 +1,37 @@
 #pragma once
 
-#include "IRuntime.h"    // for IRuntime, RuntimeSyncronisationStruct
+#include "IRuntime.h"    // for IRuntime, SRuntimeSyncronisationStruct
 
 #include <ELanguages.h>  // for ELanguages::Enum
 
 #include <iostream>
 #include <sstream>       // for std::ostringstream
 
-#include <atomic>
 #include <string>
 #include <vector>
 
+//////////////////////////////////////////////////////////////
 template<typename TokenClass>
 class CRuntime : public IRuntime
 {
   public:
-    CRuntime(RuntimeSyncronisationStruct& rSync, std::ostringstream& rOutputStream, std::ostringstream& rExecutionhistoryStream) : IRuntime(rSync, rOutputStream, rExecutionhistoryStream)
+    //////////////////////////////////////////////////////////////
+    CRuntime(SRuntimeSyncronisationStruct& rSync, std::ostringstream& rOutputStream, std::ostringstream& rExecutionhistoryStream) : IRuntime(rSync, rOutputStream, rExecutionhistoryStream)
     {
     }
 
     virtual ELanguages::Enum GetRuntimeLanguage() const = 0;
     virtual std::vector<std::string> GetSupportedFileTypes() const = 0;
 
+    //////////////////////////////////////////////////////////////
     virtual void SetSourceCode(std::string str) override
     {
         m_codeStr = str;
-        m_rSync.resetCodeSource = true;
+        m_rSync.m_bResetCodeSource = true;
         RequestReset();
     }
 
+    //////////////////////////////////////////////////////////////
     virtual bool StepExecution() override
     {
         if (m_waitingForCharInput || m_waitingForValInput)
@@ -44,6 +47,7 @@ class CRuntime : public IRuntime
 
     virtual void ResetImplementation() = 0;
 
+    //////////////////////////////////////////////////////////////
     virtual void ResetCodeStream() override
     {
         std::stringstream tmp(m_codeStr.c_str());

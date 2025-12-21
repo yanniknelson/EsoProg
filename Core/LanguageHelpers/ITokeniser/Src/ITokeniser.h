@@ -3,10 +3,12 @@
 #include <deque>
 #include <vector>
 
+//////////////////////////////////////////////////////////////
 template<typename TokenClass>
 class ITokeniser
 {
   public:
+    //////////////////////////////////////////////////////////////
     TokenClass Pop()
     {
         TokenClass ret = Peek();
@@ -14,6 +16,7 @@ class ITokeniser
         return ret;
     }
 
+    //////////////////////////////////////////////////////////////
     TokenClass Peek()
     {
         if (m_buff.empty())
@@ -23,6 +26,7 @@ class ITokeniser
         return m_buff.front();
     }
 
+    //////////////////////////////////////////////////////////////
     std::vector<TokenClass> Peek(const size_t depth)
     {
         std::vector<TokenClass> ret;
@@ -38,6 +42,7 @@ class ITokeniser
         return ret;
     };
 
+    //////////////////////////////////////////////////////////////
     void Consume(const int depth = 1)
     {
         for (size_t currDepth = 0; currDepth < depth; currDepth++)
@@ -53,6 +58,7 @@ class ITokeniser
         }
     }
 
+    //////////////////////////////////////////////////////////////
     void Reset()
     {
         m_buff.clear();
@@ -62,6 +68,7 @@ class ITokeniser
     virtual void ResetImplementation() = 0;
 
   protected:
+    //////////////////////////////////////////////////////////////
     virtual TokenClass Pop_Internal()
     {
         return TokenClass::TokenType::End;
