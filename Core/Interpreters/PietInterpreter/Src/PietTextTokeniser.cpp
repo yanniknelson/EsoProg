@@ -6,6 +6,7 @@
 #include <cstdlib>      // for std::abort()
 #include <string>
 
+//////////////////////////////////////////////////////////////
 PietToken PietTextTokeniser::GetNextToken()
 {
     if (!m_pStrStream->rdbuf()->in_avail())
@@ -73,6 +74,7 @@ PietToken PietTextTokeniser::GetNextToken()
     return PietToken(type, value);
 }
 
+//////////////////////////////////////////////////////////////
 PietToken PietTextTokeniser::Pop_Internal()
 {
     PietToken token = GetNextToken();
@@ -88,6 +90,7 @@ PietToken PietTextTokeniser::Pop_Internal()
     return token;
 }
 
+//////////////////////////////////////////////////////////////
 PietToken::ETokenType::Enum PietTextTokeniser::StringToETokenType(std::string& rString) const
 {
     if (rString == "PUSH")

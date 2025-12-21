@@ -1,10 +1,11 @@
 #include "Stack.h"
 
-#include <imgui.h>  // for ImGui structs and functions
+#include <imgui.h> // for ImGui structs and functions
 
+#include <deque>
+#include <ostream>
 #include <string>
 #include <vector>
-#include <deque>
 
 //////////////////////////////////////////////////////////////
 void Stack::Clear()
@@ -69,6 +70,16 @@ void Stack::Roll(int depth, int rotations)
         indx = (depth + (indx % depth)) % depth;
         m_stack.push_front(values[indx]);
     }
+}
+
+//////////////////////////////////////////////////////////////
+std::ostream& operator<<(std::ostream& os, const Stack& pt)
+{
+    for (auto it = pt.m_stack.rbegin(); it != pt.m_stack.rend(); it++)
+    {
+        os << *it << " ";
+    }
+    return os;
 }
 
 //////////////////////////////////////////////////////////////

@@ -6,18 +6,18 @@
 
 #include <string>
 
+//////////////////////////////////////////////////////////////
 class PietTextTokeniser : public ITextTokeniser<PietToken>
 {
   public:
-    PietTextTokeniser() {};
-    virtual void ResetImplementation() override {};
+    PietTextTokeniser() = default;
+
+    //////////////////////////////////////////////////////////////
+    virtual void ResetImplementation() override
+    {
+    };
 
   private:
-    /// <summary>
-    /// Convert from string to ETokenType enum
-    /// </summary>
-    /// <param name="rString - "> string to be converted </param>
-    /// <returns> ETokenType enum corresponding to input string </returns>
     PietToken::ETokenType::Enum StringToETokenType(std::string& rString) const;
 
     PietToken GetNextToken();

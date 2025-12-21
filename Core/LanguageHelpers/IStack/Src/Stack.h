@@ -14,15 +14,7 @@ public:
     int Pop();
     void Roll(int depth, int rotations);
 
-    //////////////////////////////////////////////////////////////
-    friend std::ostream& operator<<(std::ostream& os, const Stack& pt)
-    {
-        for (auto it = pt.m_stack.rbegin(); it != pt.m_stack.rend(); it++)
-        {
-            os << *it << " ";
-        }
-        return os;
-    }
+    friend std::ostream& operator<<(std::ostream& os, const Stack& pt);
 
     const std::deque<int>& GetStack() const;
     void DisplayStack() const;

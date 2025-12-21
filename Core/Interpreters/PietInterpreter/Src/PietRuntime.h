@@ -17,58 +17,32 @@
 #include <string>
 #include <vector>
 
+//////////////////////////////////////////////////////////////
 class PietRuntime : public CRuntime<PietToken>
 {
     using TPietTokeniser = ITokeniser<PietToken>;
 
   public:
-    PietRuntime(SRuntimeSyncronisationStruct& rSync, std::ostringstream& rOutputStream, std::ostringstream& rExecutionhistoryStream) : CRuntime(rSync, rOutputStream, rExecutionhistoryStream)
-    {
-        m_activeTokeniser = (TPietTokeniser*)&m_textTokeniser;
-    };
+    
+    PietRuntime(SRuntimeSyncronisationStruct& rSync, std::ostringstream& rOutputStream, std::ostringstream& rExecutionhistoryStream);
 
-    virtual ELanguages::Enum GetRuntimeLanguage() const override
-    {
-        return ELanguages::Piet;
-    }
-    virtual std::vector<std::string> GetSupportedFileTypes() const override
-    {
-        return { ".txt", ".jpg", ".png", ".gif", ".ppm" };
-    }
+    virtual ELanguages::Enum GetRuntimeLanguage() const override;
+    virtual std::vector<std::string> GetSupportedFileTypes() const override;
 
-    enum class SourceType
+    //////////////////////////////////////////////////////////////
+    enum class ESourceType
     {
         Text,
         Image,
         Invalid
     };
 
-    void SetImage(GLuint* pTexture, const unsigned char* imageData, const int imageWidth, const int imageHeight)
-    {
-        m_currentSourceType = SourceType::Image;
-        m_pTexture = pTexture;
-        m_aspectRatio = (float)imageHeight / (float)imageWidth;
-        m_imageTokeniser.SetImage(imageData, imageWidth, imageHeight);
-        m_activeTokeniser = &m_imageTokeniser;
-    }
-
-    void UnsetImage()
-    {
-        m_currentSourceType = SourceType::Invalid;
-        m_activeTokeniser = (TPietTokeniser*)&m_textTokeniser;
-        m_pTexture = nullptr;
-        m_aspectRatio = 1.f;
-        m_imageTokeniser.UnsetImage();
-    }
+    void SetImage(GLuint* pTexture, const unsigned char* imageData, const int imageWidth, const int imageHeight);
+    void UnsetImage();
 
     void SetCodelSize(const int size);
 
-    virtual void ResetImplementation() override
-    {
-        m_stack.Clear();
-        m_textTokeniser.SetTextStream(m_code);
-        m_imageTokeniser.Reset();
-    };
+    virtual void ResetImplementation() override;
 
     virtual void RenderWindows() override;
     virtual void CacheState() override;
@@ -88,7 +62,7 @@ class PietRuntime : public CRuntime<PietToken>
     int m_codelSize{ 1 };
 
     bool m_bForceImage = false;
-    SourceType m_currentSourceType{ SourceType::Text };
+    ESourceType m_currentSourceType{ ESourceType::Text };
 
     void RenderImageDisplay();
 
