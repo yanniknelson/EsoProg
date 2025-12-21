@@ -11,6 +11,7 @@
 #include <Stack.h>               // for Stack
 
 #include <GLFW/glfw3.h>          // for GLuint
+#include <gl/GL.h>               // for GLuint
 
 #include <sstream>               // for std::ostringstream
 #include <string>
