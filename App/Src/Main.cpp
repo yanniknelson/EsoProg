@@ -1,4 +1,4 @@
-﻿// Main.cpp : Defines the entry point for the application. 
+﻿// Main.cpp : Defines the entry point for the application.
 
 #include "Main.h"
 
@@ -41,8 +41,8 @@ int main(int, char**)
     const char* glsl_version = "#version 150";
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);  // 3.2+ only
-    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);            // Required on Mac
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE); // 3.2+ only
+    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);           // Required on Mac
 #else
     // GL 3.0 + GLSL 130
     const char* glsl_version = "#version 130";
@@ -63,9 +63,10 @@ int main(int, char**)
     // Setup Dear ImGui context
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
-    ImGuiIO& io = ImGui::GetIO(); (void)io;
-    io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
-    io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
+    ImGuiIO& io = ImGui::GetIO();
+    (void)io;
+    io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard; // Enable Keyboard Controls
+    io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;  // Enable Gamepad Controls
 
     // Setup Dear ImGui style
     ImGui::StyleColorsDark();
@@ -73,8 +74,8 @@ int main(int, char**)
 
     // Setup scaling
     ImGuiStyle& style = ImGui::GetStyle();
-    style.ScaleAllSizes(main_scale);        // Bake a fixed style scale. (until we have a solution for dynamic style scaling, changing this requires resetting Style + calling this again)
-    style.FontScaleDpi = main_scale;        // Set initial font scale. (using io.ConfigDpiScaleFonts=true makes this unnecessary. We leave both here for documentation purpose)
+    style.ScaleAllSizes(main_scale); // Bake a fixed style scale. (until we have a solution for dynamic style scaling, changing this requires resetting Style + calling this again)
+    style.FontScaleDpi = main_scale; // Set initial font scale. (using io.ConfigDpiScaleFonts=true makes this unnecessary. We leave both here for documentation purpose)
 
     // Setup Platform/Renderer backends
     ImGui_ImplGlfw_InitForOpenGL(window, true);
@@ -115,7 +116,8 @@ int main(int, char**)
                     {
                         rSync.runtimeStateMtx.unlock();
                         std::unique_lock<std::mutex> lck(rSync.finishedWithStateMtx); // once we've unlocked the current state we want to wait until the copyingStateCV is notified (indication copying is complete)
-                        rSync.finishedStateWithCv.wait(lck, [&rSync]() { return !rSync.renderWantsState.load(); });
+                        rSync.finishedStateWithCv.wait(lck, [&rSync]()
+                            { return !rSync.renderWantsState.load(); });
                         rSync.runtimeStateMtx.lock(); // now that copying is complete we can re-gain the lock to continue executing as many iterations as we can while the render thread is rendering
                     }
 
@@ -123,7 +125,8 @@ int main(int, char**)
                     {
                         rSync.runtimeStateMtx.unlock();
                         std::unique_lock<std::mutex> lck(rSync.waitingOnInputMtx);
-                        rSync.waitingOnInputCV.wait(lck, [&]() { return pProgramInstance->m_sync.exit || !pProgramInstance->IsRuntimeWaitingOnInput(); });
+                        rSync.waitingOnInputCV.wait(lck, [&]()
+                            { return pProgramInstance->m_sync.exit || !pProgramInstance->IsRuntimeWaitingOnInput(); });
                         rSync.runtimeStateMtx.lock();
                     }
 
@@ -139,7 +142,8 @@ int main(int, char**)
                 {
                     rSync.runtimeStateMtx.unlock();
                     std::unique_lock<std::mutex> lck(rSync.finishedWithStateMtx); // once we've unlocked the current state we want to wait until the copyingStateCV is notified (indication copying is complete)
-                    rSync.finishedStateWithCv.wait(lck, [&rSync]() { return !rSync.renderWantsState.load(); });
+                    rSync.finishedStateWithCv.wait(lck, [&rSync]()
+                        { return !rSync.renderWantsState.load(); });
                     rSync.runtimeStateMtx.lock(); // now that copying is complete we can re-gain the lock to continue executing as many iterations as we can while the render thread is rendering
                 }
             }
@@ -176,7 +180,7 @@ int main(int, char**)
         // Update and Render additional Platform Windows
         // (Platform functions may change the current OpenGL context, so we save/restore it to make it easier to paste this code elsewhere.
         //  For this specific demo app we could also call glfwMakeContextCurrent(window) directly)
-        if (io.ConfigFlags)//& ImGuiConfigFlags_ViewportsEnable)
+        if (io.ConfigFlags) //& ImGuiConfigFlags_ViewportsEnable)
         {
             GLFWwindow* backup_current_context = glfwGetCurrentContext();
             //ImGui::UpdatePlatformWindows();

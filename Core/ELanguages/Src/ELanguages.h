@@ -1,11 +1,13 @@
 #pragma once
 
-#include <cstdint>
 #include <SmartEnums.h>
+#include <cstdint>
 
-#define ELANGUAGES(x)\
+// clang-format off
+#define ELANGUAGES(x) \
     x(Piet)
 
 CreateSmartEnum(ELanguages, ELANGUAGES);
 
 #undef ELANGUAGES
+// clang-format on

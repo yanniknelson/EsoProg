@@ -2,66 +2,68 @@
 
 #include "IRuntime.h"
 
-#include <ITokeniser.h>
 #include <ELanguages.h>
+#include <ITokeniser.h>
 
 #include <iostream>
 #include <sstream>
 
-#include <string>
-#include <thread>
-#include <mutex>
 #include <atomic>
 #include <chrono>
 #include <condition_variable>
+#include <mutex>
+#include <string>
+#include <thread>
 
 template<typename TokenClass>
 class CRuntime : public IRuntime
 {
-public:
-	CRuntime(RuntimeSyncronisationStruct& rSync, std::ostringstream& rOutputStream, std::ostringstream& rExecutionhistoryStream) : IRuntime(rSync, rOutputStream, rExecutionhistoryStream) {}
+  public:
+    CRuntime(RuntimeSyncronisationStruct& rSync, std::ostringstream& rOutputStream, std::ostringstream& rExecutionhistoryStream) : IRuntime(rSync, rOutputStream, rExecutionhistoryStream)
+    {
+    }
 
-	virtual ELanguages::Enum GetRuntimeLanguage() const = 0;
-	virtual std::vector<std::string> GetSupportedFileTypes() const = 0;
+    virtual ELanguages::Enum GetRuntimeLanguage() const = 0;
+    virtual std::vector<std::string> GetSupportedFileTypes() const = 0;
 
-	virtual void SetSourceCode(std::string str) override
-	{
-		m_codeStr = str;
-		std::stringstream tmp(m_codeStr.c_str());
-		m_code.swap(tmp);
-		Reset();
-		OnSourceSet();
-	}
+    virtual void SetSourceCode(std::string str) override
+    {
+        m_codeStr = str;
+        std::stringstream tmp(m_codeStr.c_str());
+        m_code.swap(tmp);
+        Reset();
+        OnSourceSet();
+    }
 
-	virtual bool StepExecution() override
-	{
-		if (m_waitingForCharInput || m_waitingForValInput)
-		{
-			return false;
-		}
+    virtual bool StepExecution() override
+    {
+        if (m_waitingForCharInput || m_waitingForValInput)
+        {
+            return false;
+        }
 
-		const TokenClass token = StepExecution_Internal();
-		if (token.m_type != TokenClass::TokenType::NOP)
-		{
-			m_rExecutionHistoryStream << token << std::endl;
-		}
+        const TokenClass token = StepExecution_Internal();
+        if (token.m_type != TokenClass::TokenType::NOP)
+        {
+            m_rExecutionHistoryStream << token << std::endl;
+        }
 
-		return token.m_type != TokenClass::TokenType::End;
-	}
+        return token.m_type != TokenClass::TokenType::End;
+    }
 
-	virtual void ResetImplementation() = 0;
+    virtual void ResetImplementation() = 0;
 
-	virtual void RenderWindows() = 0;
-	virtual void CacheState() = 0;
+    virtual void RenderWindows() = 0;
+    virtual void CacheState() = 0;
 
-protected:
-	std::string m_codeStr = "";
-	std::stringstream m_code;
+  protected:
+    std::string m_codeStr = "";
+    std::stringstream m_code;
 
-	ITokeniser<TokenClass>* m_activeTokeniser = nullptr;
+    ITokeniser<TokenClass>* m_activeTokeniser = nullptr;
 
-	virtual void OnSourceSet() = 0;
-	virtual void OnInput(int val) = 0;
+    virtual void OnSourceSet() = 0;
+    virtual void OnInput(int val) = 0;
 
-	virtual TokenClass StepExecution_Internal() = 0;
+    virtual TokenClass StepExecution_Internal() = 0;
 };
