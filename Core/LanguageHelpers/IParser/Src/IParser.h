@@ -29,7 +29,7 @@ class IParser
     virtual std::shared_ptr<IOperation<LanguageOperations>> Parse_Internal() = 0;
 
     //////////////////////////////////////////////////////////////
-    bool Check(const TokenClass::ETokenType::Enum expected)
+    bool Check(const typename TokenClass::ETokenType::Enum expected)
     {
         return m_pTokeniser->Peek().m_type == expected;
     }
@@ -49,7 +49,7 @@ class IParser
     }
 
     //////////////////////////////////////////////////////////////
-    TokenClass Match(const TokenClass::ETokenType::Enum expected)
+    TokenClass Match(const typename TokenClass::ETokenType::Enum expected)
     {
         if (Check(expected))
         {

@@ -16,31 +16,19 @@
 #include <string>
 #include <vector>
 
+//////////////////////////////////////////////////////////////
 class BrainFckRuntime : public CRuntime<BrainFckOperationTypes::Enum>
 {
   public:
-    BrainFckRuntime(SRuntimeSyncronisationStruct& rSync, std::ostringstream& rOutputStream, std::ostringstream& rExecutionhistoryStream)
-        : CRuntime(rSync, rOutputStream, rExecutionhistoryStream), m_parser(&m_tokeniser)
-    {
-        m_tokeniser.SetTextStream(m_code);
-    };
+    BrainFckRuntime(SRuntimeSyncronisationStruct& rSync, std::ostringstream& rOutputStream, std::ostringstream& rExecutionhistoryStream);
 
-    virtual ELanguages::Enum GetRuntimeLanguage() const override
-    {
-        return ELanguages::Brainfck;
-    }
-    virtual std::vector<std::string> GetSupportedFileTypes() const override
-    {
-        return { ".txt" };
-    }
-
-    virtual void ResetImplementation() override
-    {
-        m_array.Clear();
-    }
-
+    // CRuntime
+    virtual ELanguages::Enum GetRuntimeLanguage() const override;
+    virtual std::vector<std::string> GetSupportedFileTypes() const override;
+    virtual void ResetImplementation() override;
     virtual void RenderWindows() override;
     virtual void CacheState() override;
+    // ~CRuntime
 
   private:
     BrainFckTokeniser m_tokeniser;
@@ -53,11 +41,10 @@ class BrainFckRuntime : public CRuntime<BrainFckOperationTypes::Enum>
     int m_cachedIndex{ 0 };
     IMemoryArray<uint8_t> m_cachedArray;
 
+    // CRuntime
     virtual void OnSourceSet() override;
-
     virtual void OnInput(int val) override;
-
     virtual bool ShouldEnd(const BrainFckOperationTypes::Enum& token) override;
-
     virtual BrainFckOperationTypes::Enum StepExecution_Internal() override;
+    // ~CRuntime
 };

@@ -5,6 +5,7 @@
 
 #include <iostream>      // for std::ostream
 
+//////////////////////////////////////////////////////////////
 class BrainFckToken : public IToken
 {
   public:
@@ -27,19 +28,18 @@ class BrainFckToken : public IToken
 #undef ETOKENTYPE
     // clang-format on
 
-    BrainFckToken(const ETokenType::Enum type) : m_type(type) {};
+    //////////////////////////////////////////////////////////////
+    BrainFckToken(const ETokenType::Enum type)
+        : m_type(type)
+    {
+    };
 
-    ETokenType::Enum m_type = ETokenType::Start;
-
-    /// <summary>
-    /// Format and output the Token of the stack for and output stream
-    /// </summary>
-    /// <param name="os - "> The output stream </param>
-    /// <param name="tk - "> The token to be output </param>
-    /// <returns></returns>
+    //////////////////////////////////////////////////////////////
     friend std::ostream& operator<<(std::ostream& os, const BrainFckToken& tk)
     {
         os << BrainFckToken::ETokenType::ToString(tk.m_type);
         return os;
     }
+
+    ETokenType::Enum m_type = ETokenType::Start;
 };

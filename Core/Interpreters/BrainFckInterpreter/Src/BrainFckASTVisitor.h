@@ -6,6 +6,7 @@
 #include <cstdint>        // for uint8_t
 #include <memory>
 
+//////////////////////////////////////////////////////////////
 class BrainFckPrintingVisitor : public IASTVisitor<BrainFckProgram>
 {
     using TProgramPtr = std::shared_ptr<BrainFckProgram>;
@@ -23,6 +24,7 @@ class BrainFckPrintingVisitor : public IASTVisitor<BrainFckProgram>
     void Print(const char* str);
 };
 
+//////////////////////////////////////////////////////////////
 class BrainFckRuntimeVisitor
 {
     using TProgramPtr = std::shared_ptr<BrainFckProgram>;

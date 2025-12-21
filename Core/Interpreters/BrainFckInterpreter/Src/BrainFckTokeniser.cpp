@@ -5,12 +5,14 @@
 #include <cctype>           // for isspace
 #include <string>
 
+//////////////////////////////////////////////////////////////
 BrainFckToken BrainFckTokeniser::Pop_Internal()
 {
     BrainFckToken token = GetNextToken();
     return token;
 }
 
+//////////////////////////////////////////////////////////////
 BrainFckToken BrainFckTokeniser::GetNextToken()
 {
     char ch = ' ';
@@ -35,6 +37,7 @@ BrainFckToken BrainFckTokeniser::GetNextToken()
     return currentETokenType;
 }
 
+//////////////////////////////////////////////////////////////
 inline BrainFckToken::ETokenType::Enum BrainFckTokeniser::CharToToken(const char chr) const
 {
     switch (chr)

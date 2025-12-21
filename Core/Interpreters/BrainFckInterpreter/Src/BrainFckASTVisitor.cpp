@@ -6,6 +6,7 @@
 #include <iostream>
 #include <memory>
 
+//////////////////////////////////////////////////////////////
 void BrainFckPrintingVisitor::Traverse(TProgramPtr pProgram)
 {
     Print("Program");
@@ -18,6 +19,7 @@ void BrainFckPrintingVisitor::Traverse(TProgramPtr pProgram)
     Print("Program End");
 };
 
+//////////////////////////////////////////////////////////////
 void BrainFckPrintingVisitor::Traverse(TBrainFckOperationPtr pOperation)
 {
     switch (pOperation->GetType())
@@ -45,11 +47,13 @@ void BrainFckPrintingVisitor::Traverse(TBrainFckOperationPtr pOperation)
     }
 }
 
+//////////////////////////////////////////////////////////////
 void BrainFckPrintingVisitor::Visit(TBrainFckOperationPtr pOperation)
 {
     Print(BrainFckOperationTypes::ToString(pOperation->GetType()));
 };
 
+//////////////////////////////////////////////////////////////
 void BrainFckPrintingVisitor::Traverse(std::shared_ptr<Loop> pLoop)
 {
     Print("Loop Start");
@@ -62,6 +66,7 @@ void BrainFckPrintingVisitor::Traverse(std::shared_ptr<Loop> pLoop)
     Print("Loop End");
 }
 
+//////////////////////////////////////////////////////////////
 void BrainFckPrintingVisitor::Print(const char* str)
 {
     for (size_t i = 0; i < m_depth; i++)
@@ -71,11 +76,13 @@ void BrainFckPrintingVisitor::Print(const char* str)
     std::cout << str << "\n";
 }
 
+//////////////////////////////////////////////////////////////
 void BrainFckRuntimeVisitor::SetProgram(TBrainFckOperationPtr pProgram)
 {
     m_pCurrentOperation = pProgram;
 }
 
+//////////////////////////////////////////////////////////////
 BrainFckOperationTypes::Enum BrainFckRuntimeVisitor::Step(uint8_t currVal)
 {
     TBrainFckOperationPtr pCurrentOperation = m_pCurrentOperation.lock();
@@ -94,6 +101,7 @@ BrainFckOperationTypes::Enum BrainFckRuntimeVisitor::Step(uint8_t currVal)
     return currOpType;
 }
 
+//////////////////////////////////////////////////////////////
 void BrainFckRuntimeVisitor::EnterRegion(uint8_t currVal)
 {
     TBrainFckOperationPtr pCurrentOperation = m_pCurrentOperation.lock();
@@ -119,6 +127,7 @@ void BrainFckRuntimeVisitor::EnterRegion(uint8_t currVal)
     }
 }
 
+//////////////////////////////////////////////////////////////
 void BrainFckRuntimeVisitor::ExitRegion(uint8_t currVal)
 {
     TBrainFckOperationPtr pCurrentOperation = m_pCurrentOperation.lock();
@@ -133,6 +142,7 @@ void BrainFckRuntimeVisitor::ExitRegion(uint8_t currVal)
     }
 }
 
+//////////////////////////////////////////////////////////////
 void BrainFckRuntimeVisitor::MoveToNextOp(uint8_t currVal)
 {
     //get the next instruction in the same region as the current instruction
@@ -153,6 +163,7 @@ void BrainFckRuntimeVisitor::MoveToNextOp(uint8_t currVal)
     }
 }
 
+//////////////////////////////////////////////////////////////
 BrainFckOperationTypes::Enum BrainFckRuntimeVisitor::GetOperationType()
 {
     TBrainFckOperationPtr pCurrentOperation = m_pCurrentOperation.lock();

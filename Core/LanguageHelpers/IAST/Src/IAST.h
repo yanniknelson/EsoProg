@@ -113,7 +113,7 @@ class IError : public IOperation<OperationTypes>
     IError(std::shared_ptr<IOperation<OperationTypes>> pParent, std::shared_ptr<IRegion<OperationTypes>> pRegion) : IOperation<OperationTypes>(pParent, pRegion) {};
 
     //////////////////////////////////////////////////////////////
-    virtual OperationTypes::Enum GetType() const
+    virtual typename OperationTypes::Enum GetType() const
     {
         return OperationTypes::Error;
     };
@@ -127,7 +127,7 @@ class IProgram : public IOperation<OperationTypes>
     IProgram(std::shared_ptr<IOperation<OperationTypes>> pParent, std::shared_ptr<IRegion<OperationTypes>> pRegion) : IOperation<OperationTypes>(pParent, pRegion) {};
 
     //////////////////////////////////////////////////////////////
-    virtual OperationTypes::Enum GetType() const
+    virtual typename OperationTypes::Enum GetType() const
     {
         return OperationTypes::Program;
     };

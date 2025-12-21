@@ -6,12 +6,11 @@
 #include <IParser.h>        // for IParser
 #include <ITokeniser.h>     // for ITokeniser
 
+//////////////////////////////////////////////////////////////
 class BrainFckParser : public IParser<BrainFckToken, BrainFckOperationTypes>
 {
   public:
-    BrainFckParser(ITokeniser<BrainFckToken>* pTokeniser) : IParser(pTokeniser)
-    {
-    }
+    BrainFckParser(ITokeniser<BrainFckToken>* pTokeniser);
 
   private:
     virtual TBrainFckOperationPtr Parse_Internal() override;

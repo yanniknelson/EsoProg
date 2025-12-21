@@ -3,8 +3,18 @@
 #include "BrainFckAST.h"    // for TBrainFckOperationPtr, TBrainFckRegionPtr, BrainFckProgram, BrainFckError
 #include "BrainFckToken.h"  // for BrainFckToken
 
+#include <IParser.h>        // for IParser
+#include <ITokeniser.h>     // for ITokeniser
+
 #include <memory>
 
+//////////////////////////////////////////////////////////////
+BrainFckParser::BrainFckParser(ITokeniser<BrainFckToken>* pTokeniser)
+    : IParser(pTokeniser)
+{
+}
+
+//////////////////////////////////////////////////////////////
 TBrainFckOperationPtr BrainFckParser::Parse_Internal()
 {
     std::shared_ptr<BrainFckProgram> pProgram = std::make_shared<BrainFckProgram>();
@@ -26,6 +36,7 @@ TBrainFckOperationPtr BrainFckParser::Parse_Internal()
     return pProgram;
 }
 
+//////////////////////////////////////////////////////////////
 TBrainFckOperationPtr BrainFckParser::ParseExpression(TBrainFckOperationPtr pParent, TBrainFckRegionPtr pParentRegion)
 {
     if (Check(BrainFckToken::ETokenType::Loop_Start))
@@ -35,6 +46,7 @@ TBrainFckOperationPtr BrainFckParser::ParseExpression(TBrainFckOperationPtr pPar
     return ParseOp(pParent, pParentRegion);
 }
 
+//////////////////////////////////////////////////////////////
 TBrainFckOperationPtr BrainFckParser::ParseOp(TBrainFckOperationPtr pParent, TBrainFckRegionPtr pParentRegion)
 {
     if (Check(BrainFckToken::ETokenType::Move_Left))
@@ -77,6 +89,7 @@ TBrainFckOperationPtr BrainFckParser::ParseOp(TBrainFckOperationPtr pParent, TBr
     return std::make_shared<BrainFckError>(pParent, pParentRegion);
 }
 
+//////////////////////////////////////////////////////////////
 TBrainFckOperationPtr BrainFckParser::ParseLoop(TBrainFckOperationPtr pParent, TBrainFckRegionPtr pParentRegion)
 {
     if (Match(BrainFckToken::ETokenType::Loop_Start).m_type != BrainFckToken::ETokenType::Unrecognised_Token)
