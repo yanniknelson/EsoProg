@@ -22,13 +22,6 @@ class PietRuntime : public CRuntime<PietToken>
 {
     using TPietTokeniser = ITokeniser<PietToken>;
 
-  public:
-    
-    PietRuntime(SRuntimeSyncronisationStruct& rSync, std::ostringstream& rOutputStream, std::ostringstream& rExecutionhistoryStream);
-
-    virtual ELanguages::Enum GetRuntimeLanguage() const override;
-    virtual std::vector<std::string> GetSupportedFileTypes() const override;
-
     //////////////////////////////////////////////////////////////
     enum class ESourceType
     {
@@ -37,17 +30,35 @@ class PietRuntime : public CRuntime<PietToken>
         Invalid
     };
 
+  public:
+    PietRuntime(SRuntimeSyncronisationStruct& rSync, std::ostringstream& rOutputStream, std::ostringstream& rExecutionhistoryStream);
+
+    // IRuntime
+    virtual ELanguages::Enum GetRuntimeLanguage() const override;
+    virtual std::vector<std::string> GetSupportedFileTypes() const override;
+    virtual void ResetImplementation() override;
+    virtual void RenderWindows() override;
+    virtual void CacheState() override;
+    // ~IRuntime
+
     void SetImage(GLuint* pTexture, const unsigned char* imageData, const int imageWidth, const int imageHeight);
     void UnsetImage();
 
     void SetCodelSize(const int size);
 
-    virtual void ResetImplementation() override;
-
-    virtual void RenderWindows() override;
-    virtual void CacheState() override;
-
   private:
+    // IRuntime
+    virtual void OnInput(int val) override;
+    // ~IRuntime
+
+    // CRuntime
+    virtual void OnSourceSet() override;
+    virtual bool ShouldEnd(const PietToken& token) override;
+    virtual PietToken StepExecution_Internal() override;
+    // ~CRuntime
+
+    void RenderImageDisplay();
+
     PietTextTokeniser m_textTokeniser;
     PietImageTokeniser m_imageTokeniser;
 
@@ -63,14 +74,4 @@ class PietRuntime : public CRuntime<PietToken>
 
     bool m_bForceImage = false;
     ESourceType m_currentSourceType{ ESourceType::Text };
-
-    void RenderImageDisplay();
-
-    virtual void OnSourceSet() override;
-
-    virtual void OnInput(int val) override;
-
-    virtual bool ShouldEnd(const PietToken& token) override;
-
-    virtual PietToken StepExecution_Internal() override;
 };

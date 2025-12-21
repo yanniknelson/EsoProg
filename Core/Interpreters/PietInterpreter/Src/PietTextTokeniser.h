@@ -12,14 +12,16 @@ class PietTextTokeniser : public ITextTokeniser<PietToken>
   public:
     PietTextTokeniser() = default;
 
-    //////////////////////////////////////////////////////////////
-    virtual void ResetImplementation() override
-    {
-    };
+    // ITokeniser
+    virtual void ResetImplementation() override;
+    // ~ITokeniser
 
   private:
-    PietToken::ETokenType::Enum StringToETokenType(std::string& rString) const;
 
-    PietToken GetNextToken();
+    // ITokeniser
     virtual PietToken Pop_Internal() override;
+    // ~ITokeniser
+
+    PietToken::ETokenType::Enum StringToETokenType(std::string& rString) const;
+    PietToken GetNextToken();
 };

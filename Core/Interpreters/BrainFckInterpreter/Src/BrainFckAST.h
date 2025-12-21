@@ -47,11 +47,13 @@ class LeftOp : public TBrainFckOperation
         : IOperation(pParent, pRegion)
     {
     };
-    
-    virtual BrainFckOperationTypes::Enum GetType() const
+
+    // TBrainFckOperation
+    virtual BrainFckOperationTypes::Enum GetType() const override
     {
         return BrainFckOperationTypes::LeftOp;
     };
+    // ~TBrainFckOperation
 };
 
 //////////////////////////////////////////////////////////////
@@ -63,10 +65,12 @@ class RightOp : public TBrainFckOperation
     {
     };
 
-    virtual BrainFckOperationTypes::Enum GetType() const
+    // TBrainFckOperation
+    virtual BrainFckOperationTypes::Enum GetType() const override
     {
         return BrainFckOperationTypes::RightOp;
     };
+    // ~TBrainFckOperation
 };
 
 //////////////////////////////////////////////////////////////
@@ -78,10 +82,12 @@ class IncOp : public TBrainFckOperation
     {
     };
 
-    virtual BrainFckOperationTypes::Enum GetType() const
+    // TBrainFckOperation
+    virtual BrainFckOperationTypes::Enum GetType() const override
     {
         return BrainFckOperationTypes::IncOp;
     };
+    // ~TBrainFckOperation
 };
 
 //////////////////////////////////////////////////////////////
@@ -93,10 +99,12 @@ class DecOp : public TBrainFckOperation
     {
     };
 
-    virtual BrainFckOperationTypes::Enum GetType() const
+    // TBrainFckOperation
+    virtual BrainFckOperationTypes::Enum GetType() const override
     {
         return BrainFckOperationTypes::DecOp;
     };
+    // ~TBrainFckOperation
 };
 
 //////////////////////////////////////////////////////////////
@@ -108,10 +116,12 @@ class InOp : public TBrainFckOperation
     {
     };
 
-    virtual BrainFckOperationTypes::Enum GetType() const
+    // TBrainFckOperation
+    virtual BrainFckOperationTypes::Enum GetType() const override
     {
         return BrainFckOperationTypes::InOp;
     };
+    // ~TBrainFckOperation
 };
 
 //////////////////////////////////////////////////////////////
@@ -123,10 +133,12 @@ class OutOp : public TBrainFckOperation
     {
     };
 
-    virtual BrainFckOperationTypes::Enum GetType() const
+    // TBrainFckOperation
+    virtual BrainFckOperationTypes::Enum GetType() const override
     {
         return BrainFckOperationTypes::OutOp;
     };
+    // ~TBrainFckOperation
 };
 
 //////////////////////////////////////////////////////////////
@@ -138,10 +150,12 @@ class Loop : public TBrainFckOperation
     {
     };
 
-    virtual BrainFckOperationTypes::Enum GetType() const
+    // TBrainFckOperation
+    virtual BrainFckOperationTypes::Enum GetType() const override
     {
         return BrainFckOperationTypes::Loop;
     };
+    // ~TBrainFckOperation
 
     TBrainFckRegionPtr m_pRegion = std::make_shared<TBrainFckRegion>();
 };

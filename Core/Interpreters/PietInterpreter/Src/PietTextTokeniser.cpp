@@ -7,72 +7,9 @@
 #include <string>
 
 //////////////////////////////////////////////////////////////
-PietToken PietTextTokeniser::GetNextToken()
+void PietTextTokeniser::ResetImplementation() 
 {
-    if (!m_pStrStream->rdbuf()->in_avail())
-    {
-        return PietToken(PietToken::ETokenType::End);
-    }
-    char ch = ' ';
-    std::string word;
-    while (isspace(ch))
-    {
-        m_pStrStream->get(ch);
-        if (ch == '\n')
-        {
-            m_lineNumber++;
-        }
-    }
-
-    PietToken::ETokenType::Enum type = PietToken::ETokenType::Unrecognised_Token;
-    int value = 0;
-
-    if (isdigit(ch))
-    {
-        type = PietToken::ETokenType::Value;
-        m_pStrStream->putback(ch);
-        *m_pStrStream >> value;
-    }
-    else
-    {
-        m_pStrStream->putback(ch);
-        *m_pStrStream >> word;
-        type = StringToETokenType(word);
-
-        if (type == PietToken::ETokenType::Input)
-        {
-            word = "";
-            *m_pStrStream >> word;
-            type = StringToETokenType(word);
-
-            if (type == PietToken::ETokenType::CHAR)
-            {
-                type = PietToken::ETokenType::Input_Char;
-            }
-            else if (type == PietToken::ETokenType::INT)
-            {
-                type = PietToken::ETokenType::Input_Val;
-            }
-        }
-        else if (type == PietToken::ETokenType::Output)
-        {
-            word = "";
-            *m_pStrStream >> word;
-            type = StringToETokenType(word);
-
-            if (type == PietToken::ETokenType::CHAR)
-            {
-                type = PietToken::ETokenType::Output_Char;
-            }
-            else if (type == PietToken::ETokenType::INT)
-            {
-                type = PietToken::ETokenType::Output_Val;
-            }
-        }
-    }
-
-    return PietToken(type, value);
-}
+};
 
 //////////////////////////////////////////////////////////////
 PietToken PietTextTokeniser::Pop_Internal()
@@ -169,4 +106,72 @@ PietToken::ETokenType::Enum PietTextTokeniser::StringToETokenType(std::string& r
     {
         return PietToken::ETokenType::Unrecognised_Token;
     }
+}
+
+//////////////////////////////////////////////////////////////
+PietToken PietTextTokeniser::GetNextToken()
+{
+    if (!m_pStrStream->rdbuf()->in_avail())
+    {
+        return PietToken(PietToken::ETokenType::End);
+    }
+    char ch = ' ';
+    std::string word;
+    while (isspace(ch))
+    {
+        m_pStrStream->get(ch);
+        if (ch == '\n')
+        {
+            m_lineNumber++;
+        }
+    }
+
+    PietToken::ETokenType::Enum type = PietToken::ETokenType::Unrecognised_Token;
+    int value = 0;
+
+    if (isdigit(ch))
+    {
+        type = PietToken::ETokenType::Value;
+        m_pStrStream->putback(ch);
+        *m_pStrStream >> value;
+    }
+    else
+    {
+        m_pStrStream->putback(ch);
+        *m_pStrStream >> word;
+        type = StringToETokenType(word);
+
+        if (type == PietToken::ETokenType::Input)
+        {
+            word = "";
+            *m_pStrStream >> word;
+            type = StringToETokenType(word);
+
+            if (type == PietToken::ETokenType::CHAR)
+            {
+                type = PietToken::ETokenType::Input_Char;
+            }
+            else if (type == PietToken::ETokenType::INT)
+            {
+                type = PietToken::ETokenType::Input_Val;
+            }
+        }
+        else if (type == PietToken::ETokenType::Output)
+        {
+            word = "";
+            *m_pStrStream >> word;
+            type = StringToETokenType(word);
+
+            if (type == PietToken::ETokenType::CHAR)
+            {
+                type = PietToken::ETokenType::Output_Char;
+            }
+            else if (type == PietToken::ETokenType::INT)
+            {
+                type = PietToken::ETokenType::Output_Val;
+            }
+        }
+    }
+
+    return PietToken(type, value);
 }

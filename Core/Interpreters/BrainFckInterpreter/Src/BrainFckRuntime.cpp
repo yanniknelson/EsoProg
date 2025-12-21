@@ -52,17 +52,17 @@ void BrainFckRuntime::CacheState()
 }
 
 //////////////////////////////////////////////////////////////
+void BrainFckRuntime::OnInput(int val)
+{
+    m_array.Set(m_currentIndex, val);
+}
+
+//////////////////////////////////////////////////////////////
 void BrainFckRuntime::OnSourceSet()
 {
     m_pProgramAST = std::dynamic_pointer_cast<BrainFckProgram>(m_parser.Parse());
     BrainFckPrintingVisitor().Traverse(m_pProgramAST);
     m_runtimeVisitor.SetProgram(m_pProgramAST);
-}
-
-//////////////////////////////////////////////////////////////
-void BrainFckRuntime::OnInput(int val)
-{
-    m_array.Set(m_currentIndex, val);
 }
 
 //////////////////////////////////////////////////////////////

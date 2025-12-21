@@ -12,7 +12,9 @@ class BrainFckPrintingVisitor : public IASTVisitor<BrainFckProgram>
     using TProgramPtr = std::shared_ptr<BrainFckProgram>;
 
   public:
+    // IASTVisitor
     virtual void Traverse(TProgramPtr pProgram) override;
+    // ~IASTVisitor
 
     void Traverse(TBrainFckOperationPtr pOperation);
     void Visit(TBrainFckOperationPtr pOperation);

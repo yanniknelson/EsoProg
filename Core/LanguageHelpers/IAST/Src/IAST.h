@@ -112,11 +112,12 @@ class IError : public IOperation<OperationTypes>
   public:
     IError(std::shared_ptr<IOperation<OperationTypes>> pParent, std::shared_ptr<IRegion<OperationTypes>> pRegion) : IOperation<OperationTypes>(pParent, pRegion) {};
 
-    //////////////////////////////////////////////////////////////
-    virtual typename OperationTypes::Enum GetType() const
+    // IOperation
+    virtual typename OperationTypes::Enum GetType() const override
     {
         return OperationTypes::Error;
     };
+    // ~IOperation
 };
 
 //////////////////////////////////////////////////////////////
@@ -126,10 +127,12 @@ class IProgram : public IOperation<OperationTypes>
   public:
     IProgram(std::shared_ptr<IOperation<OperationTypes>> pParent, std::shared_ptr<IRegion<OperationTypes>> pRegion) : IOperation<OperationTypes>(pParent, pRegion) {};
 
-    //////////////////////////////////////////////////////////////
-    virtual typename OperationTypes::Enum GetType() const
+    // IOperation
+    virtual typename OperationTypes::Enum GetType() const override
     {
         return OperationTypes::Program;
     };
+    // ~IOperation
+
     std::shared_ptr<IRegion<OperationTypes>> m_pRegion = std::make_shared<IRegion<OperationTypes>>();
 };

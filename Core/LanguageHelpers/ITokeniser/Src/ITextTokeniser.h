@@ -9,8 +9,7 @@ template<typename TokenClass>
 class ITextTokeniser : public ITokeniser<TokenClass>
 {
   public:
-    //////////////////////////////////////////////////////////////
-    ITextTokeniser() {};
+    ITextTokeniser() = default;
 
     //////////////////////////////////////////////////////////////
     void SetTextStream(std::stringstream& rCode)

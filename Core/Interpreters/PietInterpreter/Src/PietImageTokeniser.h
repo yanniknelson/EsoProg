@@ -145,17 +145,18 @@ class PietImageTokeniser : public ITokeniser<PietToken>
   public:
     PietImageTokeniser();
 
+    // ITokeniser
+    virtual void ResetImplementation() override;
+    // ~ITokeniser
+
     void SetImage(const unsigned char* pImageData, const int width, const int height);
     void UnsetImage();
     void SetCodelSize(const int size);
-    virtual void ResetImplementation() override;
 
     int GetInstructionNumber();
 
     void ToggleCodelChooser();
     void RotateDirectionPointer(const int times);
-
-    
 
     static const char* s_directionStrings[static_cast<int>(EDirection::Count) + 1];
     static const char* s_directionIcons[static_cast<int>(EDirection::Count) + 1];
@@ -169,7 +170,9 @@ class PietImageTokeniser : public ITokeniser<PietToken>
     EDirection GetCachedBlockEndCodelChoser() const;
 
   private:
+    // ITokeniser
     virtual PietToken Pop_Internal() override;
+    // ~ITokeniser
 
     static EDirection s_clockwiseDirectionLookup[(int)EDirection::Count];
 

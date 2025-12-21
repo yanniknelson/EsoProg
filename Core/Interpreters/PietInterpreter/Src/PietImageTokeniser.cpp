@@ -177,6 +177,12 @@ PietImageTokeniser::PietImageTokeniser()
 }
 
 //////////////////////////////////////////////////////////////
+void PietImageTokeniser::ResetImplementation()
+{
+    m_currentBlock = {};
+}
+
+//////////////////////////////////////////////////////////////
 void PietImageTokeniser::SetImage(const unsigned char* pImageData, const int width, const int height)
 {
     Reset();
@@ -200,12 +206,6 @@ void PietImageTokeniser::UnsetImage()
 void PietImageTokeniser::SetCodelSize(const int size)
 {
     m_codelSize = size;
-}
-
-//////////////////////////////////////////////////////////////
-void PietImageTokeniser::ResetImplementation()
-{
-    m_currentBlock = {};
 }
 
 //////////////////////////////////////////////////////////////

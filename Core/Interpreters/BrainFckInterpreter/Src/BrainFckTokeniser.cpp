@@ -6,35 +6,8 @@
 #include <string>
 
 //////////////////////////////////////////////////////////////
-BrainFckToken BrainFckTokeniser::Pop_Internal()
+void BrainFckTokeniser::ResetImplementation()
 {
-    BrainFckToken token = GetNextToken();
-    return token;
-}
-
-//////////////////////////////////////////////////////////////
-BrainFckToken BrainFckTokeniser::GetNextToken()
-{
-    char ch = ' ';
-    BrainFckToken::ETokenType::Enum currentETokenType = BrainFckToken::ETokenType::Unrecognised_Token;
-    std::string word;
-    // ignore all white space and characters that aren't ><+-.,[]
-    while (m_pStrStream->rdbuf()->in_avail() && (isspace(ch) || currentETokenType == BrainFckToken::ETokenType::Unrecognised_Token))
-    {
-        m_pStrStream->get(ch);
-        currentETokenType = CharToToken(ch);
-        if (ch == '\n')
-        {
-            m_lineNumber++;
-        }
-    }
-
-    if (currentETokenType == BrainFckToken::ETokenType::Unrecognised_Token)
-    {
-        currentETokenType = BrainFckToken::ETokenType::End;
-    }
-
-    return currentETokenType;
 }
 
 //////////////////////////////////////////////////////////////
@@ -79,4 +52,36 @@ inline BrainFckToken::ETokenType::Enum BrainFckTokeniser::CharToToken(const char
         return BrainFckToken::ETokenType::Unrecognised_Token;
     }
     }
+}
+
+//////////////////////////////////////////////////////////////
+BrainFckToken BrainFckTokeniser::GetNextToken()
+{
+    char ch = ' ';
+    BrainFckToken::ETokenType::Enum currentETokenType = BrainFckToken::ETokenType::Unrecognised_Token;
+    std::string word;
+    // ignore all white space and characters that aren't ><+-.,[]
+    while (m_pStrStream->rdbuf()->in_avail() && (isspace(ch) || currentETokenType == BrainFckToken::ETokenType::Unrecognised_Token))
+    {
+        m_pStrStream->get(ch);
+        currentETokenType = CharToToken(ch);
+        if (ch == '\n')
+        {
+            m_lineNumber++;
+        }
+    }
+
+    if (currentETokenType == BrainFckToken::ETokenType::Unrecognised_Token)
+    {
+        currentETokenType = BrainFckToken::ETokenType::End;
+    }
+
+    return currentETokenType;
+}
+
+//////////////////////////////////////////////////////////////
+BrainFckToken BrainFckTokeniser::Pop_Internal()
+{
+    BrainFckToken token = GetNextToken();
+    return token;
 }
