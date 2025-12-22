@@ -1,74 +1,87 @@
 #include "BrainFckTokeniser.h"
 
-#include <iostream>
-#include <sstream>
+#include "BrainFckToken.h"  // for BrainFckToken
 
-BrainFckToken BrainFckTokeniser::Pop_Internal()
+#include <cctype>           // for isspace
+#include <string>
+
+//////////////////////////////////////////////////////////////
+void BrainFckTokeniser::ResetImplementation()
 {
-	BrainFckToken token = GetNextToken();
-	return token;
 }
 
+//////////////////////////////////////////////////////////////
+inline BrainFckToken::ETokenType::Enum BrainFckTokeniser::CharToToken(const char chr) const
+{
+    switch (chr)
+    {
+    case ('>'):
+    {
+        return BrainFckToken::ETokenType::Move_Right;
+    }
+    case ('<'):
+    {
+        return BrainFckToken::ETokenType::Move_Left;
+    }
+    case ('+'):
+    {
+        return BrainFckToken::ETokenType::Increment;
+    }
+    case ('-'):
+    {
+        return BrainFckToken::ETokenType::Decrement;
+    }
+    case ('.'):
+    {
+        return BrainFckToken::ETokenType::Output_Char;
+    }
+    case (','):
+    {
+        return BrainFckToken::ETokenType::Input_Char;
+    }
+    case ('['):
+    {
+        return BrainFckToken::ETokenType::Loop_Start;
+    }
+    case (']'):
+    {
+        return BrainFckToken::ETokenType::Loop_End;
+    }
+    default:
+    {
+        return BrainFckToken::ETokenType::Unrecognised_Token;
+    }
+    }
+}
+
+//////////////////////////////////////////////////////////////
 BrainFckToken BrainFckTokeniser::GetNextToken()
 {
-	char ch = ' ';
-	BrainFckToken::TokenType::Enum currentTokenType = BrainFckToken::TokenType::Unrecognised_Token;
-	std::string word;
-	// ignore all white space and characters that aren't ><+-.,[]
-	while (m_pStrStream->rdbuf()->in_avail() && (isspace(ch) || currentTokenType == BrainFckToken::TokenType::Unrecognised_Token))
-	{
-		m_pStrStream->get(ch);
-		currentTokenType = CharToToken(ch);
-		if (ch == '\n') { m_lineNumber++; }
-	}
+    char ch = ' ';
+    BrainFckToken::ETokenType::Enum currentETokenType = BrainFckToken::ETokenType::Unrecognised_Token;
+    std::string word;
+    // ignore all white space and characters that aren't ><+-.,[]
+    while (m_pStrStream->rdbuf()->in_avail() && (isspace(ch) || currentETokenType == BrainFckToken::ETokenType::Unrecognised_Token))
+    {
+        m_pStrStream->get(ch);
+        currentETokenType = CharToToken(ch);
+        if (ch == '\n')
+        {
+            m_lineNumber++;
+        }
+    }
 
-	if (currentTokenType == BrainFckToken::TokenType::Unrecognised_Token)
-	{
-		currentTokenType = BrainFckToken::TokenType::End;
-	}
-	
-	return currentTokenType;
+    if (currentETokenType == BrainFckToken::ETokenType::Unrecognised_Token)
+    {
+        currentETokenType = BrainFckToken::ETokenType::End;
+    }
+
+    return currentETokenType;
 }
 
-inline BrainFckToken::TokenType::Enum BrainFckTokeniser::CharToToken(const char chr) const
+//////////////////////////////////////////////////////////////
+BrainFckToken BrainFckTokeniser::Pop_Internal()
 {
-	switch (chr)
-	{
-	case('>'):
-	{
-		return BrainFckToken::TokenType::Move_Right;
-	}
-	case('<'):
-	{
-		return BrainFckToken::TokenType::Move_Left;
-	}
-	case('+'):
-	{
-		return BrainFckToken::TokenType::Increment;
-	}
-	case('-'):
-	{
-		return BrainFckToken::TokenType::Decrement;
-	}
-	case('.'):
-	{
-		return BrainFckToken::TokenType::Output_Char;
-	}
-	case(','):
-	{
-		return BrainFckToken::TokenType::Input_Char;
-	}
-	case('['):
-	{
-		return BrainFckToken::TokenType::Loop_Start;
-	}
-	case(']'):
-	{
-		return BrainFckToken::TokenType::Loop_End;
-	}
-	default:
-	{
-		return BrainFckToken::TokenType::Unrecognised_Token;
-	}
-	}
+    BrainFckToken token = GetNextToken();
+    return token;
 }

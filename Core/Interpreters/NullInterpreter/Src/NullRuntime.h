@@ -1,35 +1,37 @@
 #pragma once
 
-#include "ELanguages.h"
+#include "ELanguages.h"  // for ELanguages::Enum
 
-#include <iostream>
-#include <sstream>
+#include <IRuntime.h>    // for IRuntime, SRuntimeSyncronisationStruct
 
-#include <CRuntime.h>
+#include <sstream>       // for std::ostringstream
+#include <string>
+#include <vector>
 
-
+//////////////////////////////////////////////////////////////
 class NullRuntime : public IRuntime
 {
-public:
-	NullRuntime(RuntimeSyncronisationStruct& rSync, std::ostringstream& rOutputStream, std::ostringstream& rExecutionhistoryStream) : IRuntime(rSync, rOutputStream, rExecutionhistoryStream) {};
+  public:
+    NullRuntime(SRuntimeSyncronisationStruct& rSync, std::ostringstream& rOutputStream, std::ostringstream& rExecutionhistoryStream)
+        : IRuntime(rSync, rOutputStream, rExecutionhistoryStream)
+    {
+    };
 
-	virtual ELanguages::Enum GetRuntimeLanguage() const override { return ELanguages::COUNT; }
-	virtual std::vector<std::string> GetSupportedFileTypes() const override { return {}; }
+// clang-format off
+    // IRuntime
+    virtual ELanguages::Enum GetRuntimeLanguage() const override { return ELanguages::COUNT; }
+    virtual std::vector<std::string> GetSupportedFileTypes() const override { return {}; }
+    virtual void SetSourceCode(std::string str) override {}
+    virtual bool StepExecution() override { return false; }
+    virtual void ResetImplementation() override {}
+    virtual void ResetCodeStream() override {}
+    virtual void RenderWindows() override {}
+    virtual void CacheState() override {}
+    // ~IRuntime
 
-	virtual void SetSourceCode(std::string str) {};
-
-	virtual bool StepExecution() { return false;  };
-
-	virtual void ResetImplementation() override {};
-	virtual void ResetCodeStream() override {};
-
-	virtual void RenderWindows() override {};
-	virtual void CacheState() override {};
-
-private:
-	void RenderImageDisplay(RuntimeSyncronisationStruct& rSync);
-
-	virtual void OnInput(int val) override {};
-
-	
+  private:
+    // IRuntime
+    virtual void OnInput(int val) override {};
+    // ~IRuntime
+// clang-format on
 };

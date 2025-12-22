@@ -1,100 +1,77 @@
 #pragma once
 
-#include "ITokeniser.h"
-#include "PietToken.h"
-#include "PietTextTokeniser.h"
-#include "PietImageTokeniser.h"
+#include "PietImageTokeniser.h"  // for PietImageTokeniser
+#include "PietTextTokeniser.h"   // for PietTextTokeniser
+#include "PietToken.h"           // for PietToken
 
-#include "ELanguages.h"
+#include <CRuntime.h>            // for CRuntime
+#include <ELanguages.h>          // for ELanguages::Enum
+#include <IRuntime.h>            // for SRuntimeSyncronisationStruct
+#include <ITokeniser.h>          // for ITokeniser
+#include <Stack.h>               // for Stack
 
-#include <iostream>
-#include <sstream>
+#include <GLFW/glfw3.h>          // for GLuint
+#include <gl/GL.h>               // for GLuint
 
-#include <Stack.h>
-#include <CRuntime.h>
+#include <sstream>               // for std::ostringstream
 #include <string>
-#include <thread>
-#include <mutex>
-#include <atomic>
-#include <chrono>
-#include <condition_variable>
+#include <vector>
 
-#include "GLFW/glfw3.h"
-
+//////////////////////////////////////////////////////////////
 class PietRuntime : public CRuntime<PietToken>
 {
-	using TPietTokeniser = ITokeniser<PietToken>;
-public:
-	PietRuntime(RuntimeSyncronisationStruct& rSync, std::ostringstream& rOutputStream, std::ostringstream& rExecutionhistoryStream) : CRuntime(rSync, rOutputStream, rExecutionhistoryStream)
-	{
-		m_activeTokeniser = (TPietTokeniser*)&m_textTokeniser;
-	};
+    using TPietTokeniser = ITokeniser<PietToken>;
 
-	virtual ELanguages::Enum GetRuntimeLanguage() const override { return ELanguages::Piet; }
-	virtual std::vector<std::string> GetSupportedFileTypes() const override { return { ".txt", ".jpg", ".png", ".gif", ".ppm" }; }
+    //////////////////////////////////////////////////////////////
+    enum class ESourceType
+    {
+        Text,
+        Image,
+        Invalid
+    };
 
-	enum class SourceType
-	{
-		Text,
-		Image,
-		Invalid
-	};
+  public:
+    PietRuntime(SRuntimeSyncronisationStruct& rSync, std::ostringstream& rOutputStream, std::ostringstream& rExecutionhistoryStream);
 
-	void SetImage(GLuint* pTexture, const unsigned char* imageData, const int imageWidth, const int imageHeight)
-	{
-		m_currentSourceType = SourceType::Image;
-		m_pTexture = pTexture;
-		m_aspectRatio = (float)imageHeight / (float)imageWidth;
-		m_imageTokeniser.SetImage(imageData, imageWidth, imageHeight);
-		m_activeTokeniser = &m_imageTokeniser;
-	}
+    // IRuntime
+    virtual ELanguages::Enum GetRuntimeLanguage() const override;
+    virtual std::vector<std::string> GetSupportedFileTypes() const override;
+    virtual void ResetImplementation() override;
+    virtual void RenderWindows() override;
+    virtual void CacheState() override;
+    // ~IRuntime
 
-	void UnsetImage()
-	{
-		m_currentSourceType = SourceType::Invalid;
-		m_activeTokeniser = (TPietTokeniser*)&m_textTokeniser;
-		m_pTexture = nullptr;
-		m_aspectRatio = 1.f;
-		m_imageTokeniser.UnsetImage();
-	}
+    void SetImage(GLuint* pTexture, const unsigned char* imageData, const int imageWidth, const int imageHeight);
+    void UnsetImage();
 
-	void SetCodelSize(const int size);
+    void SetCodelSize(const int size);
 
-	virtual void ResetImplementation() override
-	{
-		m_stack.Clear();
-		m_textTokeniser.SetTextStream(m_code);
-		m_imageTokeniser.Reset();
-	};
+  private:
+    // IRuntime
+    virtual void OnInput(int val) override;
+    // ~IRuntime
 
-	virtual void RenderWindows() override;
-	virtual void CacheState() override;
+    // CRuntime
+    virtual void OnSourceSet() override;
+    virtual bool ShouldEnd(const PietToken& token) override;
+    virtual PietToken StepExecution_Internal() override;
+    // ~CRuntime
 
-private:
+    void RenderImageDisplay();
 
-	PietTextTokeniser m_textTokeniser;
-	PietImageTokeniser m_imageTokeniser;
+    PietTextTokeniser m_textTokeniser;
+    PietImageTokeniser m_imageTokeniser;
 
-	TPietTokeniser* m_activeTokeniser = nullptr;
+    TPietTokeniser* m_activeTokeniser = nullptr;
 
-	Stack m_stack;
-	Stack m_cachedStack;
+    Stack m_stack;
+    Stack m_cachedStack;
 
-	GLuint* m_pTexture = nullptr;
-	float m_aspectRatio = 1.f;
-	std::string m_codelSizeStr{ "1" };
-	int m_codelSize{ 1 };
+    GLuint* m_pTexture = nullptr;
+    float m_aspectRatio = 1.f;
+    std::string m_codelSizeStr{ "1" };
+    int m_codelSize{ 1 };
 
-	bool m_bForceImage = false;
-	SourceType m_currentSourceType{ SourceType::Text };
-
-	void RenderImageDisplay();
-
-	virtual void OnSourceSet() override;
-
-	virtual void OnInput(int val) override;
-
-	virtual bool ShouldEnd(const PietToken& token) override;
-
-	virtual PietToken StepExecution_Internal() override;
+    bool m_bForceImage = false;
+    ESourceType m_currentSourceType{ ESourceType::Text };
 };

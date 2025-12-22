@@ -1,28 +1,24 @@
 #pragma once
 
-#include "BrainFckToken.h"
+#include "BrainFckToken.h"   // for BrainFckToken
 
-#include <ITextTokeniser.h>
-#include <strstream>
-#include <iostream>
+#include <ITextTokeniser.h>  // for ITextTokeniser
 
-
+//////////////////////////////////////////////////////////////
 class BrainFckTokeniser : public ITextTokeniser<BrainFckToken>
 {
-public:
+  public:
+    BrainFckTokeniser() = default;
 
-	BrainFckTokeniser() {};
-	virtual void ResetImplementation() override {};
+    // ITokeniser
+    virtual void ResetImplementation() override;
+    // ~ITokeniser
 
-private:
+  private:
+    inline BrainFckToken::ETokenType::Enum CharToToken(const char chr) const;
+    BrainFckToken GetNextToken();
 
-	/// <summary>
-	/// Convert from char to TokenType enum
-	/// </summary>
-	/// <param name="chr - "> char to be converted </param>
-	/// <returns> TokenType enum corresponding to input char </returns>
-	inline BrainFckToken::TokenType::Enum CharToToken(const char chr) const;
-
-	BrainFckToken GetNextToken();
-	virtual BrainFckToken Pop_Internal() override;
+    // ITokeniser
+    virtual BrainFckToken Pop_Internal() override;
+    // ~ITokeniser
 };

@@ -1,45 +1,39 @@
 #pragma once
 
-#include <filesystem>
-#include <iostream>
+#include <filesystem>  // for std::filesystem::path
+#include <string>
+#include <vector>
 
 namespace fs = std::filesystem;
 
-class FileDialogBox {
-
-    static fs::path currentPath;
-    static fs::path selectedFilePath;
-    static std::string currentFileName;
-    static std::vector<std::string> allowed_types;
-
-public:
-
-    struct FileDialogReturn {
-        bool selected = false;
-        fs::path path;
+//////////////////////////////////////////////////////////////
+class CFileDialogBox
+{
+  public:
+    //////////////////////////////////////////////////////////////
+    struct SFileDialogReturn
+    {
+        bool m_bSelected = false;
+        fs::path m_path;
     };
 
-    static void Init_Path(fs::path p) {
-        currentPath = p;
-        std::cout << currentPath.string() << "\n";
-    }
+    static void Init_Path(fs::path path);
+    static void Set_Allowed_Type(std::vector<std::string> types);
+    static void Add_Allowed_Type(std::string type);
 
-    static void Set_Allowed_Type(std::vector<std::string> types) {
-        allowed_types = types;
-    }
-
-    static void Add_Allowed_Type(std::string type) {
-        allowed_types.push_back(type);
-    }
-
-    enum FileDialogType {
+    enum FileDialogType
+    {
         Open,
         Save_As,
         Num_of_Types
     };
 
-    static const char* DialogBoxTypes[];
+    static SFileDialogReturn Create_File_Dialog(bool& rbOpen, FileDialogType type);
 
-    static FileDialogReturn Create_File_Dialog(bool& open, FileDialogType type);
-
+  private:
+    static const char* s_dialogBoxTypes[];
+    static fs::path s_currentPath;
+    static fs::path s_selectedFilePath;
+    static std::string s_currentFileName;
+    static std::vector<std::string> s_allowed_types;
 };

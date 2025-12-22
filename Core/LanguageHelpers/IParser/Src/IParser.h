@@ -1,64 +1,76 @@
 #pragma once
 
-#include <IAST.h>
-#include <ITokeniser.h>
+#include <IAST.h>        // for IOperation
+#include <ITokeniser.h>  // for ITokeniser
+
+#include <memory>
 #include <string>
 #include <vector>
-#include <memory>
 
+//////////////////////////////////////////////////////////////
 template<typename TokenClass, typename LanguageOperations>
 class IParser
 {
-public:
-	IParser(ITokeniser<TokenClass>* pTokeniser) : m_pTokeniser(pTokeniser) {}
+  public:
+    //////////////////////////////////////////////////////////////
+    IParser(ITokeniser<TokenClass>* pTokeniser) : m_pTokeniser(pTokeniser)
+    {
+    }
 
-	std::shared_ptr<IOperation<LanguageOperations>> Parse()
-	{
-		Reset();
-		return Parse_Internal();
-	}
+    //////////////////////////////////////////////////////////////
+    std::shared_ptr<IOperation<LanguageOperations>> Parse()
+    {
+        Reset();
+        return Parse_Internal();
+    }
 
-protected:
-	virtual std::shared_ptr<IOperation<LanguageOperations>> Parse_Internal() = 0;
+  protected:
+    //////////////////////////////////////////////////////////////
+    virtual std::shared_ptr<IOperation<LanguageOperations>> Parse_Internal() = 0;
 
-	bool Check(const TokenClass::TokenType::Enum expected)
-	{
-		return m_pTokeniser->Peek().m_type == expected;
-	}
+    //////////////////////////////////////////////////////////////
+    bool Check(const typename TokenClass::ETokenType::Enum expected)
+    {
+        return m_pTokeniser->Peek().m_type == expected;
+    }
 
-	bool Check(const std::vector<typename TokenClass::TokenType::Enum>& expected)
-	{
-		const std::vector<TokenClass> nextN = m_pTokeniser->Peek(expected.size());
-		for (size_t tokenIdx = 0; tokenIdx < expected.size(); tokenIdx++)
-		{
-			if (nextN[tokenIdx].m_type != expected[tokenIdx])
-			{
-				return false;
-			}
-		}
-		return true;
-	}
+    //////////////////////////////////////////////////////////////
+    bool Check(const std::vector<typename TokenClass::ETokenType::Enum>& expected)
+    {
+        const std::vector<TokenClass> nextN = m_pTokeniser->Peek(expected.size());
+        for (size_t tokenIdx = 0; tokenIdx < expected.size(); tokenIdx++)
+        {
+            if (nextN[tokenIdx].m_type != expected[tokenIdx])
+            {
+                return false;
+            }
+        }
+        return true;
+    }
 
-	TokenClass Match(const TokenClass::TokenType::Enum expected)
-	{
-		if (Check(expected))
-		{
-			return m_pTokeniser->Pop();
-		}
-		std::string err = "Expected ";
-		err = err + TokenClass::TokenType::ToString(expected) + " token not found";
-		return Error(err.c_str());
-	}
+    //////////////////////////////////////////////////////////////
+    TokenClass Match(const typename TokenClass::ETokenType::Enum expected)
+    {
+        if (Check(expected))
+        {
+            return m_pTokeniser->Pop();
+        }
+        std::string err = "Expected ";
+        err = err + TokenClass::ETokenType::ToString(expected) + " token not found";
+        return Error(err.c_str());
+    }
 
-	TokenClass Error(const char* errorStr)
-	{
-		return TokenClass(TokenClass::TokenType::Unrecognised_Token);
-	}
+    //////////////////////////////////////////////////////////////
+    TokenClass Error(const char* errorStr)
+    {
+        return TokenClass(TokenClass::ETokenType::Unrecognised_Token);
+    }
 
-	void Reset()
-	{
-		m_pTokeniser->Reset();
-	}
+    //////////////////////////////////////////////////////////////
+    void Reset()
+    {
+        m_pTokeniser->Reset();
+    }
 
-	ITokeniser<TokenClass>* m_pTokeniser{ nullptr };
+    ITokeniser<TokenClass>* m_pTokeniser{ nullptr };
 };
