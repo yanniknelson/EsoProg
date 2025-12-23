@@ -25,6 +25,7 @@ TSinkPtr CLogManager::s_sharedConsoleSink;
 TSinkPtr CLogManager::s_sharedFileSink;
 ELogLevel::Enum CLogManager::s_defaultLogLevel = ELogLevel::Trace;
 ELogLevel::Enum CLogManager::s_defaultFlushLevel = ELogLevel::Info;
+ETraceVerbosityLevel::Enum CLogManager::s_verbosityLevel = ETraceVerbosityLevel::Off;
 
 // Constants
 const std::string DEFAULT_LOG_PATTERN = "[%n] [%d-%m-%Y %X.%e (%z)] [thread %t] [%s:%# %!] [%^%l%$] %v";
@@ -82,7 +83,7 @@ void CLogManager::Shutdown()
 }
 
 //////////////////////////////////////////////////////////////
-TLoggerPtr CLogManager::GetOrCreate(const std::string& name /*= ""*/, bool bOutputToConsole /*= true*/, bool bOutputToFile /*= true*/, bool bOutputToUniquewFile /*= false*/)
+TLoggerPtr CLogManager::GetOrCreate(const std::string& name /*= ""*/, bool bOutputToConsole /*= true*/, bool bOutputToFile /*= true*/, bool bOutputToUniqueFile /*= false*/)
 {
     if (!s_sharedConsoleSink)
     {
@@ -109,7 +110,7 @@ TLoggerPtr CLogManager::GetOrCreate(const std::string& name /*= ""*/, bool bOutp
         sinks.push_back(s_sharedFileSink);
     }
 
-    if (bOutputToUniquewFile)
+    if (bOutputToUniqueFile)
     {
         std::string unique_file_name = spdlog::fmt_lib::format("logs/{}_Logs.txt", logger_name);
         TSinkPtr unique_file_sink = std::make_shared<spdlog::sinks::rotating_file_sink_mt>(unique_file_name, MAX_LOG_FILE_SIZE_BYTES, MAX_LOG_FILES);
@@ -143,17 +144,29 @@ void CLogManager::Drop(const std::string& name)
 }
 
 //////////////////////////////////////////////////////////////
-void CLogManager::SetDefaultLogLevel(const ELogLevel::Enum& log_level)
+void CLogManager::SetDefaultLogLevel(const ELogLevel::Enum& logLevel)
 {
-    s_defaultLogLevel = log_level;
-    spdlog::apply_all([log_level](TSPDLoggerPtr logger)
-        { logger->set_level(to_spdlog_level(log_level)); });
+    s_defaultLogLevel = logLevel;
+    spdlog::apply_all([logLevel](TSPDLoggerPtr logger)
+        { logger->set_level(to_spdlog_level(logLevel)); });
 }
 
 //////////////////////////////////////////////////////////////
-void CLogManager::SetDefaultFlushLevel(const ELogLevel::Enum& flush_level)
+void CLogManager::SetDefaultFlushLevel(const ELogLevel::Enum& flushLevel)
 {
-    s_defaultFlushLevel = flush_level;
-    spdlog::apply_all([flush_level](TSPDLoggerPtr logger)
-        { logger->flush_on(to_spdlog_level(flush_level)); });
+    s_defaultFlushLevel = flushLevel;
+    spdlog::apply_all([flushLevel](TSPDLoggerPtr logger)
+        { logger->flush_on(to_spdlog_level(flushLevel)); });
+}
+
+//////////////////////////////////////////////////////////////
+void CLogManager::SetTraceVerbosity(const ETraceVerbosityLevel::Enum& verbosityLevel)
+{
+    s_verbosityLevel = verbosityLevel;
+}
+
+//////////////////////////////////////////////////////////////
+ETraceVerbosityLevel::Enum CLogManager::GetTraceVerbosity()
+{
+    return s_verbosityLevel;
 }

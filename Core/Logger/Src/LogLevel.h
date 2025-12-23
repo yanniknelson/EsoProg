@@ -5,6 +5,16 @@
 #include <spdlog/common.h>
 
 // clang-format off
+#define TRACE_VERBOSITY_LEVEL(x)\
+    x(Off)\
+    x(Low)\
+    x(Mid)\
+    x(High)\
+
+    CreateSmartEnum(ETraceVerbosityLevel, TRACE_VERBOSITY_LEVEL)
+
+#undef TRACE_VERBOSITY_LEVEL
+
 #define LOG_LEVEL(x)\
     x(Trace)\
     x(Debug)\

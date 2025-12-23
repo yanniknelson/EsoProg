@@ -34,11 +34,14 @@ class CLogManager
     static void Init();
     static void Shutdown();
 
-    static TLoggerPtr GetOrCreate(const std::string& name = "", bool bOutputToConsole = true, bool bOutputToFile = true, bool bOutputToUniquewFile = false);
+    static TLoggerPtr GetOrCreate(const std::string& name = "", bool bOutputToConsole = true, bool bOutputToFile = true, bool bOutputToUniqueFile = false);
     static void Drop(const std::string& name);
 
     static void SetDefaultLogLevel(const ELogLevel::Enum& log_level);
     static void SetDefaultFlushLevel(const ELogLevel::Enum& flush_level);
+    static void SetTraceVerbosity(const ETraceVerbosityLevel::Enum& verbosity_level);
+
+    static ETraceVerbosityLevel::Enum GetTraceVerbosity();
 
     private:
     /// Private ctor & dtor to enforce singleton pattern.
@@ -56,4 +59,5 @@ class CLogManager
     static TSinkPtr s_sharedFileSink;
     static ELogLevel::Enum s_defaultLogLevel;
     static ELogLevel::Enum s_defaultFlushLevel;
+    static ETraceVerbosityLevel::Enum s_verbosityLevel;
 };

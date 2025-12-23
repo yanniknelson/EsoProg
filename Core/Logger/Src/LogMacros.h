@@ -1,5 +1,6 @@
 #pragma once
 
+#include "LogLevel.h"                         // for ETraceVerbosityLevel::Enum
 #include "LogManager.h"                       // for TSPDLoggerPtr
 
 #include <spdlog/common.h>
@@ -25,8 +26,17 @@
         }                                                                                                           \
     } while (0)
 
+#define LOG_TRACE(logger, verbosity, ...)                                                                                   \
+    do                                                                                                                      \
+    {                                                                                                                       \
+        if (CLogManager::GetTraceVerbosity() != ETraceVerbosityLevel::Off && verbosity <= CLogManager::GetTraceVerbosity()) \
+        {                                                                                                                   \
+            LOG(logger, spdlog::level::trace, __VA_ARGS__);                                                                 \
+        }                                                                                                                   \
+    } while (0)
+#define LOG_DEBUG(logger, ...) LOG(logger, spdlog::level::debug, __VA_ARGS__)
 #define LOG_INFO(logger, ...) LOG(logger, spdlog::level::info, __VA_ARGS__)
-#define LOG_WARN(logger, ...) LOG(logger, spdlog::level::warn, __VA_ARGS__)
+#define LOG_WARNING(logger, ...) LOG(logger, spdlog::level::warn, __VA_ARGS__)
 #define LOG_ERROR(logger, ...) LOG(logger, spdlog::level::err, __VA_ARGS__)
 #define LOG_FATAL(logger, ...)                                                                                                    \
     do                                                                                                                            \
@@ -43,17 +53,12 @@
     } while (0)
 
 // Available in debug builds
-#if defined(DEBUG)
-
-#define LOG_TRACE(logger, ...) LOG(logger, spdlog::level::trace, __VA_ARGS__)
-#define LOG_DEBUG(logger, ...) LOG(logger, spdlog::level::debug, __VA_ARGS__)
-
-#else
+#if defined(RELEASE)
 
 #define LOG_TRACE(logger, ...) (void)(0)
 #define LOG_DEBUG(logger, ...) (void)(0)
 
-#endif // defined(DEBUG)
+#endif // defined(RELEASE)
 
 // Assertion macro
 #define LOG_ASSERT(logger, condition, ...)                                                                                       \
