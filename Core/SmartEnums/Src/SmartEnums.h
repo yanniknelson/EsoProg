@@ -47,6 +47,6 @@
             os << ToString(e);                                           \
             return os;                                                   \
         }                                                                \
-    }
+    };
 
 #define CreateSmartEnum(enumName, enumValues, ...) CreateSmartEnumOfType(enumName, uint8_t, enumValues, ...)
