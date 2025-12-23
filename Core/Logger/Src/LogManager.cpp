@@ -24,13 +24,14 @@ bool CLogManager::s_isInitialized = false;
 TSinkPtr CLogManager::s_sharedConsoleSink;
 TSinkPtr CLogManager::s_sharedFileSink;
 ELogLevel::Enum CLogManager::s_defaultLogLevel = ELogLevel::Trace;
-ELogLevel::Enum CLogManager::s_defaultFlushLevel = ELogLevel::Info;
+ELogLevel::Enum CLogManager::s_defaultFlushLevel = ELogLevel::Warn;
 ETraceVerbosityLevel::Enum CLogManager::s_verbosityLevel = ETraceVerbosityLevel::Off;
 
 // Constants
-const std::string DEFAULT_LOG_PATTERN = "[%n] [%d-%m-%Y %X.%e (%z)] [thread %t] [%s:%# %!] [%^%l%$] %v";
-constexpr size_t THREAD_POOL_QUEUE_SIZE = 8192;
-constexpr size_t THREAD_POOL_THREADS = 2;
+const std::string DEFAULT_LOG_PATTERN = "[%n] [%d-%m-%Y %X] [thread %t] [%!] [%^%l%$] %v";
+constexpr size_t THREAD_POOL_QUEUE_SIZE = 1024 * 1024;
+constexpr size_t THREAD_POOL_THREADS = 4;
+
 constexpr size_t MAX_LOG_FILE_SIZE_BYTES = 1048576 * 10; // 10 MiB
 constexpr size_t MAX_LOG_FILES = 5;
 
