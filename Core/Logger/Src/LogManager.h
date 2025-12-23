@@ -1,7 +1,6 @@
 #pragma once
 
 #include <atomic>
-#include <memory>
 #include <vector>
 
 ///////////////////////////////////////////
@@ -19,6 +18,6 @@ class CLogManager
     static void Shutdown(const char* m_loggerName);
 
   private:
-    static bool m_bInitialized;
-    static std::atomic<int> m_nLoggers;
+    static bool s_bInitialized;
+    static std::atomic<int> s_numLoggers;
 };

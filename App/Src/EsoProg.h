@@ -1,28 +1,41 @@
 #pragma once
 
-//ImGui imports
-#include <imgui.h>
-#include <imgui_stdlib.h>
+#include <BrainFckRuntime.h>    // for BrainFckRuntime
+#include <ELanguages.h>         // for ELanguages::Enum
+#include <FileDialogBox.h>      // for CFileDialogBox::FileDialogType, CFileDialogBox::Init_Path
+#include <IRuntime.h>           // for IRuntime
+#include <NullRuntime.h>        // for NullRuntime
+#include <PietRuntime.h>        // for PietRuntime
+#include <SmartEnums.h>         // for CreateSmartEnum
 
-//OpenGL imports
-#include "GLFW/glfw3.h"
+#include <GLFW/glfw3.h>         // for GLFWwindow
+#include <gl/GL.h>              // for GLuint
+#include <imgui.h>              // for ImGuiKey, ImGuiWindowFlags_, ImGuiInputTextFlags, ImGuiIO, ImWchar, ImFontConfig
 
-//Other imports
+#include <filesystem>           // for std::filesystem::path
 #include <fstream>
-#include <iostream>
-#include <stdio.h>
+#include <sstream>              // for std::ostringstream
+#include <string>
 
-//Custom classes
-#include <FileDialogBox.h>
-#include <IRuntime.h>
-#include <IconsFontAwesome7.h>
-#include <NullRuntime.h>
-#include <PietRuntime.h>
-#include <SmartEnums.h>
-
-class EsoProg
+//////////////////////////////////////////////////////////////
+class CEsoProg
 {
-// clang-format off
+  public:
+    static const char* s_programName;
+    static GLFWwindow* s_pWindow;
+
+    SRuntimeSyncronisationStruct m_sync;
+
+    CEsoProg(GLFWwindow* pWindow);
+
+    void Render();
+    bool UpdateRuntime();
+    bool IsRuntimeWaitingOnInput();
+    void CopyState();
+    void Reset();
+
+  private:
+    // clang-format off
 #define EFILETYPES(x) \
     x(Text)           \
     x(Image)
@@ -30,7 +43,11 @@ class EsoProg
     CreateSmartEnum(EFileType, EFILETYPES);
 
 #undef EFILETYPES
-// clang-format on
+    // clang-format on
+
+    void CreateMenuBar();
+
+    void SetCurrentLanugage(ELanguages::Enum language);
 
     void CheckShortCuts();
 
@@ -39,7 +56,9 @@ class EsoProg
     void HandelSaveAs();
     void HandleSave();
 
-    void CreateMenuBar();
+    void PreFileLoad(const std::filesystem::path path);
+    EFileType::Enum LoadFile(const std::filesystem::path path);
+    void PostFileLoad(const EFileType::Enum fileType, const std::filesystem::path path);
 
     //shortcut flags
     bool m_bShortcutUsed = false;
@@ -47,29 +66,23 @@ class EsoProg
 
     //file dialog box flags
     bool m_bEnableFileDialog = false;
-    FileDialogBox::FileDialogType m_dialogType = FileDialogBox::FileDialogType::Open;
+    CFileDialogBox::FileDialogType m_dialogType = CFileDialogBox::FileDialogType::Open;
     ImGuiWindowFlags_ m_fileDialogOnTop = ImGuiWindowFlags_None;
     std::fstream m_fileStream;
 
     EFileType::Enum m_currentFileType = EFileType::COUNT;
 
-    void PreFileLoad(const std::filesystem::path path);
-    EFileType::Enum LoadFile(const std::filesystem::path path);
-    void PostFileLoad(const EFileType::Enum fileType, const std::filesystem::path path);
-
     ELanguages::Enum m_currentLanguage = ELanguages::COUNT;
-
-    void SetCurrentLanugage(ELanguages::Enum languag);
 
     //file management
     bool m_bFileIsNew = true;
     fs::path m_currentFilePath = "";
 
     //Image
-    unsigned char* m_imageData{ nullptr };
+    unsigned char* m_pImageData{ nullptr };
     int m_imageWidth = 0;
     int m_imageHeight = 0;
-    int m_NumComponents = 0;
+    int m_numComponents = 0;
     bool m_bImageLoaded = false;
     float m_aspectRatio = 1.f;
 
@@ -85,43 +98,11 @@ class EsoProg
     std::string m_cachedOutput{ "" };
 
     IRuntime* m_pRuntime{ nullptr };
-    PietRuntime m_pietRuntime{ m_sync, m_outputStream, m_executionHistoryStream };
     NullRuntime m_nullRuntime{ m_sync, m_outputStream, m_executionHistoryStream };
+    PietRuntime m_pietRuntime{ m_sync, m_outputStream, m_executionHistoryStream };
+    BrainFckRuntime m_brainFckRuntime{ m_sync, m_outputStream, m_executionHistoryStream };
 
     ImGuiInputTextFlags m_codeEditorFlags = ImGuiInputTextFlags_CallbackCharFilter | ImGuiInputTextFlags_EnterReturnsTrue;
     std::string m_code{ "" };
     std::string m_programInput{ "" };
-
-  public:
-    static const char* i_ProgramName;
-    static GLFWwindow* i_pWindow;
-
-    RuntimeSyncronisationStruct m_sync;
-
-    EsoProg(GLFWwindow* pWindow)
-    {
-        i_pWindow = pWindow;
-        //setup the current directory as the initial path in the file dialog box
-        FileDialogBox::Init_Path(fs::current_path());
-        //SetCurrentLanugage(ELanguages::Piet);
-
-        glGenTextures(1, &m_texture);
-
-        m_pRuntime = &m_nullRuntime;
-
-        //Merge font awesome into the default font
-        ImGuiIO io = ImGui::GetIO();
-        io.Fonts->AddFontDefault();
-        static const ImWchar icons_ranges[] = { ICON_MIN_FA, ICON_MAX_16_FA, 0 };
-        ImFontConfig icons_config;
-        icons_config.MergeMode = true;
-        icons_config.PixelSnapH = true;
-        io.Fonts->AddFontFromFileTTF("../Vendor/Font-Awesome/otfs/Font Awesome 7 Free-Solid-900.otf", 16.0f, &icons_config, icons_ranges);
-    }
-
-    void ResetImplementation();
-    bool UpdateRuntime();
-    void Render();
-    bool IsRuntimeWaitingOnInput();
-    void CopyState();
 };

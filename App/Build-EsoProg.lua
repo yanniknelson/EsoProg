@@ -4,7 +4,7 @@ project "EsoProg"
    cppdialect "C++20"
    targetdir "bin/%{cfg.buildcfg}"
 
-   files { "Src/**.h", "Src/**.cpp" }
+   files { "Src/**.h", "Src/**.cpp", "README.md"}
 
    includedirs
    {
@@ -12,15 +12,19 @@ project "EsoProg"
 
 	  -- Include Core
 	  "%{wks.location}/Core/SmartEnums/Src",
-	  "%{wks.location}/Core/ELanguages/Src",
+	  "%{wks.location}/Core/LanguageHelpers/ELanguages/Src",
 	  "%{wks.location}/Core/ImGuiHelpers/FileDialogBox",
 	  "%{wks.location}/Core/ImGuiHelpers/ImGuiSetStyles",
 	  "%{wks.location}/Core/ImGuiHelpers/ImGuiValueChangeCallbacks",
-      "%{wks.location}/Core/ITokeniser/Src",
-      "%{wks.location}/Core/IStack/Src",
-	  "%{wks.location}/Core/IRuntime/Src",
-	  "%{wks.location}/Core/NullInterpreter/Src",
-	  "%{wks.location}/Core/PietInterpreter/Src",
+      "%{wks.location}/Core/LanguageHelpers/ITokeniser/Src",
+      "%{wks.location}/Core/LanguageHelpers/IAST/Src",
+      "%{wks.location}/Core/LanguageHelpers/IParser/Src",
+      "%{wks.location}/Core/LanguageHelpers/IStack/Src",
+	  "%{wks.location}/Core/LanguageHelpers/IMemoryArray/Src",
+	  "%{wks.location}/Core/LanguageHelpers/IRuntime/Src",
+	  "%{wks.location}/Core/Interpreters/NullInterpreter/Src",
+	  "%{wks.location}/Core/Interpreters/PietInterpreter/Src",
+	  "%{wks.location}/Core/Interpreters/BrainFckInterpreter/Src",
 
       -- Include externals
       "%{wks.location}/%{externals.stb}",
@@ -49,7 +53,8 @@ project "EsoProg"
       "ImGuiSetStyles",
       "ImGuiValueChangeCallbacks",
       "IStack",
-      "PietInterpreter"
+      "PietInterpreter",
+      "BrainFckInterpreter"
    }
 
    targetdir ("%{wks.location}/bin/%{prj.name}/" .. OutputDir)

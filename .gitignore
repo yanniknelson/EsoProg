@@ -10,7 +10,6 @@ obj/
 *.vcxproj.filters
 *.sln
 *.log
-*.ini
 Makefile
 
 # Exclude

@@ -1,18 +1,24 @@
 #include "ImGuiValueChangeCallbacks.h"
 
-int TextInputCallback(ImGuiInputTextCallbackData* data)
+#include <imgui.h>  // for ImGuiInputTextCallbackData
+
+#include <string>
+
+//////////////////////////////////////////////////////////////
+int TextInputCallback(ImGuiInputTextCallbackData* pData)
 {
-    *((bool*)data->UserData) = true;
+    *((bool*)pData->UserData) = true;
 
     //don't change the input key
     return 0;
 }
 
-int ValueInputChanged(ImGuiInputTextCallbackData* data)
+//////////////////////////////////////////////////////////////
+int ValueInputChanged(ImGuiInputTextCallbackData* pData)
 {
-    if (std::string str = data->Buf; !str.empty())
+    if (std::string str = pData->Buf; !str.empty())
     {
-        *((int*)data->UserData) = std::stoi(str);
+        *((int*)pData->UserData) = std::stoi(str);
     }
     return 0;
 }
