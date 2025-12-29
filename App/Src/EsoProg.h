@@ -4,6 +4,7 @@
 #include <ELanguages.h>         // for ELanguages::Enum
 #include <FileDialogBox.h>      // for CFileDialogBox::FileDialogType, CFileDialogBox::Init_Path
 #include <IRuntime.h>           // for IRuntime
+#include <LogManager.h>         // for TLoggerPtr
 #include <NullRuntime.h>        // for NullRuntime
 #include <PietRuntime.h>        // for PietRuntime
 #include <SmartEnums.h>         // for CreateSmartEnum
@@ -28,6 +29,7 @@ class CEsoProg
 
     CEsoProg(GLFWwindow* pWindow);
 
+    TLoggerPtr GetLogger();
     void Render();
     bool UpdateRuntime();
     bool IsRuntimeWaitingOnInput();
@@ -59,6 +61,8 @@ class CEsoProg
     void PreFileLoad(const std::filesystem::path path);
     EFileType::Enum LoadFile(const std::filesystem::path path);
     void PostFileLoad(const EFileType::Enum fileType, const std::filesystem::path path);
+
+    TLoggerPtr m_pLogger{ nullptr };
 
     //shortcut flags
     bool m_bShortcutUsed = false;

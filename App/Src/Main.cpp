@@ -4,6 +4,9 @@
 
 #include <IRuntime.h>            // for SRuntimeSyncronisationStruct
 #include <ImGuiSetStyles.h>      // for StyleColorsDark
+#include <LogLevel.h>            // for ETraceVerbosityLevel
+#include <LogMacros.h>           // for LOG_INFO ....
+#include <LogManager.h>          // for TLoggerPtr
 
 #include <GLFW/glfw3.h>          // glfwGetFramebufferSize, glfwPollEvents, glfwWindowShouldClose
 #include <gl/GL.h>               // for glViewport, glClearColor, gl....
@@ -102,11 +105,13 @@ int main(int, char**)
     std::thread runtimeWorker([&]()
         {
             SRuntimeSyncronisationStruct& rSync = pProgramInstance->m_sync;
+            TLoggerPtr pLogger = pProgramInstance->GetLogger();
             rSync.m_runtimeStateMtx.lock(); // lock the state for the first iterations
             while (!rSync.m_bExit)
             {
                 while (rSync.m_iterations != 0) // run while we have iterations to run
                 {
+                    LOG_TRACE(pLogger, ETraceVerbosityLevel::High, "Running iteration");
                     if (rSync.m_bWantsReset)
                     {
                         pProgramInstance->Reset();
@@ -122,8 +127,10 @@ int main(int, char**)
                     {
                         rSync.m_iterations = 0;
                     }
+
                     if (rSync.m_bRenderWantsState) // if the rendering thread has flagged it wants to copy the current state then unlock the current state
                     {
+                        LOG_TRACE(pLogger, ETraceVerbosityLevel::High, "Pausing runtime thread for state caching");
                         rSync.m_runtimeStateMtx.unlock();
                         std::unique_lock<std::mutex> lck(rSync.m_finishedWithStateMtx); // once we've unlocked the current state we want to wait until the copyingStateCV is notified (indication copying is complete)
                         rSync.m_finishedStateWithCv.wait(lck, [&rSync]()
@@ -133,6 +140,7 @@ int main(int, char**)
 
                     if (pProgramInstance->IsRuntimeWaitingOnInput())
                     {
+                        LOG_TRACE(pLogger, ETraceVerbosityLevel::Mid, "Pausing runtime thread for input");
                         rSync.m_runtimeStateMtx.unlock();
                         std::unique_lock<std::mutex> lck(rSync.m_waitingOnInputMtx);
                         rSync.m_waitingOnInputCV.wait(lck, [&]()
@@ -150,6 +158,7 @@ int main(int, char**)
 
                 if (rSync.m_bRenderWantsState) // if the rendering thread has flagged it wants to copy the current state then unlock the current state
                 {
+                    LOG_TRACE(pLogger, ETraceVerbosityLevel::High, "Pausing runtime thread for state caching");
                     rSync.m_runtimeStateMtx.unlock();
                     std::unique_lock<std::mutex> lck(rSync.m_finishedWithStateMtx); // once we've unlocked the current state we want to wait until the copyingStateCV is notified (indication copying is complete)
                     rSync.m_finishedStateWithCv.wait(lck, [&rSync]()
@@ -157,6 +166,7 @@ int main(int, char**)
                     rSync.m_runtimeStateMtx.lock(); // now that copying is complete we can re-gain the lock to continue executing as many iterations as we can while the render thread is rendering
                 }
             }
+            LOG_INFO(pLogger, "Ending the runtime thread");
             rSync.m_runtimeStateMtx.unlock(); // make sure we unlock the state when we're being told to shut down.
         });
 

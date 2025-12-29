@@ -12,6 +12,7 @@ project "EsoProg"
 
 	  -- Include Core
 	  "%{wks.location}/Core/SmartEnums/Src",
+	  "%{wks.location}/Core/Logger/Src",
 	  "%{wks.location}/Core/LanguageHelpers/ELanguages/Src",
 	  "%{wks.location}/Core/ImGuiHelpers/FileDialogBox",
 	  "%{wks.location}/Core/ImGuiHelpers/ImGuiSetStyles",
@@ -27,6 +28,7 @@ project "EsoProg"
 	  "%{wks.location}/Core/Interpreters/BrainFckInterpreter/Src",
 
       -- Include externals
+      "%{wks.location}/%{externals.spdlog}/include",
       "%{wks.location}/%{externals.stb}",
       "%{wks.location}/%{externals.imgui}",
       "%{wks.location}/%{externals.imgui}/misc/cpp",

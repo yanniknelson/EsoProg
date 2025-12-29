@@ -6,6 +6,9 @@
 #include <FileDialogBox.h>              // for CFileDialogBox
 #include <ImGuiSetStyles.h>             // for SetImGuiDarkStyle, SetImGuiLightStyle
 #include <ImGuiValueChangeCallbacks.h>  // for TextInputCallback, ValueInputChanged
+#include <LogLevel.h>                   // for ETraceVerbosityLevel
+#include <LogMacros.h>                  // for LOG_INFO ....
+#include <LogManager.h>                 // for CLogmanager::GetOrCreate
 #include <PietRuntime.h>                // for PietRuntime
 
 #include <GLFW/glfw3.h>                 // for GLFWwindow
@@ -19,7 +22,6 @@
 #include <cfloat>                       // for FLT_MIN
 #include <filesystem>                   // for std::filesystem::path
 #include <fstream>                      // for std::ofstream
-#include <iostream>
 #include <string>
 
 const char* CEsoProg::s_programName = "EsoProg";
@@ -28,6 +30,7 @@ GLFWwindow* CEsoProg::s_pWindow = nullptr;
 //////////////////////////////////////////////////////////////
 CEsoProg::CEsoProg(GLFWwindow* pWindow)
 {
+    m_pLogger = CLogManager::GetOrCreate("EsoProg", /*boutputToConsole =*/true, /*bOutputToFile =*/true);
     s_pWindow = pWindow;
     //setup the current directory as the initial path in the file dialog box
     CFileDialogBox::Init_Path(fs::current_path());
@@ -45,6 +48,13 @@ CEsoProg::CEsoProg(GLFWwindow* pWindow)
     icons_config.MergeMode = true;
     icons_config.PixelSnapH = true;
     rIO.Fonts->AddFontFromFileTTF("../Vendor/Font-Awesome/otfs/Font Awesome 7 Free-Solid-900.otf", 16.0f, &icons_config, icons_ranges);
+    LOG_TRACE(m_pLogger, ETraceVerbosityLevel::Low , "EsoProg instance created");
+}
+
+//////////////////////////////////////////////////////////////
+TLoggerPtr CEsoProg::GetLogger()
+{
+    return m_pLogger;
 }
 
 //////////////////////////////////////////////////////////////
@@ -77,6 +87,7 @@ void CEsoProg::Render()
                 m_fileStream.open(ret.m_path.string(), m_fileStream.out);
                 m_fileStream << m_code;
                 m_fileStream.close();
+                LOG_INFO(m_pLogger, "Wrote to file {}", ret.m_path.string());
                 m_bFileIsNew = false;
                 m_currentFilePath = ret.m_path;
                 break;
@@ -95,6 +106,7 @@ void CEsoProg::Render()
             ImGui::InputText("##valInput", &m_programInput, ImGuiInputTextFlags_CharsDecimal | ImGuiInputTextFlags_CallbackEdit);
             if (ImGui::Button("Submit"))
             {
+                LOG_INFO(m_pLogger, "Recieved input as value");
                 m_pRuntime->InputVal(std::stoi(m_programInput));
                 m_programInput = "";
                 if (m_sync.m_iterations != -1)
@@ -115,6 +127,7 @@ void CEsoProg::Render()
             ImGui::InputText("##charInput", &m_programInput, ImGuiInputTextFlags_CallbackEdit);
             if (ImGui::Button("Submit (will only submit first character)"))
             {
+                LOG_INFO(m_pLogger, "Recieved input as character");
                 m_pRuntime->InputChar((char)m_programInput[0]);
                 m_programInput = "";
                 if (m_sync.m_iterations != -1)
@@ -125,6 +138,7 @@ void CEsoProg::Render()
             }
             if (ImGui::Button("Submit Enter Char"))
             {
+                LOG_INFO(m_pLogger, "Input line break/enter character");
                 m_programInput = "";
                 m_pRuntime->InputChar(10);
                 if (m_sync.m_iterations != -1)
@@ -147,12 +161,13 @@ void CEsoProg::Render()
 
         if (ImGui::InputTextMultiline("##code", &m_code, ImVec2(-FLT_MIN, ImGui::GetContentRegionAvail().y - (ImGui::GetTextLineHeight() * 1.5f)), ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_CallbackEdit, TextInputCallback, &m_bCodeChangedSinceLastStep))
         {
-            std::cout << "code changed" << std::endl;
+            LOG_TRACE(m_pLogger, ETraceVerbosityLevel::Low, "Code changed, halting code execution");
             m_sync.m_iterations = 0; // stop execution on code change
         }
 
         if (ImGui::Button("Run"))
         {
+            LOG_INFO(m_pLogger, "Run button pressed, resetting runtime and enabling running loop");
             m_pRuntime->Reset();
             m_pRuntime->SetSourceCode(m_code);
             m_sync.m_iterations = -1; // add a run speed
@@ -163,7 +178,10 @@ void CEsoProg::Render()
             int currentinstructionWaitTime = m_sync.m_instructionWaitTime.load();
             float newInstructionWaitTime = currentinstructionWaitTime / 1000.f;
             ImGui::SliderFloat("##ExecutionSpeed", &newInstructionWaitTime, 0, 3);
-            m_sync.m_instructionWaitTime.compare_exchange_strong(currentinstructionWaitTime, static_cast<int>(newInstructionWaitTime * 1000.f));
+            if (!m_sync.m_instructionWaitTime.compare_exchange_strong(currentinstructionWaitTime, static_cast<int>(newInstructionWaitTime * 1000.f)))
+            {
+                LOG_INFO(m_pLogger, "Updating exeuction speed");
+            }
         }
 
         if (m_sync.m_iterations == -1)
@@ -171,6 +189,7 @@ void CEsoProg::Render()
             ImGui::SameLine();
             if (ImGui::Button("Pause"))
             {
+                LOG_INFO(m_pLogger, "Pause button pressed, halting execution");
                 m_sync.m_iterations = 0;
             }
         }
@@ -178,6 +197,7 @@ void CEsoProg::Render()
         ImGui::SameLine();
         if (ImGui::Button("Step"))
         {
+            LOG_INFO(m_pLogger, "Step button pressed, increasing exeuction step request count");
             ++m_sync.m_iterations;
         }
 
@@ -186,6 +206,7 @@ void CEsoProg::Render()
             ImGui::SameLine();
             if (ImGui::Button("Reset"))
             {
+                LOG_INFO(m_pLogger, "Reset button pressed, requesting runtime reset");
                 m_pRuntime->RequestReset();
             }
         }
@@ -216,9 +237,11 @@ bool CEsoProg::UpdateRuntime()
 {
     if (m_bCodeChangedSinceLastStep)
     {
+        LOG_INFO(m_pLogger, "Code changed since last step, so resetting the runtime");
         m_pRuntime->SetSourceCode(m_code);
         m_bCodeChangedSinceLastStep = false;
     }
+    LOG_TRACE(m_pLogger, ETraceVerbosityLevel::High, "Stepping runtime execution");
     return m_pRuntime->StepExecution();
 }
 
@@ -231,6 +254,7 @@ bool CEsoProg::IsRuntimeWaitingOnInput()
 //////////////////////////////////////////////////////////////
 void CEsoProg::CopyState()
 {
+    LOG_TRACE(m_pLogger, ETraceVerbosityLevel::High, "Caching runtime state");
     m_sync.m_bRenderWantsState = true;
     m_sync.m_runtimeStateMtx.lock();
 
@@ -246,6 +270,7 @@ void CEsoProg::CopyState()
 //////////////////////////////////////////////////////////////
 void CEsoProg::Reset()
 {
+    LOG_INFO(m_pLogger, "Resetting EsoProg");
     m_pRuntime->Reset();
 }
 
@@ -298,14 +323,46 @@ void CEsoProg::CreateMenuBar()
         {
             if (ImGui::MenuItem("Dark Mode"))
             {
+                LOG_INFO(m_pLogger, "Setting style to dark mode");
                 SetImGuiDarkStyle();
             }
             if (ImGui::MenuItem("Light Mode"))
             {
+                LOG_INFO(m_pLogger, "Setting style to light mode");
                 SetImGuiLightStyle();
             }
             ImGui::EndMenu();
         }
+
+#ifdef DEBUG
+        //Debug Settings
+        if (ImGui::BeginMenu("Debug"))
+        {
+            //Trace Verbosity
+            if (ImGui::BeginMenu("Trace Verbosity"))
+            {
+                if (ImGui::MenuItem("Off"))
+                {
+                    CLogManager::SetTraceVerbosity(ETraceVerbosityLevel::Off);
+                }
+                if (ImGui::MenuItem("Low"))
+                {
+                    CLogManager::SetTraceVerbosity(ETraceVerbosityLevel::Low);
+                }
+                if (ImGui::MenuItem("Mid (Only use with programs that with a small number of instructions)"))
+                {
+                    CLogManager::SetTraceVerbosity(ETraceVerbosityLevel::Mid);
+                }
+                if (ImGui::MenuItem("High (Only use with programs that with a small number of instructions)"))
+                {
+                    CLogManager::SetTraceVerbosity(ETraceVerbosityLevel::High);
+                }
+                ImGui::EndMenu();
+            }
+            ImGui::EndMenu();
+        }
+#endif // !DEBUG
+
     }
     ImGui::EndMainMenuBar();
 }
@@ -334,6 +391,7 @@ void CEsoProg::SetCurrentLanugage(ELanguages::Enum language)
         m_pRuntime = &m_nullRuntime;
     }
     }
+    LOG_INFO(m_pLogger, "Setting current language to {}", ELanguages::ToString(language));
     m_pRuntime->RequestReset();
     CFileDialogBox::Set_Allowed_Type(m_pRuntime->GetSupportedFileTypes());
     glfwSetWindowTitle(s_pWindow, newName.c_str());
@@ -388,6 +446,7 @@ void CEsoProg::CheckShortCuts()
 //////////////////////////////////////////////////////////////
 void CEsoProg::HandleNew()
 {
+    LOG_INFO(m_pLogger, "Creating new file");
     m_bFileIsNew = true;
     m_code = "";
 }
@@ -395,6 +454,7 @@ void CEsoProg::HandleNew()
 //////////////////////////////////////////////////////////////
 void CEsoProg::HandleOpen()
 {
+    LOG_INFO(m_pLogger, "Requesting 'open' file dialog box");
     m_bEnableFileDialog = true;
     m_dialogType = CFileDialogBox::FileDialogType::Open;
 }
@@ -402,8 +462,10 @@ void CEsoProg::HandleOpen()
 //////////////////////////////////////////////////////////////
 void CEsoProg::HandleSave()
 {
+    LOG_INFO(m_pLogger, "Saving file");
     if (m_bFileIsNew)
     {
+        LOG_INFO(m_pLogger, "File is new so need to save as");
         HandelSaveAs();
     }
     else
@@ -418,6 +480,7 @@ void CEsoProg::HandleSave()
 //////////////////////////////////////////////////////////////
 void CEsoProg::HandelSaveAs()
 {
+    LOG_INFO(m_pLogger, "Requesting 'save as' file dialog box");
     m_bEnableFileDialog = true;
     m_dialogType = CFileDialogBox::FileDialogType::Save_As;
 }
@@ -437,6 +500,7 @@ void CEsoProg::PreFileLoad(const std::filesystem::path path)
                 static_cast<PietRuntime*>(m_pRuntime)->UnsetImage();
                 if (m_bImageLoaded)
                 {
+                    LOG_INFO(m_pLogger, "Opening new image file, clearing old image data");
                     stbi_image_free(m_pImageData);
                     m_bImageLoaded = false;
                 }
@@ -446,8 +510,9 @@ void CEsoProg::PreFileLoad(const std::filesystem::path path)
     }
     case EFileType::Text:
     {
-        if (m_currentFileType == EFileType::Text)
+        if (!m_code.empty())
         {
+            LOG_INFO(m_pLogger, "Opening new text file, clearing old text data");
             m_code = "";
             m_bCodeChangedSinceLastStep = true;
         }
@@ -455,6 +520,7 @@ void CEsoProg::PreFileLoad(const std::filesystem::path path)
     }
     m_outputStream.str(std::string());
     m_executionHistoryStream.str(std::string());
+    LOG_INFO(m_pLogger, "Requesting runtime rest before loading new file data");
     m_pRuntime->RequestReset();
 }
 
@@ -470,6 +536,7 @@ CEsoProg::EFileType::Enum CEsoProg::LoadFile(const std::filesystem::path path)
         m_fileStream.open(path.string(), m_fileStream.in);
         m_code = "";
         std::getline(m_fileStream, m_code, char(0));
+        LOG_INFO(m_pLogger, "Loaded text file: {}", path.string().c_str());
         m_bFileIsNew = false;
         m_currentFilePath = path;
         m_fileStream.close();
@@ -501,6 +568,11 @@ CEsoProg::EFileType::Enum CEsoProg::LoadFile(const std::filesystem::path path)
                 glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, m_imageWidth, m_imageHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, m_pImageData);
                 //glGenerateMipmap(GL_TEXTURE_2D);
                 m_bImageLoaded = true;
+                LOG_INFO(m_pLogger, "Loaded image file: {}", path.string().c_str());
+            }
+            else
+            {
+                LOG_WARNING(m_pLogger, "Failed to load image file: {}", path.string().c_str());
             }
             m_sync.m_bRenderWantsState = true;
             m_sync.m_runtimeStateMtx.lock();
@@ -518,7 +590,8 @@ CEsoProg::EFileType::Enum CEsoProg::LoadFile(const std::filesystem::path path)
 }
 
 //////////////////////////////////////////////////////////////
-void CEsoProg::PostFileLoad(const CEsoProg::EFileType::Enum fileType, const std::filesystem::path path)
+void CEsoProg::PostFileLoad(const EFileType::Enum fileType, const std::filesystem::path path)
 {
+    LOG_INFO(m_pLogger, "Updating current file type to {}", EFileType::ToString(fileType));
     m_currentFileType = fileType;
 }
