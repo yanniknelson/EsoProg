@@ -19,7 +19,7 @@ class NullRuntime : public IRuntime
 
 // clang-format off
     // IRuntime
-    virtual ELanguages::Enum GetRuntimeLanguage() const override { return ELanguages::COUNT; }
+    virtual ELanguages::Enum GetRuntimeLanguage() const override { return ELanguages::None; }
     virtual std::vector<std::string> GetSupportedFileTypes() const override { return {}; }
     virtual void SetSourceCode(std::string str) override {}
     virtual bool StepExecution() override { return false; }

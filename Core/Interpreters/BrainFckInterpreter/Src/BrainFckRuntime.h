@@ -9,6 +9,7 @@
 #include <ELanguages.h>          // for ELanguages::Enum
 #include <IMemoryArray.h>        // for IMemoryArray
 #include <IRuntime.h>            // for SRuntimeSyncronisationStruct
+#include <LogManager.h>          // for TLoggerPtr
 
 #include <cstdint>               // for uint8_t
 #include <memory>
@@ -31,6 +32,8 @@ class BrainFckRuntime : public CRuntime<BrainFckOperationTypes::Enum>
     // ~IRuntime
 
   private:
+    TLoggerPtr m_pLogger{ nullptr };
+
     BrainFckTokeniser m_tokeniser;
     BrainFckParser m_parser;
     std::shared_ptr<BrainFckProgram> m_pProgramAST{ nullptr };

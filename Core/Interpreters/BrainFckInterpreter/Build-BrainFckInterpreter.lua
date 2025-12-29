@@ -13,6 +13,7 @@ project "BrainFckInterpreter"
 	  -- Include Core
 	  "%{wks.location}/Core/ImGuiHelpers/ImGuiValueChangeCallbacks",
       "%{wks.location}/Core/SmartEnums/Src",
+	  "%{wks.location}/Core/Logger/Src",
       "%{wks.location}/Core/LanguageHelpers/ELanguages/Src",
       "%{wks.location}/Core/LanguageHelpers/IAST/Src",
       "%{wks.location}/Core/LanguageHelpers/IParser/Src",

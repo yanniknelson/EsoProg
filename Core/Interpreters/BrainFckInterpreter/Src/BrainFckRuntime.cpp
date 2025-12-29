@@ -4,8 +4,11 @@
 #include "BrainFckAstVisitor.h"  // for BrainFckPrintingVisitor
 
 #include <CRuntime.h>            // for CRuntime
-#include <IRuntime.h>            // for SRuntimeSyncronisationStruct
 #include <ELanguages.h>          // for ELanguages::Enum
+#include <IRuntime.h>            // for SRuntimeSyncronisationStruct
+#include <LogLevel.h>            // for ETraceVerbosityLevel
+#include <LogMacros.h>           // for LOG_INFO ....
+#include <LogManager.h>          // for CLogmanager::GetOrCreate
 
 #include <sstream>               // for std::ostringstream
 #include <iostream>
@@ -17,7 +20,9 @@
 BrainFckRuntime::BrainFckRuntime(SRuntimeSyncronisationStruct& rSync, std::ostringstream& rOutputStream, std::ostringstream& rExecutionhistoryStream)
     : CRuntime(rSync, rOutputStream, rExecutionhistoryStream), m_parser(&m_tokeniser)
 {
+    m_pLogger = CLogManager::GetOrCreate("BrainFck-Runtime", /*boutputToConsole =*/true, /*bOutputToFile =*/true, /*bOutputToUniqueFile =*/true);
     m_tokeniser.SetTextStream(m_code);
+    LOG_TRACE(m_pLogger, ETraceVerbosityLevel::Low, "BrainFck runtime instance created");
 };
 
 //////////////////////////////////////////////////////////////
@@ -35,6 +40,7 @@ std::vector<std::string> BrainFckRuntime::GetSupportedFileTypes() const
 //////////////////////////////////////////////////////////////
 void BrainFckRuntime::ResetImplementation()
 {
+    LOG_INFO(m_pLogger, "Resetting array");
     m_array.Clear();
 }
 
@@ -47,6 +53,7 @@ void BrainFckRuntime::RenderWindows()
 //////////////////////////////////////////////////////////////
 void BrainFckRuntime::CacheState()
 {
+    LOG_TRACE(m_pLogger, ETraceVerbosityLevel::High, "Caching array and current array index");
     m_cachedIndex = m_currentIndex;
     m_cachedArray = m_array;
 }
@@ -54,14 +61,15 @@ void BrainFckRuntime::CacheState()
 //////////////////////////////////////////////////////////////
 void BrainFckRuntime::OnInput(int val)
 {
+    LOG_INFO(m_pLogger, "Storing {} at index {}", val, m_currentIndex);
     m_array.Set(m_currentIndex, val);
 }
 
 //////////////////////////////////////////////////////////////
 void BrainFckRuntime::OnSourceSet()
 {
+    LOG_INFO(m_pLogger, "Updating BrainFck source code");
     m_pProgramAST = std::dynamic_pointer_cast<BrainFckProgram>(m_parser.Parse());
-    BrainFckPrintingVisitor().Traverse(m_pProgramAST);
     m_runtimeVisitor.SetProgram(m_pProgramAST);
 }
 
@@ -75,6 +83,8 @@ bool BrainFckRuntime::ShouldEnd(const BrainFckOperationTypes::Enum& token)
 BrainFckOperationTypes::Enum BrainFckRuntime::StepExecution_Internal()
 {
     BrainFckOperationTypes::Enum operation = m_runtimeVisitor.Step(m_array.Get(m_currentIndex));
+
+    LOG_TRACE(m_pLogger, ETraceVerbosityLevel::Mid, "Stepping, executing {}", BrainFckOperationTypes::ToString(operation));
     switch (operation)
     {
     case (BrainFckOperationTypes::RightOp):

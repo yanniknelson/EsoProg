@@ -5,7 +5,8 @@
 // clang-format off
 #define ELANGUAGES(x) \
     x(Piet)           \
-    x(Brainfck)
+    x(Brainfck)       \
+    x(None)
 
 CreateSmartEnum(ELanguages, ELANGUAGES);
 

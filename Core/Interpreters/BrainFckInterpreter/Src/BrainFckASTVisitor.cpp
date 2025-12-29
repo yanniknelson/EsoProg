@@ -2,6 +2,10 @@
 
 #include "BrainFckAST.h"  // for TBrainFckOperationPtr, BrainFckOperationTypes
 
+#include <LogLevel.h>       // for ETraceVerbosityLevel
+#include <LogMacros.h>      // for LOG_INFO ....
+#include <LogManager.h>     // for CLogmanager::GetOrCreate
+
 #include <cstdint>        // for uint8_t
 #include <iostream>
 #include <memory>
@@ -35,11 +39,10 @@ void BrainFckPrintingVisitor::Traverse(TBrainFckOperationPtr pOperation)
     case (BrainFckOperationTypes::RightOp): [[fallthrough]];
     case (BrainFckOperationTypes::InOp): [[fallthrough]];
     case (BrainFckOperationTypes::OutOp):
-        [[fallthrough]];
-        {
-            Visit(pOperation);
-            break;
-        }
+    {
+        Visit(pOperation);
+        break;
+    }
     default:
     {
         std::cout << "Error" << std::endl;
@@ -76,6 +79,12 @@ void BrainFckPrintingVisitor::Print(const char* str)
     std::cout << str << "\n";
 }
 
+BrainFckRuntimeVisitor::BrainFckRuntimeVisitor()
+{
+    m_pLogger = CLogManager::GetOrCreate("BrainFck-Runtime-Visitor", /*boutputToConsole =*/true, /*bOutputToFile =*/true, /*bOutputToUniqueFile =*/true);
+    LOG_TRACE(m_pLogger, ETraceVerbosityLevel::Low, "BrainFck runtime visitor instance created");
+}
+
 //////////////////////////////////////////////////////////////
 void BrainFckRuntimeVisitor::SetProgram(TBrainFckOperationPtr pProgram)
 {
@@ -85,9 +94,13 @@ void BrainFckRuntimeVisitor::SetProgram(TBrainFckOperationPtr pProgram)
 //////////////////////////////////////////////////////////////
 BrainFckOperationTypes::Enum BrainFckRuntimeVisitor::Step(uint8_t currVal)
 {
+    LOG_TRACE(m_pLogger, ETraceVerbosityLevel::High, "stepping execution");
     TBrainFckOperationPtr pCurrentOperation = m_pCurrentOperation.lock();
     if (!pCurrentOperation)
+    {
+        LOG_TRACE(m_pLogger, ETraceVerbosityLevel::High, "No current operation, program is at end", BrainFckOperationTypes::ToString(pCurrentOperation->GetType()));
         return BrainFckOperationTypes::End;
+    }
 
     BrainFckOperationTypes::Enum currOpType = GetOperationType();
     if (pCurrentOperation->GetType() == BrainFckOperationTypes::Loop || pCurrentOperation->GetType() == BrainFckOperationTypes::Program)
@@ -110,6 +123,8 @@ void BrainFckRuntimeVisitor::EnterRegion(uint8_t currVal)
     {
         std::shared_ptr<BrainFckProgram> pProgram = std::dynamic_pointer_cast<BrainFckProgram>(pCurrentOperation);
         m_pCurrentOperation = pProgram->m_pRegion->front();
+        LOG_TRACE(m_pLogger, ETraceVerbosityLevel::High, "Exiting program region");
+
     }
     else if (pCurrentOperation->GetType() == BrainFckOperationTypes::Loop)
     {
@@ -117,11 +132,13 @@ void BrainFckRuntimeVisitor::EnterRegion(uint8_t currVal)
         // if the current value is not zero then we enter the Loop's Region
         if (currVal != 0)
         {
+            LOG_TRACE(m_pLogger, ETraceVerbosityLevel::High, "Restarting loop", BrainFckOperationTypes::ToString(pCurrentOperation->GetType()));
             m_pCurrentOperation = pLoop->m_pRegion->front();
         }
         // otherwise we skip the loop body and move on with execution
         else
         {
+            LOG_TRACE(m_pLogger, ETraceVerbosityLevel::High, "Skipping loop region");
             MoveToNextOp(currVal);
         }
     }
@@ -131,6 +148,7 @@ void BrainFckRuntimeVisitor::EnterRegion(uint8_t currVal)
 void BrainFckRuntimeVisitor::ExitRegion(uint8_t currVal)
 {
     TBrainFckOperationPtr pCurrentOperation = m_pCurrentOperation.lock();
+    LOG_TRACE(m_pLogger, ETraceVerbosityLevel::High, "Exiting {} region", BrainFckOperationTypes::ToString(pCurrentOperation->GetType()));
     TBrainFckOperationPtr pParentOperation = pCurrentOperation->GetParent();
     if (pParentOperation->GetType() == BrainFckOperationTypes::Program)
     {
@@ -145,6 +163,7 @@ void BrainFckRuntimeVisitor::ExitRegion(uint8_t currVal)
 //////////////////////////////////////////////////////////////
 void BrainFckRuntimeVisitor::MoveToNextOp(uint8_t currVal)
 {
+    LOG_TRACE(m_pLogger, ETraceVerbosityLevel::High, "Moving to next operation");
     //get the next instruction in the same region as the current instruction
     TBrainFckOperationPtr pCurrentOperation = m_pCurrentOperation.lock();
     if (pCurrentOperation)

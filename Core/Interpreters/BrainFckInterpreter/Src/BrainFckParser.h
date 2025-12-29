@@ -5,6 +5,7 @@
 
 #include <IParser.h>        // for IParser
 #include <ITokeniser.h>     // for ITokeniser
+#include <LogManager.h>     // for TLoggerPtr
 
 //////////////////////////////////////////////////////////////
 class BrainFckParser : public IParser<BrainFckToken, BrainFckOperationTypes>
@@ -20,4 +21,6 @@ class BrainFckParser : public IParser<BrainFckToken, BrainFckOperationTypes>
     TBrainFckOperationPtr ParseExpression(TBrainFckOperationPtr pParent, TBrainFckRegionPtr pParentRegion);
     TBrainFckOperationPtr ParseOp(TBrainFckOperationPtr pParent, TBrainFckRegionPtr pParentRegion);
     TBrainFckOperationPtr ParseLoop(TBrainFckOperationPtr pParent, TBrainFckRegionPtr pParentRegion);
+
+    TLoggerPtr m_pLogger{ nullptr };
 };

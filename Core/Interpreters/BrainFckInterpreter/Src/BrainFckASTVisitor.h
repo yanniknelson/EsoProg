@@ -2,6 +2,7 @@
 
 #include <BrainFckAST.h>  // for BrainFckOperationTypes, BrainFckProgram, TBrainFckOperationPtr, Loop
 #include <IASTVisitor.h>  // for IASTVisitor
+#include <LogManager.h>   // for TLoggerPtr
 
 #include <cstdint>        // for uint8_t
 #include <memory>
@@ -32,6 +33,8 @@ class BrainFckRuntimeVisitor
     using TProgramPtr = std::shared_ptr<BrainFckProgram>;
 
   public:
+    BrainFckRuntimeVisitor();
+
     void SetProgram(TBrainFckOperationPtr pProgram);
     BrainFckOperationTypes::Enum Step(uint8_t currVal);
     void EnterRegion(uint8_t currVal);
@@ -40,5 +43,7 @@ class BrainFckRuntimeVisitor
     BrainFckOperationTypes::Enum GetOperationType();
 
   private:
+    TLoggerPtr m_pLogger{ nullptr };
+
     TBrainFckOperationWkPtr m_pCurrentOperation;
 };
