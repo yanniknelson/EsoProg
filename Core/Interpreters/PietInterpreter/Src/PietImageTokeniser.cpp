@@ -53,8 +53,8 @@ PietImageTokeniser::SRGB::SRGB(const int init)
 }
 
 //////////////////////////////////////////////////////////////
-PietImageTokeniser::SRGB::SRGB(const int initR, const int initG, const int initB)
-    : r(initR), g(initG), b(initB)
+PietImageTokeniser::SRGB::SRGB(const int initR, const int initG, const int initB, const int initA /*= 0xFF*/)
+    : r(initR), g(initG), b(initB), a(initA)
 {
 }
 
@@ -343,42 +343,21 @@ PietImageTokeniser::SPietColour PietImageTokeniser::RGBToPietColour(const PietIm
     bool bHasFF = colour.r == 0xFF || colour.g == 0xFF || colour.b == 0xFF;
     bool bHasC0 = colour.r == 0xC0 || colour.g == 0xC0 || colour.b == 0xC0;
 
-    if (bHasFF && bHasC0)
-    {
-        retVal.m_brightness = EBrightness::Light;
-    }
-    else if (bHasFF)
-    {
-        retVal.m_brightness = EBrightness::Standard;
-    }
-    else
-    {
-        retVal.m_brightness = EBrightness::Dark;
-        // If the colour is dark all the hex FFs will be C0 (see NOTE 2)
-        if (colour.r == 0xC0)
-        {
-            hueIndx |= 0b100;
-        }
-        if (colour.g == 0xC0)
-        {
-            hueIndx |= 0b010;
-        }
-        if (colour.b == 0xC0)
-        {
-            hueIndx |= 0b001;
-        }
-    }
+    // If the colour is dark all the hex FFs will be C0 (see NOTE 2)
+    const uint8_t highBits = bHasFF ? 0xFF : 0xC0;
+    
+    retVal.m_brightness = bHasFF ? (bHasC0 ? EBrightness::Light : EBrightness::Standard) : EBrightness::Dark;
 
     // See NOTE 2
-    if (colour.r == 0xFF)
+    if (colour.r == highBits)
     {
         hueIndx |= 0b100;
     }
-    if (colour.g == 0xFF)
+    if (colour.g == highBits)
     {
         hueIndx |= 0b010;
     }
-    if (colour.b == 0xFF)
+    if (colour.b == highBits)
     {
         hueIndx |= 0b001;
     }
@@ -482,18 +461,12 @@ PietToken::ETokenType::Enum PietImageTokeniser::ConvertColoursToInstruction(cons
 //////////////////////////////////////////////////////////////
 PietImageTokeniser::SRGB PietImageTokeniser::GetRGBFromLoation(const PietImageTokeniser::SLocation& rLoc) const
 {
-    SRGB retCol;
-
     if (rLoc.y < m_imageHeight && rLoc.y > -1 && rLoc.x < m_imageWidth && rLoc.x > -1)
     {
-        int indx = (m_imageWidth * rLoc.y + rLoc.x) * 4;
-
-        retCol.r = m_pImageData[indx];
-        retCol.g = m_pImageData[indx + 1];
-        retCol.b = m_pImageData[indx + 2];
+        return reinterpret_cast<const SRGB*>(m_pImageData)[(m_imageWidth * rLoc.y + rLoc.x)];
     }
 
-    return retCol;
+    return BLACK;
 }
 
 //////////////////////////////////////////////////////////////
@@ -501,11 +474,10 @@ bool PietImageTokeniser::LocationIsSameColour(const SLocation& rLoc, const SRGB 
 {
     if (rLoc.y < m_imageHeight && rLoc.y > -1 && rLoc.x < m_imageWidth && rLoc.x > -1)
     {
-        int indx = (m_imageWidth * rLoc.y + rLoc.x) * 4;
-
-        return m_pImageData[indx] == col.r && m_pImageData[indx + 1] == col.g && col.b == m_pImageData[indx + 2];
+        return reinterpret_cast<const SRGB*>(m_pImageData)[(m_imageWidth * rLoc.y + rLoc.x)] == col;
     }
-    return col == 0;
+
+    return col == BLACK;
 }
 
 //////////////////////////////////////////////////////////////
@@ -521,7 +493,7 @@ PietImageTokeniser::SLocation PietImageTokeniser::SlideAlongWhite(const SLocatio
     while (true)
     {
         const SLocation nextLocation = MoveInDirection(currLocation, dir);
-        if (LocationIsSameColour(nextLocation, 0xFFFFFF))
+        if (LocationIsSameColour(nextLocation, WHITE))
         {
             currLocation = nextLocation;
         }
@@ -589,7 +561,7 @@ void PietImageTokeniser::FindEndCodel(SBlockInfo& rBlockInfo)
         rBlockInfo.m_leavingCodel = rBlockInfo.m_pCodelInfo->m_edgePositions[static_cast<int>(rBlockInfo.m_endingDirectionPointer)][static_cast<int>(rBlockInfo.m_endingCodelChooser) - static_cast<int>(EDirection::Left)];
         rBlockInfo.m_endingCodel = MoveInDirection(rBlockInfo.m_leavingCodel, rBlockInfo.m_endingDirectionPointer);
 
-        if (IsValidLocation(rBlockInfo.m_endingCodel) && !LocationIsSameColour(rBlockInfo.m_endingCodel, 0))
+        if (IsValidLocation(rBlockInfo.m_endingCodel) && !LocationIsSameColour(rBlockInfo.m_endingCodel, BLACK))
         {
             rBlockInfo.m_endingDirectionPointer;
             rBlockInfo.m_endingCodelChooser;
@@ -627,7 +599,7 @@ void PietImageTokeniser::FindEndWhiteCodel(SBlockInfo& rBlockInfo)
     {
         const SLocation nextLocation = SlideAlongWhite(currLocation, currDirectionPointer);
         const SLocation nextBlockLoc = MoveInDirection(nextLocation, currDirectionPointer);
-        if (LocationIsSameColour(nextBlockLoc, 0))
+        if (LocationIsSameColour(nextBlockLoc, BLACK))
         {
             currCodelChoser = currCodelChoser == EDirection::Left ? EDirection::Right : EDirection::Left;
             currDirectionPointer = s_clockwiseDirectionLookup[(int)currDirectionPointer];
