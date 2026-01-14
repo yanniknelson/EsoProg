@@ -6,6 +6,7 @@
 
 #include <deque>
 #include <map>
+#include <numeric>              // for std::gcd
 #include <ios>                  // for std::hex, std::dec
 #include <ostream>
 #include <string>
@@ -190,6 +191,7 @@ void PietImageTokeniser::SetImage(const unsigned char* pImageData, const int wid
     m_imageWidth = width;
     m_imageHeight = height;
     m_instructionNumber = 1;
+    SetCodelSize(CalcCodelSize());
 }
 
 //////////////////////////////////////////////////////////////
@@ -200,6 +202,12 @@ void PietImageTokeniser::UnsetImage()
     m_imageWidth = 0;
     m_imageHeight = 0;
     m_instructionNumber = 1;
+}
+
+//////////////////////////////////////////////////////////////
+int PietImageTokeniser::GetCodelSize() const
+{
+    return m_codelSize;
 }
 
 //////////////////////////////////////////////////////////////
@@ -342,7 +350,7 @@ PietImageTokeniser::SPietColour PietImageTokeniser::RGBToPietColour(const PietIm
 
     bool bHasFF = colour.r == 0xFF || colour.g == 0xFF || colour.b == 0xFF;
     bool bHasC0 = colour.r == 0xC0 || colour.g == 0xC0 || colour.b == 0xC0;
-
+    
     // If the colour is dark all the hex FFs will be C0 (see NOTE 2)
     const uint8_t highBits = bHasFF ? 0xFF : 0xC0;
     
@@ -456,6 +464,45 @@ PietToken::ETokenType::Enum PietImageTokeniser::ConvertColoursToInstruction(cons
     }
 
     return conversionTable[hueDiffIndx][brightnessDiffIndx];
+}
+
+//////////////////////////////////////////////////////////////
+int PietImageTokeniser::CalcCodelSize() const
+{
+    int minWidth = m_imageWidth;
+    int startOfCurrentBlock = 0;
+    const SRGB* pImageData = reinterpret_cast<const SRGB*>(m_pImageData);
+    for (int xCoord = 1; xCoord < m_imageWidth; xCoord++)
+    {
+        if (pImageData[startOfCurrentBlock] != pImageData[xCoord])
+        {
+            const int sizeOfBlock = xCoord - startOfCurrentBlock;
+            minWidth = std::min(minWidth, sizeOfBlock);
+            if (minWidth == 1)
+            {
+                return 1;
+            }
+            startOfCurrentBlock = xCoord;
+        }
+    }
+
+    int minHeight = m_imageHeight;
+    startOfCurrentBlock = 0;
+    for (int yCoord = 1; yCoord < m_imageWidth; yCoord++)
+    {
+        if (pImageData[startOfCurrentBlock * m_imageWidth] != pImageData[yCoord * m_imageWidth])
+        {
+            const int sizeOfBlock = yCoord - startOfCurrentBlock;
+            minHeight = std::min(minHeight, sizeOfBlock);
+            if (minHeight == 1)
+            {
+                return 1;
+            }
+            startOfCurrentBlock = yCoord;
+        }
+    }
+
+    return std::gcd(minWidth, minHeight);
 }
 
 //////////////////////////////////////////////////////////////

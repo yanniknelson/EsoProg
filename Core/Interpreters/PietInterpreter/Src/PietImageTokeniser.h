@@ -155,6 +155,7 @@ class PietImageTokeniser : public ITokeniser<PietToken>
 
     void SetImage(const unsigned char* pImageData, const int width, const int height);
     void UnsetImage();
+    int GetCodelSize() const;
     void SetCodelSize(const int size);
 
     int GetInstructionNumber();
@@ -200,6 +201,7 @@ class PietImageTokeniser : public ITokeniser<PietToken>
     static void RotateDirectionPointer(SBlockInfo& rBlockInfo, const int times);
     static PietToken::ETokenType::Enum ConvertColoursToInstruction(const SPietColour& rColour1, const SPietColour& rColour2);
 
+    int CalcCodelSize() const;
     SRGB GetRGBFromLoation(const SLocation& rLoc) const;
     bool LocationIsSameColour(const SLocation& rLoc, const SRGB col) const;
     SPietColour GetPietColourFromLocation(const SLocation& rLoc) const;

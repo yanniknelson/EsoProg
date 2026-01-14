@@ -67,6 +67,8 @@ void PietRuntime::SetImage(GLuint* pTexture, const unsigned char* imageData, con
     m_pTexture = pTexture;
     m_aspectRatio = (float)imageHeight / (float)imageWidth;
     m_imageTokeniser.SetImage(imageData, imageWidth, imageHeight);
+    m_codelSize = m_imageTokeniser.GetCodelSize();
+    m_codelSizeStr = std::to_string(m_codelSize);
     m_activeTokeniser = &m_imageTokeniser;
 }
 
