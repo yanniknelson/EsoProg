@@ -9,6 +9,9 @@
 #include <string>
 #include <vector>
 
+#define WHITE 0xFFFFFFFF
+#define BLACK 0xFF000000
+
 //////////////////////////////////////////////////////////////
 class PietImageTokeniser : public ITokeniser<PietToken>
 {
@@ -41,17 +44,18 @@ class PietImageTokeniser : public ITokeniser<PietToken>
     //////////////////////////////////////////////////////////////
     union SRGB
     {
-        uint32_t val = 0;
+        uint32_t val{ BLACK };
         struct
         {
             uint8_t r;
             uint8_t g;
             uint8_t b;
+            uint8_t a;
         };
 
         SRGB() = default;
         SRGB(const int init);
-        SRGB(const int initR, const int initG, const int initB);
+        SRGB(const int initR, const int initG, const int initB, const int initA = 0xFF);
 
         friend std::ostream& operator<<(std::ostream& rOS, const SRGB& rCol);
 
@@ -151,6 +155,7 @@ class PietImageTokeniser : public ITokeniser<PietToken>
 
     void SetImage(const unsigned char* pImageData, const int width, const int height);
     void UnsetImage();
+    int GetCodelSize() const;
     void SetCodelSize(const int size);
 
     int GetInstructionNumber();
@@ -196,6 +201,7 @@ class PietImageTokeniser : public ITokeniser<PietToken>
     static void RotateDirectionPointer(SBlockInfo& rBlockInfo, const int times);
     static PietToken::ETokenType::Enum ConvertColoursToInstruction(const SPietColour& rColour1, const SPietColour& rColour2);
 
+    int CalcCodelSize() const;
     SRGB GetRGBFromLoation(const SLocation& rLoc) const;
     bool LocationIsSameColour(const SLocation& rLoc, const SRGB col) const;
     SPietColour GetPietColourFromLocation(const SLocation& rLoc) const;
