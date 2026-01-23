@@ -1,23 +1,63 @@
 #pragma once
 
-#include <atomic>
-#include <vector>
+#include "LogLevel.h" // for ELogLevel
 
-///////////////////////////////////////////
-class CLogManager
+#include <memory>
+#include <string>
+
+// Forward decl
+namespace spdlog { class logger; };
+namespace spdlog::sinks { class sink; };
+
+using TSPDLoggerPtr = std::shared_ptr<spdlog::logger>;
+using TSinkPtr = std::shared_ptr<spdlog::sinks::sink>;
+
+//////////////////////////////////////////////////////////////
+class CLogger
 {
   public:
-    struct SLoggerDetails
-    {
-        const char* m_loggerName{ "" };
-        bool m_bConsoleOutput{ true };
-        bool m_bFileOutput{ true };
-    };
+    CLogger(TSPDLoggerPtr pLogger);
+    ~CLogger();
 
-    static void Initialize(const std::vector<SLoggerDetails>& rLoggers);
-    static void Shutdown(const char* m_loggerName);
+    TSPDLoggerPtr& get();
 
   private:
-    static bool s_bInitialized;
-    static std::atomic<int> s_numLoggers;
+    TSPDLoggerPtr m_pLogger;
+};
+
+using TLoggerPtr = std::shared_ptr<CLogger>;
+
+//////////////////////////////////////////////////////////////
+class CLogManager
+{
+    public:
+    static void Init();
+    static void Shutdown();
+
+    static TLoggerPtr GetOrCreate(const std::string& name = "", bool bOutputToConsole = true, bool bOutputToFile = true, bool bOutputToUniqueFile = false);
+    static void Drop(const std::string& name);
+
+    static void SetDefaultLogLevel(const ELogLevel::Enum& log_level);
+    static void SetDefaultFlushLevel(const ELogLevel::Enum& flush_level);
+    static void SetTraceVerbosity(const ETraceVerbosityLevel::Enum& verbosity_level);
+
+    static ETraceVerbosityLevel::Enum GetTraceVerbosity();
+
+    private:
+    /// Private ctor & dtor to enforce singleton pattern.
+    CLogManager() = default;
+    ~CLogManager() = default;
+
+    /// Delete move/copy ctor and assignment op
+    CLogManager(const CLogManager& other) = delete;
+    CLogManager(CLogManager&& other) = delete;
+    CLogManager& operator=(const CLogManager& other) = delete;
+    CLogManager& operator=(CLogManager&& other) = delete;
+
+    static bool s_isInitialized;
+    static TSinkPtr s_sharedConsoleSink;
+    static TSinkPtr s_sharedFileSink;
+    static ELogLevel::Enum s_defaultLogLevel;
+    static ELogLevel::Enum s_defaultFlushLevel;
+    static ETraceVerbosityLevel::Enum s_verbosityLevel;
 };
