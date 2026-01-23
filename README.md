@@ -128,4 +128,3 @@ If you find this interesting then consider contributing to it! All contributions
 ## License
 
 EsoProg is under **MIT License** and all its third-party vendors are under their own licenses and terms and conditions.
-
