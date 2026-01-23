@@ -354,7 +354,9 @@ PietImageTokeniser::SPietColour PietImageTokeniser::RGBToPietColour(const PietIm
     // If the colour is dark all the hex FFs will be C0 (see NOTE 2)
     const uint8_t highBits = bHasFF ? 0xFF : 0xC0;
     
-    retVal.m_brightness = bHasFF ? (bHasC0 ? EBrightness::Light : EBrightness::Standard) : EBrightness::Dark;
+    retVal.m_brightness = bHasFF
+        ? (bHasC0 ? EBrightness::Light : EBrightness::Standard)
+        : EBrightness::Dark;
 
     // See NOTE 2
     if (colour.r == highBits)
