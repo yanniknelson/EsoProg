@@ -88,12 +88,13 @@ git submodule update --init --recursive
 - **For Windows:**
 
 ```bash
-./build.bat
+./Scripts/Setup-Windows.bat
 ```
 
 - **For Linux/MacOS:**
+
 ```bash
-./build.sh
+./Scripts/Setup-Linux.bat
 ```
 
 > After building you'll have the respective executable for your OS.
