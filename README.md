@@ -37,6 +37,9 @@
 Esoteoric languages are type of languages which are designed to non-conventional and hard to write.
 In EsoProg you can write programs in these languages with ease!
 
+![Piet Empty Program Example](./ReadMe_Resources/Empty_Program_Example.png)
+![Piet Quest Example](./ReadMe_Resources/PietQuest_Running.png)
+
 ### Supported Languages
 
 The languages which are supported by **EsoProg** are as following:
