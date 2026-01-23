@@ -508,12 +508,15 @@ int PietImageTokeniser::CalcCodelSize() const
 //////////////////////////////////////////////////////////////
 PietImageTokeniser::SRGB PietImageTokeniser::GetRGBFromLoation(const PietImageTokeniser::SLocation& rLoc) const
 {
-    if (rLoc.y < m_imageHeight && rLoc.y > -1 && rLoc.x < m_imageWidth && rLoc.x > -1)
-    {
-        return reinterpret_cast<const SRGB*>(m_pImageData)[(m_imageWidth * rLoc.y + rLoc.x)];
-    }
+    const bool bValidX = (rLoc.x >= 0 && rLoc.x < m_imageWidth);
+    const bool bValidY = (rLoc.y >= 0 && rLoc.y < m_imageHeight);
 
-    return BLACK;
+    if (bValidX && bValidY)
+    {
+        const int index = (m_imageWidth * rLoc.y) + rLoc.x;
+        const SRGB* pColors = reinterpret_cast<const SRGB*>(m_pImageData);
+        return pColors[index];
+    }
 }
 
 //////////////////////////////////////////////////////////////
