@@ -7,7 +7,7 @@
   <!-- TODO: Add build status when workflow is completed (ci.yaml) -->
 </p>
 
-> Playground of Esoteoric Languages!
+The Playground of Esoteric Languages!
 
 ---
 
@@ -16,7 +16,6 @@
 - [About the Project](#about-the-project)
   - [Introduction](#introduction)
   - [Supported Languages](#supported-languages)
-  - [Features](#features)
 - [Getting Started](#getting-started)
   - [Prerequisites](#prerequisites)
   - [Installation](#installation)
@@ -29,12 +28,10 @@
 
 ## About the Project
 
-> Playground of Esoteoric Languages!
-
 ### Introduction
 
-**EsoProg** is a playground for various types of esoteoric languages.
-Esoteoric languages are type of languages which are designed to non-conventional and hard to write.
+**EsoProg** is a playground for various types of esoteric languages.
+Esoteric languages are type of languages which are designed to non-conventional and hard to write.
 In EsoProg you can write programs in these languages with ease!
 
 ![Piet Empty Program Example](./ReadMe_Resources/Empty_Program_Example.png)
@@ -47,14 +44,6 @@ The languages which are supported by **EsoProg** are as following:
 - BrainF\*ck
 - COW
 - Auld
-
-### Features
-
-- **Performance:** Written in C++20 for modern type-safety and high performance.
-
-- **Support:** Supports various types of Esoteoric languages from image-based to pointer-based.
-
-- **Editor:** Comes with an ImGui-based editor for writing in these languages.
 
 ---
 
@@ -94,14 +83,10 @@ git submodule update --init --recursive
 - **For Linux/MacOS:**
 
 ```bash
-./Scripts/Setup-Linux.bat
+./Scripts/Setup-Linux.sh
 ```
 
-> After building you'll have the respective executable for your OS.
-
-### Basic Usage
-
-Consult [Examples](./App/Examples) folder for basic usage and programs.
+After building you'll have the respective executable for your OS.
 
 ---
 
@@ -110,10 +95,10 @@ Consult [Examples](./App/Examples) folder for basic usage and programs.
 Currently Piet has been done and BrainF\*ck is under-development. COW and Auld development will start after that.
 
 **Current Development Stage:**
-- Piet [✓]
-- BrainF\*ck [-]
-- COW []
-- Auld []
+- :white_check_mark: Piet 
+- :construction_worker: BrainF\*ck (See BrainFck branch)
+- :white_large_square: COW
+- :white_large_square: Auld
 
 ---
 
@@ -121,7 +106,7 @@ Currently Piet has been done and BrainF\*ck is under-development. COW and Auld d
 
 If you find this interesting then consider contributing to it! All contributions are welcomed whole-heartedly.
 
-> See the contributing guideline: [CONTRIBUTING.md](./contributing.md)
+See the contributing guideline: [CONTRIBUTING.md](./contributing.md)
 
 ---
 
