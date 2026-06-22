@@ -26,7 +26,7 @@ class IOperation
 
     virtual ~IOperation() = default;
 
-    virtual OperationTypes::Enum GetType() const = 0;
+    virtual typename OperationTypes::Enum GetType() const = 0;
 
     //////////////////////////////////////////////////////////////
     void SetIndex(size_t regionIndex)
