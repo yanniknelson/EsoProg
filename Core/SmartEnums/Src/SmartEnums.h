@@ -1,3 +1,5 @@
+#pragma once
+
 #include <cstdint>   // for uint8_t
 #include <iostream>  // for std::ostream
 #include <string.h>  // for strcmp
@@ -47,6 +49,6 @@
             os << ToString(e);                                           \
             return os;                                                   \
         }                                                                \
-    }
+    };
 
 #define CreateSmartEnum(enumName, enumValues, ...) CreateSmartEnumOfType(enumName, uint8_t, enumValues, ...)

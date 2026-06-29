@@ -10,6 +10,9 @@ project "Logger"
    {
       "Src",
 
+      -- Include Core
+      "%{wks.location}/Core/SmartEnums/Src",
+
       -- Include externals
       "%{wks.location}/%{externals.spdlog}/include"
    }
